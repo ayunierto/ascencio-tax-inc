@@ -1,43 +1,104 @@
+import React, { useEffect } from 'react';
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import Loader from '@/components/Loader';
+import { theme } from '@/components/ui/theme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { status, checkStatus } = useAuthStore();
+
+  useEffect(() => {
+    checkStatus();
+  }, []);
+
+  if (status === 'checking') {
+    return <Loader />;
+  }
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.mutedForeground,
+        tabBarHideOnKeyboard: true,
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+        tabBarStyle: {
+          backgroundColor: theme.background,
+          paddingTop: 4,
+          height: 65,
+        },
+        animation: 'shift',
+      }}
+    >
       <Tabs.Screen
-        name="index"
+        name="(home)"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'My Sites',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              size={28}
+              name={focused ? 'home' : 'home-outline'}
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="my-bookings"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          href:
+            status === 'authenticated' ? '/(tabs)/my-bookings/bookings' : null,
+          title: 'My Bookings',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              size={28}
+              name={focused ? 'calendar' : 'calendar-outline'}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="accounting"
+        options={{
+          href:
+            status === 'authenticated' ? '/(tabs)/accounting/receipts' : null,
+          title: 'Receipts',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              size={28}
+              name={focused ? 'receipt' : 'receipt-outline'}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile/settings"
+        options={{
+          title: 'My Profile',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              size={28}
+              name={focused ? 'person-circle' : 'person-circle-outline'}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile/auth"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="booking"
+        options={{
+          href: null,
+          headerShown: false,
         }}
       />
     </Tabs>
