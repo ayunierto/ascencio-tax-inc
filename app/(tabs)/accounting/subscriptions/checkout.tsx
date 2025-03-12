@@ -119,7 +119,7 @@ const CheckoutScreen = () => {
       publishableKey={publishableKey}
       merchantIdentifier="merchant.com.ayunierto.ascenciotaxinc" // required for Apple Pay
       // urlScheme={Linking.createURL('/')?.split(':')[0]} // required for 3D Secure and bank redirects
-      urlScheme={'ascenciotax'} // required for 3D Secure and bank redirects
+      urlScheme={'ascenciotaxinc'} // required for 3D Secure and bank redirects
     >
       <ScrollView>
         <View style={{ padding: 20, gap: 10 }}>

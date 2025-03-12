@@ -21,7 +21,6 @@ const SubscriptionsScreen = () => {
     useCallback(() => {
       queryCheckSubscription.refetch();
       if (queryCheckSubscription.data) {
-        console.info('It has plan');
         router.navigate('/accounting/subscriptions/my-subscription');
       }
     }, [queryCheckSubscription.data])
@@ -39,7 +38,7 @@ const SubscriptionsScreen = () => {
   const { data: plans } = plansQuery;
 
   return (
-    <View style={{ flex: 1, marginVertical: 20, gap: 20 }}>
+    <View style={{ flex: 1, padding: 20, gap: 20 }}>
       <View style={{ marginHorizontal: 20 }}>
         <ThemedText style={styles.title}>
           Choose the perfect plan for you

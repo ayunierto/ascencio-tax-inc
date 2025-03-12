@@ -71,7 +71,6 @@ const BookingScreen = (): JSX.Element => {
             `${API_URL}/availability?staff=${selectedStaff.value}&date=${selectedDate}`
           );
           const data = await response.json();
-          console.log({ slots: data });
           setAvailableSlots(data);
 
           if (data.length === 0) {
@@ -145,7 +144,6 @@ const BookingScreen = (): JSX.Element => {
                     selectedDayBackgroundColor: theme.primary,
                   }}
                   onDayPress={(day: Day) => {
-                    console.log({ day });
                     setSelectedDate(day.dateString);
                   }}
                   markedDates={{

@@ -42,7 +42,6 @@ const ForgotPassword = () => {
   }: z.infer<typeof forgotPasswordSchema>) => {
     setIsLoading(true);
     const response = await resetPassword(username);
-    console.warn({ response });
     setIsLoading(false);
     if ('email' in response) {
       router.push('/(tabs)/profile/auth/verify-code-reset-password');

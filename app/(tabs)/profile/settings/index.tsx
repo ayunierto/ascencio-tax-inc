@@ -88,7 +88,6 @@ const Profile = (): JSX.Element => {
       phoneNumber,
       password,
     });
-    console.warn({ responseProfile: response });
     setLoading(false);
 
     if ('id' in response) {

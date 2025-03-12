@@ -54,7 +54,6 @@ const VerifyCode = () => {
     if (user) {
       setIsLoading(true);
       const response = await verifyCode(user.email, verificationCode);
-      console.warn({ verifyResponse: response });
       setIsLoading(false);
 
       if ('token' in response) {

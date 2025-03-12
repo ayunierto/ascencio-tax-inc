@@ -42,7 +42,6 @@ const Signin = () => {
   const onSignin = async (values: z.infer<typeof signinSchema>) => {
     setIsLoading(true);
     const response = await signin(values);
-    console.warn({ signinResponse: response });
     setIsLoading(false);
 
     if ('token' in response) {

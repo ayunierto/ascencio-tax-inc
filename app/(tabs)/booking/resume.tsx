@@ -18,7 +18,6 @@ const ResumeScreen = () => {
   const { mutateAsync: mutate, isPending } = useMutation({
     mutationFn: async () => {
       const data = await bookNow();
-      console.log({ data });
       return data;
     },
     onSuccess: async () => {
