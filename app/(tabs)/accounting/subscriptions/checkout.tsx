@@ -90,6 +90,8 @@ const CheckoutScreen = () => {
         type: 'error',
         text1: 'Your order is not confirmed!',
         text2: 'Please try again or contact support.',
+        text1Style: { fontSize: 14 },
+        text2Style: { fontSize: 12 },
       });
     } else {
       // Alert.alert('Success', 'Your order is confirmed!');
@@ -103,6 +105,8 @@ const CheckoutScreen = () => {
             type: 'success',
             text1: 'Your order is confirmed!',
             text2: 'Thank you for your purchase.',
+            text1Style: { fontSize: 14 },
+            text2Style: { fontSize: 12 },
           });
           router.replace('/accounting/subscriptions');
         });

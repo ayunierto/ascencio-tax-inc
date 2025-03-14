@@ -19,15 +19,16 @@ const MySubscriptions = () => {
   if (subscriptionQuery.isLoading) return <Loader />;
 
   if (!subscriptionQuery.data) return;
-
-  if (subscriptionQuery.data && 'error' in subscriptionQuery.data)
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ThemedText>{subscriptionQuery.data.message}</ThemedText>
-      </View>
-    );
+  // if ('statusCode' in subscriptionQuery.data) return;
 
   const { data: subscriptions } = subscriptionQuery;
+
+  if ('statusCode' in subscriptions)
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ThemedText>{subscriptions.message}</ThemedText>
+      </View>
+    );
 
   return (
     <ScrollView>
