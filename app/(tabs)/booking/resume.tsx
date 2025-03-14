@@ -33,6 +33,8 @@ const ResumeScreen = () => {
             type: 'success',
             text1: 'Appointment booked',
             text2: 'Your appointment has been booked successfully',
+            text1Style: { fontSize: 14 },
+            text2Style: { fontSize: 12 },
           });
           router.replace('/(tabs)/my-bookings/bookings');
         } else {
@@ -40,6 +42,8 @@ const ResumeScreen = () => {
             type: 'error',
             text1: 'Something went wrong',
             text2: `${data.message}`,
+            text1Style: { fontSize: 14 },
+            text2Style: { fontSize: 12 },
           });
         }
       })

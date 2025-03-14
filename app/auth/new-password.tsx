@@ -46,8 +46,8 @@ const NewPassword = () => {
       Toast.show({
         type: 'success',
         text1: `Please sign in`,
-        text1Style: { fontSize: 14 },
         text2: 'Password changed successfully',
+        text1Style: { fontSize: 14 },
         text2Style: { fontSize: 12 },
       });
       return;

@@ -110,6 +110,8 @@ const VerifyCode = () => {
       type: 'success',
       text1: 'Code sent',
       text2: `Please check your ${verificationPlatform}`,
+      text1Style: { fontSize: 14 },
+      text2Style: { fontSize: 12 },
     });
     setIsLoadingResend(false);
     setTimer(30);

@@ -31,11 +31,13 @@ const Services = (): JSX.Element => {
   const handleSelectService = (service: ServiceResponse): void => {
     selectService(service);
     if (!token) {
-      router.push('/profile/settings');
+      router.push('/settings');
       Toast.show({
         type: 'info',
         text1: 'Info',
         text2: 'You must be authenticated to book a service',
+        text1Style: { fontSize: 14 },
+        text2Style: { fontSize: 12 },
       });
       return;
     }

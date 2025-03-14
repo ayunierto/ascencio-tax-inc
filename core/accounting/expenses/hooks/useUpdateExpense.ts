@@ -165,6 +165,8 @@ export const useUpdateExpense = (expenseId: string) => {
         type: 'success',
         text1: `Receipt ${data.merchant} updated`,
         text2: 'Receipt was updated correctly',
+        text1Style: { fontSize: 14 },
+        text2Style: { fontSize: 12 },
       });
       clearImages();
       router.replace('/accounting/receipts/expense');
@@ -194,6 +196,8 @@ export const useUpdateExpense = (expenseId: string) => {
         type: 'success',
         text1: `Receipt ${data.merchant} deleted`,
         text2: 'Receipt was deleted correctly',
+        text1Style: { fontSize: 14 },
+        text2Style: { fontSize: 12 },
       });
       clearImages();
       router.replace('/accounting/receipts/expense');
@@ -232,6 +236,8 @@ export const useUpdateExpense = (expenseId: string) => {
                 type: 'error',
                 text1: 'Error deleting receipt',
                 text2: 'There was an error deleting the receipt',
+                text1Style: { fontSize: 14 },
+                text2Style: { fontSize: 12 },
               });
             }
           },

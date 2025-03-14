@@ -58,6 +58,8 @@ const ForgotPassword = () => {
       type: 'error',
       text1: 'Error',
       text2: response.message,
+      text1Style: { fontSize: 14 },
+      text2Style: { fontSize: 12 },
     });
   };
 

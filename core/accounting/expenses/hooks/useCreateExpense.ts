@@ -159,6 +159,8 @@ export const useCreateExpense = () => {
         type: 'success',
         text1: `Receipt ${data.merchant} saved`,
         text2: 'Receipt was saved correctly',
+        text1Style: { fontSize: 14 },
+        text2Style: { fontSize: 12 },
       });
       clearImages();
       router.replace('/accounting/receipts/expense');
