@@ -1,10 +1,10 @@
 import * as SecureStore from 'expo-secure-store';
-import { UserTokenResponse } from '../interfaces/signin-response.interface';
 import { Exception } from '@/core/interfaces/Exception.interface';
+import { UserToken } from '../interfaces';
 
 export const changePassword = async (
   password: string
-): Promise<UserTokenResponse | Exception> => {
+): Promise<UserToken | Exception> => {
   try {
     const token = (await SecureStore.getItemAsync('token')) || '';
     const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -17,11 +17,11 @@ export const changePassword = async (
       body: JSON.stringify({ password }),
     });
 
-    const data: UserTokenResponse | Exception = await response.json();
+    const data: UserToken | Exception = await response.json();
 
     return data;
   } catch (error) {
     console.error(error);
-    throw new Error('Network request failed');
+    throw new Error('Change Password: Network request failed');
   }
 };

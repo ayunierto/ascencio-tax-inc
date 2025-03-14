@@ -43,7 +43,7 @@ const SubscriptionCard = ({ plan }: SubscriptionCardProps) => {
       style={{
         flex: 1,
         marginHorizontal: 20,
-        width: 280,
+        width: '100%',
         gap: 20,
       }}
     >

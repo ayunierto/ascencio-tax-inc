@@ -1,19 +1,17 @@
 import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
-import { User } from '@/core/auth/interfaces/user.interface';
-import { RegisterData } from '@/core/auth/interfaces/register.data';
+
+import { Exception } from '@/core/interfaces/Exception.interface';
+import { UserToken, User, Credentials, RegisterData } from '../interfaces';
 import {
-  checkStatus,
   signin,
+  changePassword,
+  checkStatus,
+  deleteAccount,
+  resetPassword,
   signup,
   verifyCode,
-  changePassword,
-  resetPassword,
-  deleteAccountAction,
-} from '@/core/auth/actions';
-import { UserTokenResponse } from '../interfaces/signin-response.interface';
-import { Exception } from '@/core/interfaces/Exception.interface';
-import { Credentials } from '../interfaces/credentials.interface';
+} from '../actions';
 
 export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking';
 
@@ -22,7 +20,7 @@ export interface AuthState {
   token?: string;
   user?: User;
 
-  signin: (credentials: Credentials) => Promise<UserTokenResponse | Exception>;
+  signin: (credentials: Credentials) => Promise<UserToken | Exception>;
   signup: (values: RegisterData) => Promise<User | Exception>;
   deleteAccount: () => Promise<User | Exception>;
   checkStatus: () => Promise<boolean>;
@@ -30,12 +28,12 @@ export interface AuthState {
   verifyCode: (
     username: string,
     verificationCode: string
-  ) => Promise<UserTokenResponse | Exception>;
+  ) => Promise<UserToken | Exception>;
   setAuthenticated: (token: string, user: User) => void;
   setUnauthenticated: () => void;
   setUser: (user: User) => void;
   resetPassword: (username: string) => Promise<User | Exception>;
-  changePassword: (password: string) => Promise<UserTokenResponse | Exception>;
+  changePassword: (password: string) => Promise<UserToken | Exception>;
 }
 
 export const useAuthStore = create<AuthState>()((set, get) => ({
@@ -72,7 +70,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   deleteAccount: async () => {
-    const response = await deleteAccountAction();
+    const response = await deleteAccount();
     if ('email' in response) {
       get().setUnauthenticated();
       return response;
@@ -125,10 +123,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   changePassword: async (password: string) => {
     const response = await changePassword(password);
-    if ('token' in response) {
-      set({ user: response.user });
-      return response;
-    }
     return response;
   },
 

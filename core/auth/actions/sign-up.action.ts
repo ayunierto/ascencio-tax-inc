@@ -1,6 +1,5 @@
 import { Exception } from '@/core/interfaces/Exception.interface';
-import { RegisterData } from '../interfaces/register.data';
-import { User } from '../interfaces/user.interface';
+import { RegisterData, User } from '../interfaces';
 
 export const signup = async (
   newUser: RegisterData
@@ -21,6 +20,6 @@ export const signup = async (
     return data;
   } catch (error) {
     console.error(error);
-    throw new Error('Network request failed');
+    throw new Error('Sign up: Network request failed');
   }
 };

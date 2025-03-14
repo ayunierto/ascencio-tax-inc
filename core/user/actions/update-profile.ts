@@ -23,6 +23,10 @@ export const updateProfile = async ({
     delete userUpdate.password;
   }
 
+  if (!phoneNumber) {
+    delete userUpdate.phoneNumber;
+  }
+
   try {
     const response = await fetch(`${API_URL}/users/update-profile`, {
       method: 'PUT',

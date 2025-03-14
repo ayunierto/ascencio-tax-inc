@@ -12,7 +12,6 @@ import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import Toast from 'react-native-toast-message';
 
 import { signinSchema } from '@/core/auth/schemas/signinSchema';
 import Button from '@/components/ui/Button';
@@ -56,25 +55,18 @@ const Signin = () => {
         name: '',
         lastName: '',
         phoneNumber: '',
-        birthdate: null,
         isActive: false,
-        lastLogin: null,
         roles: [],
         createdAt: '',
-        updatedAt: null,
       });
-      router.push('/(tabs)/profile/auth/verify');
+      router.push({ pathname: '/auth/verify', params: { action: 'verify' } });
       return;
     }
 
     setError('root', {
       type: 'manual',
-      message: 'Invalid credentials',
-    });
-
-    Toast.show({
-      type: 'error',
-      text1: 'Invalid credentials',
+      message:
+        "We didn't recognize the username or password you entered. Please try again.",
     });
   };
 
@@ -96,53 +88,55 @@ const Signin = () => {
             <Header
               subtitle=" Don’t have an account?"
               title={'Sign In'}
-              link="/(tabs)/profile/auth/sign-up"
+              link="/auth/sign-up"
               linkText="Sign Up"
             />
 
             <View style={{ gap: 10 }}>
               <ErrorMessage message={errors.root?.message} />
 
-              <Controller
-                control={control}
-                name="username"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    value={value}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    keyboardType="email-address"
-                    placeholder="Email or phone number"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                  />
-                )}
-              />
-              <ErrorMessage fieldErrors={errors.username} />
+              <View style={{ gap: 6 }}>
+                <Controller
+                  control={control}
+                  name="username"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <Input
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      keyboardType="email-address"
+                      placeholder="Email or phone number"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                    />
+                  )}
+                />
+                <ErrorMessage fieldErrors={errors.username} />
+              </View>
 
-              <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    value={value}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    secureTextEntry={true}
-                    placeholder="Enter password"
-                    autoComplete="password"
-                    autoCapitalize="none"
-                  />
-                )}
-              />
-              <ErrorMessage fieldErrors={errors.password} />
+              <View style={{ gap: 6 }}>
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <Input
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      secureTextEntry={true}
+                      placeholder="Enter password"
+                      autoComplete="password"
+                      autoCapitalize="none"
+                    />
+                  )}
+                />
+                <ErrorMessage fieldErrors={errors.password} />
+              </View>
             </View>
 
             <Text
               style={{ color: theme.primary, textAlign: 'center' }}
-              onPress={() =>
-                router.push('/(tabs)/profile/auth/forgot-password')
-              }
+              onPress={() => router.push('/auth/forgot-password')}
             >
               Forgot password?
             </Text>

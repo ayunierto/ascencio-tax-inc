@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
 
-import Header from '../../../../core/auth/components/Header';
+import Header from '../../core/auth/components/Header';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { z } from 'zod';
 import Button from '@/components/ui/Button';
@@ -44,7 +44,10 @@ const ForgotPassword = () => {
     const response = await resetPassword(username);
     setIsLoading(false);
     if ('email' in response) {
-      router.push('/(tabs)/profile/auth/verify-code-reset-password');
+      router.push({
+        pathname: '/auth/verify',
+        params: { action: 'reset-password' },
+      });
       return;
     }
 
@@ -66,7 +69,7 @@ const ForgotPassword = () => {
           gap: 20,
           padding: 20,
           width: '100%',
-          maxWidth: 320,
+          maxWidth: 360,
           marginHorizontal: 'auto',
         }}
       >
@@ -89,7 +92,6 @@ const ForgotPassword = () => {
             />
           )}
         />
-
         <ErrorMessage fieldErrors={errors.username} />
 
         <Button
@@ -99,9 +101,10 @@ const ForgotPassword = () => {
         >
           Reset Password
         </Button>
+
         <Button
           variant="outlined"
-          onPress={() => router.replace('/(tabs)/profile/auth/sign-in')}
+          onPress={() => router.replace('/auth/sign-in')}
         >
           Back
         </Button>

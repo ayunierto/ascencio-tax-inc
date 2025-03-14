@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import Header from '../../../../core/auth/components/Header';
+import Header from '../../core/auth/components/Header';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { Input } from '@/components/ui/Input';
@@ -42,10 +42,13 @@ const NewPassword = () => {
     setIsLoading(false);
 
     if ('token' in response) {
-      router.replace('/(tabs)/(home)');
+      router.replace('/auth/sign-in');
       Toast.show({
         type: 'success',
-        text1: 'Password changed successfully',
+        text1: `Please sign in`,
+        text1Style: { fontSize: 14 },
+        text2: 'Password changed successfully',
+        text2Style: { fontSize: 12 },
       });
       return;
     }
@@ -67,7 +70,7 @@ const NewPassword = () => {
           marginTop: 20,
           padding: 20,
           width: '100%',
-          maxWidth: 320,
+          maxWidth: 360,
           marginHorizontal: 'auto',
         }}
       >

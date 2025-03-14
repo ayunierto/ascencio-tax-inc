@@ -45,6 +45,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="my-bookings"
         options={{
@@ -60,6 +61,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="accounting"
         options={{
@@ -75,25 +77,21 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
-        name="profile/settings"
+        name="settings"
         options={{
-          title: 'My Profile',
+          title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               size={28}
-              name={focused ? 'person-circle' : 'person-circle-outline'}
+              name={focused ? 'settings' : 'settings-outline'}
               color={color}
             />
           ),
         }}
       />
-      <Tabs.Screen
-        name="profile/auth"
-        options={{
-          href: null,
-        }}
-      />
+
       <Tabs.Screen
         name="booking"
         options={{

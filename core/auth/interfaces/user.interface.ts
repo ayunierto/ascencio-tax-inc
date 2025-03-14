@@ -3,11 +3,11 @@ export interface User {
   name: string;
   lastName: string;
   email: string;
-  phoneNumber: string;
-  birthdate: string | null;
+  phoneNumber?: string;
+  birthdate?: string;
   isActive: boolean;
-  lastLogin: string | null;
+  lastLogin?: string;
   roles: string[];
   createdAt: string;
-  updatedAt: string | null;
+  updatedAt?: string;
 }

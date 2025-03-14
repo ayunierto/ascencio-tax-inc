@@ -1,10 +1,10 @@
 import { Exception } from '@/core/interfaces/Exception.interface';
-import { UserTokenResponse } from '../interfaces/signin-response.interface';
+import { UserToken } from '../interfaces';
 
 export const verifyCode = async (
   username: string,
   verificationCode: string
-): Promise<UserTokenResponse | Exception> => {
+): Promise<UserToken | Exception> => {
   const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
   try {
@@ -16,11 +16,11 @@ export const verifyCode = async (
       body: JSON.stringify({ username, verificationCode }),
     });
 
-    const data: UserTokenResponse | Exception = await response.json();
+    const data: UserToken | Exception = await response.json();
 
     return data;
   } catch (error) {
     console.error(error);
-    throw new Error('Network request failed');
+    throw new Error('Verify Code: Network request failed');
   }
 };

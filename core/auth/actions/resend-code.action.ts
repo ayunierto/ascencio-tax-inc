@@ -22,6 +22,6 @@ export const resendCode = async (
     return data;
   } catch (error) {
     console.error(error);
-    throw new Error('Error sending verification code');
+    throw new Error('Resend Code: Error sending verification code');
   }
 };

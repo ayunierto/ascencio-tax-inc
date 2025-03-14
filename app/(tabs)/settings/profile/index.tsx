@@ -7,13 +7,13 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+import { Link } from 'expo-router';
 import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Toast from 'react-native-toast-message';
 
-import Signin from '../auth/sign-in';
+import Signin from '../../../auth/sign-in';
 import { updateProfile } from '@/core/user/actions';
 import { Input } from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -21,37 +21,26 @@ import Divider from '@/components/ui/Divider';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { ThemedText } from '@/components/ui/ThemedText';
 import ErrorMessage from '@/core/components/ErrorMessage';
-import { Link } from 'expo-router';
 import { theme } from '@/components/ui/theme';
 
 export const profileSchema = z
   .object({
     name: z.string().min(3, 'First name must be at least 3 characters'),
     lastName: z.string().min(3, 'First name must be at least 3 characters'),
-    email: z.string().email('Invalid email address'),
-    phoneNumber: z.string().nonempty('The phone number is required'),
-    password: z
-      .string()
-      // .min(6, 'Password must be at least 6 characters')
-      .optional(),
-    // .regex(
-    //   /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
-    //   'Password must include uppercase, lowercase and numbers'
-    // ),
-    confirmPassword: z
-      .string()
-      // .min(6, 'Password must be at least 6 characters')
-      .optional(),
+    email: z.string(),
+    phoneNumber: z.string().optional(),
+    password: z.string().optional(),
+    confirmPassword: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords must match',
     path: ['confirmPassword'],
   });
 
-const Profile = (): JSX.Element => {
+const ProfileScreen = () => {
   const [loading, setLoading] = useState(false);
 
-  const { token, logout, user } = useAuthStore();
+  const { token, logout, user, setUser } = useAuthStore();
 
   const {
     control,
@@ -62,12 +51,10 @@ const Profile = (): JSX.Element => {
   } = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      confirmPassword: '',
-      password: '',
       email: user?.email,
       lastName: user?.lastName,
       name: user?.name,
-      phoneNumber: user?.phoneNumber,
+      phoneNumber: user?.phoneNumber || '',
     },
   });
 
@@ -75,26 +62,32 @@ const Profile = (): JSX.Element => {
     return <Signin />; // Use replace to avoid stacking profile on top of sign-in
   }
 
-  const handleUpdateProfile = async ({
-    name,
-    lastName,
-    phoneNumber,
-    password,
-  }: z.infer<typeof profileSchema>): Promise<void> => {
+  const handleUpdateProfile = async (
+    values: z.infer<typeof profileSchema>
+  ): Promise<void> => {
     setLoading(true);
     const response = await updateProfile({
-      name,
-      lastName,
-      phoneNumber,
-      password,
+      name: values.name,
+      lastName: values.lastName,
+      phoneNumber: values.phoneNumber,
+      password: values.password,
     });
     setLoading(false);
 
     if ('id' in response) {
-      reset({ password: '' });
+      setUser(response);
+      console.log({ response });
+      reset({
+        password: '',
+        confirmPassword: '',
+        name: response.name,
+        lastName: response.lastName,
+        phoneNumber: response.phoneNumber || '',
+      });
       Toast.show({
         type: 'success',
-        text1: 'Data updated successfully',
+        text1: 'Data update d successfully',
+        text1Style: { fontSize: 14 },
       });
     }
 
@@ -128,11 +121,7 @@ const Profile = (): JSX.Element => {
               marginHorizontal: 'auto',
             }}
           >
-            <ThemedText style={{ textAlign: 'center', fontSize: 30 }}>
-              Profile
-            </ThemedText>
-
-            <ThemedText>Name:</ThemedText>
+            <ThemedText>Name</ThemedText>
             <Controller
               control={control}
               name="name"
@@ -149,7 +138,7 @@ const Profile = (): JSX.Element => {
             />
             <ErrorMessage fieldErrors={errors.name} />
 
-            <ThemedText>Last Name:</ThemedText>
+            <ThemedText>Last Name</ThemedText>
             <Controller
               control={control}
               name="lastName"
@@ -166,7 +155,7 @@ const Profile = (): JSX.Element => {
             />
             <ErrorMessage fieldErrors={errors.lastName} />
 
-            <ThemedText>Email:</ThemedText>
+            <ThemedText>Email</ThemedText>
             <Controller
               control={control}
               name="email"
@@ -185,7 +174,7 @@ const Profile = (): JSX.Element => {
             />
             <ErrorMessage fieldErrors={errors.email} />
 
-            <ThemedText>Phone Number:</ThemedText>
+            <ThemedText>Phone number</ThemedText>
             <Controller
               control={control}
               name="phoneNumber"
@@ -195,16 +184,15 @@ const Profile = (): JSX.Element => {
                   onBlur={onBlur}
                   onChangeText={onChange}
                   keyboardType="phone-pad"
-                  placeholder="Phone Number"
+                  placeholder="Phone number"
                   autoCapitalize="none"
                   autoComplete="tel"
-                  style={{ flex: 1 }}
                 />
               )}
             />
             <ErrorMessage fieldErrors={errors.phoneNumber} />
 
-            <ThemedText>Password:</ThemedText>
+            <ThemedText>Password</ThemedText>
             <Controller
               control={control}
               name="password"
@@ -222,7 +210,7 @@ const Profile = (): JSX.Element => {
             />
             <ErrorMessage fieldErrors={errors.password} />
 
-            <ThemedText>Confirm Password:</ThemedText>
+            <ThemedText>Confirm Password</ThemedText>
             <Controller
               control={control}
               name="confirmPassword"
@@ -257,13 +245,13 @@ const Profile = (): JSX.Element => {
               variant="outlined"
               onPress={() => logout()}
             >
-              Logout
+              Sign out
             </Button>
 
             <Divider />
 
             <Link
-              href={'/profile/settings/delete-account-modal'}
+              href={'/settings/profile/delete-account-modal'}
               style={{
                 textAlign: 'center',
                 color: theme.destructive,
@@ -287,4 +275,4 @@ const Profile = (): JSX.Element => {
   );
 };
 
-export default Profile;
+export default ProfileScreen;

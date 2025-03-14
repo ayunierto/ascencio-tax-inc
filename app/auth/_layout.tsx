@@ -20,30 +20,28 @@ export default function AuthLayout() {
           title: '',
         }}
       />
+
       <Stack.Screen
         name="new-password"
         options={{
           title: '',
         }}
       />
+
       <Stack.Screen
         name="sign-in"
         options={{
           title: '',
         }}
       />
+
       <Stack.Screen
         name="sign-up"
         options={{
           title: '',
         }}
       />
-      <Stack.Screen
-        name="verify-code-reset-password"
-        options={{
-          title: '',
-        }}
-      />
+
       <Stack.Screen
         name="verify"
         options={{

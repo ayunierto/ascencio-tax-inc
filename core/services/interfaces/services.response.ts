@@ -1,3 +1,5 @@
+import { User } from '@/core/auth/interfaces';
+
 export interface ServiceResponse {
   id: string;
   name: string;
@@ -22,18 +24,4 @@ export interface Staff {
   name: string;
   lastName: string;
   isActive: boolean;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  birthdate: Date;
-  isActive: boolean;
-  registrationDate: Date;
-  lastLogin: null;
-  roles: string[];
-  verificationCode: string | null;
 }

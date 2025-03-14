@@ -42,9 +42,17 @@ export default function RootLayout() {
               name="camera/index"
               options={{ headerShown: false }}
             />
+
             <Stack.Screen
               name="scan-receipts/index"
               options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name="auth"
+              options={{
+                headerShown: false,
+              }}
             />
           </Stack>
 

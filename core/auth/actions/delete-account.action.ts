@@ -1,8 +1,8 @@
 import * as SecureStore from 'expo-secure-store';
 import { Exception } from '@/core/interfaces/Exception.interface';
-import { User } from '../interfaces/user.interface';
+import { User } from '../interfaces';
 
-export const deleteAccountAction = async (): Promise<User | Exception> => {
+export const deleteAccount = async (): Promise<User | Exception> => {
   try {
     const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -22,6 +22,6 @@ export const deleteAccountAction = async (): Promise<User | Exception> => {
     return data;
   } catch (error) {
     console.error(error);
-    throw new Error('Network request failed');
+    throw new Error('Delete Account: Network request failed');
   }
 };

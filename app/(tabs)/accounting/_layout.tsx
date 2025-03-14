@@ -86,6 +86,29 @@ const _layout = () => {
           title: 'Subscriptions',
         }}
       />
+
+      <Drawer.Screen
+        name="reports/index"
+        options={{
+          drawerIcon: ({
+            color,
+            focused,
+            size,
+          }: {
+            color: string;
+            focused: boolean;
+            size: number;
+          }) => (
+            <Ionicons
+              color={color}
+              name={focused ? 'receipt' : 'receipt-outline'}
+              size={size}
+            />
+          ),
+          drawerLabel: 'Reports',
+          title: 'Reports',
+        }}
+      />
     </Drawer>
   );
 };

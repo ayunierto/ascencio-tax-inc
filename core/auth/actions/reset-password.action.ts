@@ -1,5 +1,5 @@
 import { Exception } from '@/core/interfaces/Exception.interface';
-import { User } from '../interfaces/user.interface';
+import { User } from '../interfaces';
 
 export const resetPassword = async (
   username: string,
@@ -20,6 +20,6 @@ export const resetPassword = async (
     return data;
   } catch (error) {
     console.error(error);
-    throw new Error('Network request failed');
+    throw new Error('Reset Password: Network request failed');
   }
 };

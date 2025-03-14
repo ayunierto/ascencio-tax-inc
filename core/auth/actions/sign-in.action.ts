@@ -1,10 +1,9 @@
 import { Exception } from '@/core/interfaces/Exception.interface';
-import { UserTokenResponse } from '../interfaces/signin-response.interface';
-import { Credentials } from '../interfaces/credentials.interface';
+import { UserToken, Credentials } from '../interfaces';
 
 export const signin = async (
   credentials: Credentials
-): Promise<UserTokenResponse | Exception> => {
+): Promise<UserToken | Exception> => {
   try {
     const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -15,10 +14,10 @@ export const signin = async (
       },
       body: JSON.stringify(credentials),
     });
-    const data: UserTokenResponse | Exception = await response.json();
+    const data: UserToken | Exception = await response.json();
     return data;
   } catch (error) {
     console.error(error);
-    throw new Error('Network request failed');
+    throw new Error('Sign in: Network request failed');
   }
 };

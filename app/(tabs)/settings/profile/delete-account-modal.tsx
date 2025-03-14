@@ -40,7 +40,7 @@ const DeleteAccountModal = () => {
       setIsDeleting(true);
       await deleteAccount();
       setIsDeleting(false);
-      router.replace('/profile/auth/sign-in');
+      router.replace('/auth/sign-in');
       return;
     }
 
