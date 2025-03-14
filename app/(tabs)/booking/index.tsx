@@ -91,7 +91,7 @@ const BookingScreen = (): JSX.Element => {
     }
   }, [selectedDate, selectedStaff]);
 
-  const { saveDetails } = useBookingStore();
+  const { bookingDetails: saveDetails } = useBookingStore();
   function onBookNow(): void {
     if (selectedSlot && selectedStaff) {
       saveDetails(
@@ -124,8 +124,8 @@ const BookingScreen = (): JSX.Element => {
             you."
           />
 
-          <View style={{ flexDirection: 'row' }}>
-            <View style={{ gap: 20, width: '50%', flexDirection: 'column' }}>
+          <View>
+            <View style={{ gap: 10 }}>
               <Select
                 options={staff}
                 onSelect={(item) => handleSelectStaff(item)}
@@ -157,7 +157,7 @@ const BookingScreen = (): JSX.Element => {
               </View>
             </View>
 
-            <View style={{ gap: 20, width: '50%' }}>
+            <View style={{ gap: 10, marginTop: 20 }}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -173,8 +173,9 @@ const BookingScreen = (): JSX.Element => {
                     Select a staff member to see the schedules available.
                   </Alert>
                 ) : availableSlots.length === 0 ? (
-                  <Alert>
-                    There are no appointments available for this day.
+                  <Alert style={{ width: '100%' }}>
+                    There are no appointments available for this day. Please
+                    select another day.
                   </Alert>
                 ) : (
                   availableSlots.map((slot) => (

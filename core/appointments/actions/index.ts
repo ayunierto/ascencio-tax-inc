@@ -1,1 +1,1 @@
-export * from './saveAppointment';
+export * from './book-appointment.action';

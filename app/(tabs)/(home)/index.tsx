@@ -7,7 +7,7 @@ import Toast from 'react-native-toast-message';
 import { useQuery } from '@tanstack/react-query';
 
 import { getServices } from '@/core/services/actions';
-import { ServiceResponse } from '@/core/services/interfaces/services.response';
+import { ServiceResponse } from '@/core/services/interfaces/services.interface';
 import { useBookingStore } from '@/core/services/store/useBookingStore';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import Loader from '@/components/Loader';

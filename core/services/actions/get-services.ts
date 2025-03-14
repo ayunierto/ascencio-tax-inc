@@ -1,4 +1,4 @@
-import { ServiceResponse } from '../interfaces/services.response';
+import { ServiceResponse } from '../interfaces/services.interface';
 
 export const getServices = async (): Promise<ServiceResponse[] | null> => {
   try {

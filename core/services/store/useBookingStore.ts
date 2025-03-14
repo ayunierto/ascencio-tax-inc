@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { ServiceResponse as Service } from '@/core/services/interfaces/services.response';
 import * as SecureStore from 'expo-secure-store';
-import { saveAppointment } from '@/core/appointments/actions/saveAppointment';
+import { bookAppointment } from '@/core/appointments/actions/book-appointment.action';
+import { Service } from '../interfaces';
 
 export interface BookingState {
   selectedService: Service | undefined;
@@ -11,7 +11,7 @@ export interface BookingState {
   staffName: string | undefined;
 
   selectService: (service: Service) => void;
-  saveDetails: (
+  bookingDetails: (
     staffId: string,
     staffName: string,
     startDateAndTime: string,
@@ -36,7 +36,7 @@ export const useBookingStore = create<BookingState>()((set, get) => ({
     );
   },
 
-  saveDetails: (
+  bookingDetails: (
     staffId: string,
     staffName: string,
     startDateAndTime: string,
@@ -48,8 +48,12 @@ export const useBookingStore = create<BookingState>()((set, get) => ({
   bookNow: async () => {
     const { endDateAndTime, selectedService, staffId, startDateAndTime } =
       get();
+    console.log({ endDateAndTime });
+    console.log({ selectedService });
+    console.log({ staffId });
+    console.log({ startDateAndTime });
     if (endDateAndTime && selectedService && staffId && startDateAndTime) {
-      const response = saveAppointment({
+      const response = bookAppointment({
         startDateAndTime,
         endDateAndTime,
         service: selectedService.id,

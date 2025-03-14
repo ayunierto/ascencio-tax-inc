@@ -8,7 +8,7 @@ interface Appointment {
   comments?: string;
 }
 
-export const saveAppointment = async ({
+export const bookAppointment = async ({
   startDateAndTime,
   endDateAndTime,
   service,
@@ -35,7 +35,7 @@ export const saveAppointment = async ({
       }),
       redirect: 'follow',
     });
-    const data = await response.json();
+    const data: Appointment = await response.json();
     return data;
   } catch (error) {
     console.error('Error saving appointment:', error);

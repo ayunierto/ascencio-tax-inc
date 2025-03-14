@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';
 import Button from '@/components/ui/Button';
+import { DateTime } from 'luxon';
 
 const ResumeScreen = () => {
   const { selectedService, staffName, startDateAndTime, bookNow } =
@@ -18,6 +19,7 @@ const ResumeScreen = () => {
   const { mutateAsync: mutate, isPending } = useMutation({
     mutationFn: async () => {
       const data = await bookNow();
+      console.log({ data });
       return data;
     },
     onSuccess: async () => {
@@ -106,10 +108,9 @@ const ResumeScreen = () => {
           </SimpleCardHeader>
           <View>
             <ThemedText>
-              {new Date(startDateAndTime!).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
+              {DateTime.fromISO(startDateAndTime!, {
+                zone: 'America/Toronto',
+              }).toFormat('hh:mm a')}
             </ThemedText>
           </View>
         </Card>

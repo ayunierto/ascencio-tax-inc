@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
-import { getUserAppointments } from '@/core/appointments/actions/getUserAppointments';
+import { getUserAppointments } from '@/core/appointments/actions/get-user-appointments.action';
 import { useQuery } from '@tanstack/react-query';
 import { ScrollView } from 'react-native-gesture-handler';
 import { DateTime } from 'luxon';
@@ -17,6 +17,7 @@ import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 import { SimpleCardHeaderSubTitle } from '@/components/ui/Card/SimpleCardHeaderSubTitle';
 import { ThemedText } from '@/components/ui/ThemedText';
+import { EmptyList } from '@/core/components';
 
 const MyBookings = (): JSX.Element => {
   const { data, isPending } = useQuery({
@@ -90,16 +91,15 @@ const MyBookings = (): JSX.Element => {
               </TouchableOpacity>
             ))
           ) : (
-            <View>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontSize: 20,
-                  color: theme.foreground,
-                }}
-              >
-                No appointments found
-              </Text>
+            <View
+              style={{
+                flex: 1,
+              }}
+            >
+              <EmptyList
+                title="No appointments found."
+                subtitle="Add a new appointment to get started"
+              />
             </View>
           )}
         </View>

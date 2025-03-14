@@ -1,42 +1,24 @@
-import { ServiceResponse } from '@/core/services/interfaces/services.response';
+import { User } from '@/core/auth/interfaces';
+import { Service } from '@/core/services/interfaces';
+import { Staff } from '@/core/staff/interfaces';
 
-export interface AppointmentResponse {
-  calendarEventId: string;
-  comments: string;
-  createdAt: Date;
-  endDateAndTime: string;
-  id: string;
-  service: ServiceResponse;
-  staff: Staff;
+export interface Appointment {
   startDateAndTime: string;
-  state: string;
-  zoomMeetingId: string;
+  endDateAndTime: string;
+  comments: string;
+  calendarEventId: string;
+  zoomMeetingId: number;
   zoomMeetingLink: string;
+  service: Service;
+  user: User;
+  staff: Staff;
+  updatedAt: null;
+  id: string;
+  state: string;
+  createdAt: string;
 }
 
 export interface Image {
   id: number;
   url: string;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
-  birthdate: Date;
-  isActive: boolean;
-  registrationDate: Date;
-  lastLogin: null;
-  roles: string[];
-  verificationCode: null;
-}
-
-export interface Staff {
-  id: string;
-  name: string;
-  lastName: string;
-  isActive: boolean;
 }
