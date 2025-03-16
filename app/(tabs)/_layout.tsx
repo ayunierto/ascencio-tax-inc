@@ -99,6 +99,14 @@ export default function TabLayout() {
           headerShown: false,
         }}
       />
+
+      <Tabs.Screen
+        name="auth"
+        options={{
+          href: null,
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 }

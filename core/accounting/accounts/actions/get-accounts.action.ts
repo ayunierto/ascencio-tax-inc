@@ -25,6 +25,7 @@ export const getAccounts = async (
     const data: Account[] = await response.json();
     return data;
   } catch (error) {
+    console.error(error);
     throw new Error('Unable to load accounts');
   }
 };

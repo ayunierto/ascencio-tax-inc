@@ -13,7 +13,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Toast from 'react-native-toast-message';
 
-import Signin from '../../../auth/sign-in';
+import Signin from '../../auth/sign-in';
 import { updateProfile } from '@/core/user/actions';
 import { Input } from '@/components/ui/Input';
 import Button from '@/components/ui/Button';

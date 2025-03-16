@@ -7,12 +7,12 @@ import Toast from 'react-native-toast-message';
 import { useQuery } from '@tanstack/react-query';
 
 import { getServices } from '@/core/services/actions';
-import { ServiceResponse } from '@/core/services/interfaces/services.interface';
 import { useBookingStore } from '@/core/services/store/useBookingStore';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import Loader from '@/components/Loader';
 import { theme } from '@/components/ui/theme';
 import Button from '@/components/ui/Button';
+import { Service } from '@/core/services/interfaces';
 
 const Services = (): JSX.Element => {
   const { selectService } = useBookingStore();
@@ -28,7 +28,7 @@ const Services = (): JSX.Element => {
     return <Loader />;
   }
 
-  const handleSelectService = (service: ServiceResponse): void => {
+  const onSelectService = (service: Service): void => {
     selectService(service);
     if (!token) {
       router.push('/settings');
@@ -51,7 +51,7 @@ const Services = (): JSX.Element => {
         {isError && <Text>{error.message}</Text>}
         <View style={{ flexDirection: 'column', gap: 20 }}>
           {data &&
-            data.map((service: ServiceResponse) => (
+            data.map((service: Service) => (
               <View
                 style={{
                   flex: 1,
@@ -74,11 +74,12 @@ const Services = (): JSX.Element => {
                     flexDirection: 'column',
                     gap: 2,
                     justifyContent: 'center',
+                    flex: 1,
                   }}
                 >
                   <Text
-                    numberOfLines={2}
-                    lineBreakMode="tail"
+                    // numberOfLines={2}
+                    // lineBreakMode="tail"
                     style={{
                       fontSize: 16,
                       color: theme.foreground,
@@ -108,14 +109,15 @@ const Services = (): JSX.Element => {
                   </View>
                 </View>
 
-                <View style={{ flex: 1 }}>
-                  <Button
-                    onPress={() => handleSelectService(service)}
-                    size="small"
-                  >
-                    Book
-                  </Button>
-                </View>
+                {/* <View style={{ flex: 1 }}> */}
+                <Button
+                  style={{ maxWidth: 100 }}
+                  onPress={() => onSelectService(service)}
+                  size="small"
+                >
+                  Book
+                </Button>
+                {/* </View> */}
               </View>
             ))}
         </View>

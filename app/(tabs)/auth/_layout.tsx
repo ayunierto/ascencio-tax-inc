@@ -11,12 +11,14 @@ export default function AuthLayout() {
           backgroundColor: theme.background,
         },
         headerShadowVisible: false,
+        headerShown: false,
       }}
       initialRouteName="sign-in"
     >
       <Stack.Screen
         name="forgot-password"
         options={{
+          headerShown: true,
           title: '',
         }}
       />
@@ -46,6 +48,7 @@ export default function AuthLayout() {
         name="verify"
         options={{
           title: '',
+          headerShown: true,
         }}
       />
     </Stack>

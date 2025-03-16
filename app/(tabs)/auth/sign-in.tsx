@@ -80,9 +80,10 @@ const Signin = () => {
               flex: 1,
               gap: 20,
               width: '100%',
-              maxWidth: 300,
+              maxWidth: 380,
               marginHorizontal: 'auto',
               marginBottom: 20,
+              padding: 20,
             }}
           >
             <Header
@@ -91,7 +92,6 @@ const Signin = () => {
               link="/auth/sign-up"
               linkText="Sign Up"
             />
-
             <View style={{ gap: 10 }}>
               <ErrorMessage message={errors.root?.message} />
 
@@ -133,14 +133,12 @@ const Signin = () => {
                 <ErrorMessage fieldErrors={errors.password} />
               </View>
             </View>
-
             <Text
               style={{ color: theme.primary, textAlign: 'center' }}
               onPress={() => router.push('/auth/forgot-password')}
             >
               Forgot password?
             </Text>
-
             <Button
               loading={isLoading}
               disabled={isLoading}

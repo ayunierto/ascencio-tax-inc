@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
 
-import Header from '../../core/auth/components/Header';
+import Header from '../../../core/auth/components/Header';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { z } from 'zod';
 import Button from '@/components/ui/Button';

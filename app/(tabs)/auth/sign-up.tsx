@@ -117,7 +117,6 @@ const Signup = () => {
               width: '100%',
               maxWidth: 380,
               marginHorizontal: 'auto',
-              marginBottom: 20,
               padding: 20,
             }}
           >

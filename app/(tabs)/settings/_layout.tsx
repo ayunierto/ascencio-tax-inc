@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { Redirect, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import { theme } from '@/components/ui/theme';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import Loader from '@/components/Loader';
+import Signin from '../auth/sign-in';
 
 const MyProfileLayout = () => {
   const { status, checkStatus } = useAuthStore();
@@ -17,7 +18,8 @@ const MyProfileLayout = () => {
   }
 
   if (status === 'unauthenticated') {
-    return <Redirect href={'/auth/sign-in'} />;
+    return <Signin />;
+    // return <Redirect href={'/auth/sign-in'} />;
   }
 
   return (

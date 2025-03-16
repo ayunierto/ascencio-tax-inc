@@ -22,18 +22,6 @@ import { useQuery } from '@tanstack/react-query';
 globalThis.Buffer = Buffer;
 
 export default function ScanReceiptScreen() {
-  const queryCheckSubscription = useQuery({
-    queryKey: ['hasSubscription'],
-    queryFn: () => checkSubscription(),
-  });
-
-  if (queryCheckSubscription.isLoading) {
-    return <Loader />;
-  }
-
-  if (!queryCheckSubscription.data)
-    return <Redirect href={'/accounting/subscriptions'} />;
-
   const {
     requestCameraPermission,
     loading,
@@ -47,6 +35,18 @@ export default function ScanReceiptScreen() {
     onPickImages,
     onShutterButtonPress,
   } = useScanReceipts();
+
+  const queryCheckSubscription = useQuery({
+    queryKey: ['hasSubscription'],
+    queryFn: () => checkSubscription(),
+  });
+
+  if (queryCheckSubscription.isLoading) {
+    return <Loader />;
+  }
+
+  if (!queryCheckSubscription.data)
+    return <Redirect href={'/accounting/subscriptions'} />;
 
   const onRequestPermissions = async () => {
     try {

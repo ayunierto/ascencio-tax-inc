@@ -59,62 +59,87 @@ const ResumeScreen = () => {
   return (
     <ScrollView>
       <View style={{ padding: 20, gap: 20 }}>
-        <Card>
-          <SimpleCardHeader>
-            <Ionicons
-              name={'receipt-outline'}
-              size={20}
-              color={theme.foreground}
-            />
-            <SimpleCardHeaderTitle>Service</SimpleCardHeaderTitle>
-          </SimpleCardHeader>
-          <View>
-            <ThemedText>{selectedService?.name}</ThemedText>
-          </View>
-        </Card>
+        <View style={{ gap: 10 }}>
+          <Card>
+            <SimpleCardHeader>
+              <Ionicons
+                name={'receipt-outline'}
+                size={20}
+                color={theme.foreground}
+              />
+              <SimpleCardHeaderTitle>Service</SimpleCardHeaderTitle>
+            </SimpleCardHeader>
+            <View>
+              <ThemedText>{selectedService?.name}</ThemedText>
+            </View>
+          </Card>
 
-        <Card>
-          <SimpleCardHeader>
-            <Ionicons name={'map-outline'} size={20} color={theme.foreground} />
-            <SimpleCardHeaderTitle>Address</SimpleCardHeaderTitle>
-          </SimpleCardHeader>
-          <View>
-            <ThemedText>{selectedService?.address}</ThemedText>
-          </View>
-        </Card>
+          <Card>
+            <SimpleCardHeader>
+              <Ionicons
+                name={'map-outline'}
+                size={20}
+                color={theme.foreground}
+              />
+              <SimpleCardHeaderTitle>Address</SimpleCardHeaderTitle>
+            </SimpleCardHeader>
+            <View>
+              <ThemedText>{selectedService?.address}</ThemedText>
+            </View>
+          </Card>
 
-        <Card>
-          <SimpleCardHeader>
-            <Ionicons
-              name={'time-outline'}
-              size={20}
-              color={theme.foreground}
-            />
-            <SimpleCardHeaderTitle>Staff</SimpleCardHeaderTitle>
-          </SimpleCardHeader>
-          <View>
-            <ThemedText>{staffName}</ThemedText>
-          </View>
-        </Card>
+          <Card>
+            <SimpleCardHeader>
+              <Ionicons
+                name={'person-outline'}
+                size={20}
+                color={theme.foreground}
+              />
+              <SimpleCardHeaderTitle>Staff</SimpleCardHeaderTitle>
+            </SimpleCardHeader>
+            <View>
+              <ThemedText>{staffName}</ThemedText>
+            </View>
+          </Card>
 
-        <Card>
-          <SimpleCardHeader>
-            <Ionicons
-              name={'time-outline'}
-              size={20}
-              color={theme.foreground}
-            />
-            <SimpleCardHeaderTitle>Time</SimpleCardHeaderTitle>
-          </SimpleCardHeader>
-          <View>
-            <ThemedText>
-              {DateTime.fromISO(startDateAndTime!, {
-                zone: 'America/Toronto',
-              }).toFormat('hh:mm a')}
-            </ThemedText>
-          </View>
-        </Card>
+          <Card>
+            <SimpleCardHeader>
+              <Ionicons
+                name={'calendar-outline'}
+                size={20}
+                color={theme.foreground}
+              />
+              <SimpleCardHeaderTitle>Date</SimpleCardHeaderTitle>
+            </SimpleCardHeader>
+            <View>
+              <ThemedText>
+                {DateTime.fromISO(startDateAndTime!, {
+                  zone: 'America/Toronto',
+                })
+                  .toJSDate()
+                  .toDateString()}
+              </ThemedText>
+            </View>
+          </Card>
 
+          <Card>
+            <SimpleCardHeader>
+              <Ionicons
+                name={'time-outline'}
+                size={20}
+                color={theme.foreground}
+              />
+              <SimpleCardHeaderTitle>Time</SimpleCardHeaderTitle>
+            </SimpleCardHeader>
+            <View>
+              <ThemedText>
+                {DateTime.fromISO(startDateAndTime!, {
+                  zone: 'America/Toronto',
+                }).toFormat('hh:mm a')}
+              </ThemedText>
+            </View>
+          </Card>
+        </View>
         <Button
           loading={isPending}
           disabled={isPending}
