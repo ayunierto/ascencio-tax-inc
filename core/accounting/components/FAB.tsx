@@ -5,9 +5,12 @@ import { Ionicons } from '@expo/vector-icons';
 import Button from '@/components/ui/Button';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { theme } from '@/components/ui/theme';
+import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
+import { useRevenueCat } from '@/providers/RevenueCat';
 
 export const FAB = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { isPro } = useRevenueCat();
   const animation = useRef(new Animated.Value(0)).current;
 
   const toggleButtons = () => {
@@ -36,6 +39,26 @@ export const FAB = () => {
   //   outputRange: ['0deg', '45deg'],
   // });
 
+  const goPro = async () => {
+    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall({
+      displayCloseButton: true,
+    });
+
+    console.log(paywallResult);
+
+    switch (paywallResult) {
+      case PAYWALL_RESULT.NOT_PRESENTED:
+      case PAYWALL_RESULT.ERROR:
+      case PAYWALL_RESULT.CANCELLED:
+        return false;
+      case PAYWALL_RESULT.PURCHASED:
+      case PAYWALL_RESULT.RESTORED:
+        return true;
+      default:
+        return false;
+    }
+  };
+
   return (
     <View
       style={{
@@ -61,7 +84,11 @@ export const FAB = () => {
             height: 52,
           }}
           onPress={() => {
-            router.push('/(tabs)/accounting/receipts/expense/create');
+            if (!isPro) {
+              goPro();
+            } else {
+              router.push('/(tabs)/accounting/receipts/expense/create');
+            }
             toggleButtons();
           }}
         >
@@ -80,7 +107,11 @@ export const FAB = () => {
             height: 52,
           }}
           onPress={() => {
-            router.push('/scan-receipts');
+            if (!isPro) {
+              goPro();
+            } else {
+              router.push('/scan-receipts');
+            }
             toggleButtons();
           }}
         >

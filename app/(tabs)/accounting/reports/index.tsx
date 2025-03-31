@@ -17,12 +17,15 @@ import {
   getReports,
 } from '@/core/accounting/reports/actions';
 import { Report } from '@/core/accounting/reports/interfaces';
+import { useRevenueCat } from '@/providers/RevenueCat';
+import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 
 const ReportsScreen = () => {
   const [recentReports, setRecentReports] = useState<Report[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [startDate, setStartDate] = useState<string>();
   const [endDate, setEndDate] = useState<string>();
+  const { isPro } = useRevenueCat();
 
   const reportsQuery = useQuery({
     queryKey: ['reports'],
@@ -42,11 +45,37 @@ const ReportsScreen = () => {
     }
   }, [reportsQuery.data]);
 
+  const goPro = async () => {
+    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall({
+      displayCloseButton: true,
+    });
+
+    console.log(paywallResult);
+
+    switch (paywallResult) {
+      case PAYWALL_RESULT.NOT_PRESENTED:
+      case PAYWALL_RESULT.ERROR:
+      case PAYWALL_RESULT.CANCELLED:
+        return false;
+      case PAYWALL_RESULT.PURCHASED:
+      case PAYWALL_RESULT.RESTORED:
+        return true;
+      default:
+        return false;
+    }
+  };
+
   const downloadAndOpenPDFReport = async () => {
     if (!startDate || !endDate) {
       Alert.alert('Error', 'Please select a start and end date');
       return;
     }
+
+    if (!isPro) {
+      goPro();
+      return;
+    }
+
     if (new Date(startDate) > new Date(endDate)) {
       Alert.alert('Error', 'Start date must be before end date');
       return;

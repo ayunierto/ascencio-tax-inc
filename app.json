@@ -40,11 +40,9 @@
       ],
       "expo-secure-store",
       [
-        "@stripe/stripe-react-native",
+        "expo-dev-launcher",
         {
-          "merchantIdentifier": "merchant.com.ayunierto.ascenciotaxinc",
-          "publishableKey": "pk_live_51QtFL2DLCXdpMa3l8wEaZQkh4kkTLezDCj58oIrefZalg1dvD3A6lwic8uWudnvZyog8Top6yatqWpbUa4ulMZ2H00LLv2HD4r",
-          "enableGooglePay": true
+          "launchMode": "most-recent"
         }
       ]
     ],

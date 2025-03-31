@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
+import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 
 import { getExpenses } from '@/core/accounting/expenses/actions';
 import { getLogs } from '@/core/logs/actions';
@@ -12,10 +13,12 @@ import { Metrics } from './Metrics';
 import { QuickActions } from './QuickActions';
 import { RecentActivity } from './RecentActivity';
 import Loader from '@/components/Loader';
+import { useRevenueCat } from '@/providers/RevenueCat';
 
 const ReceiptsDashboard = () => {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [recentActivity, setRecentActivity] = useState<Log[]>([]);
+  const { isPro } = useRevenueCat();
 
   const expenseQuery = useQuery({
     queryKey: ['totalExpenses'],
@@ -81,16 +84,56 @@ const ReceiptsDashboard = () => {
   const quickActions = [
     {
       label: 'Add Expense',
-      onPress: () => router.push('/(tabs)/accounting/receipts/expense/create'),
+      onPress: () => createExpense(),
     },
 
     {
       label: 'Scan Expense',
-      onPress: () => router.push('/scan-receipts'),
+      onPress: () => scanExpense(),
     },
     // { label: 'Add Income', onPress: () => addIncome('Add Income') },
-    { label: 'View Reports', onPress: () => getReport() },
+    { label: 'View Reports', onPress: () => viewReport() },
   ];
+
+  const goPro = async () => {
+    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall({
+      displayCloseButton: true,
+    });
+
+    console.log(paywallResult);
+
+    switch (paywallResult) {
+      case PAYWALL_RESULT.NOT_PRESENTED:
+      case PAYWALL_RESULT.ERROR:
+      case PAYWALL_RESULT.CANCELLED:
+        return false;
+      case PAYWALL_RESULT.PURCHASED:
+      case PAYWALL_RESULT.RESTORED:
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  const createExpense = () => {
+    if (!isPro) {
+      goPro();
+    } else {
+      router.push('/(tabs)/accounting/receipts/expense/create');
+    }
+  };
+
+  const scanExpense = () => {
+    if (!isPro) {
+      goPro();
+    } else {
+      router.push('/scan-receipts');
+    }
+  };
+
+  const viewReport = () => {
+    getReport();
+  };
 
   // const recentActivity = [
   //   { description: 'Expense added: Office Supplies', date: '2024-07-15' },

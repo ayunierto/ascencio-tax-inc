@@ -16,9 +16,6 @@ import { Buffer } from 'buffer';
 import Loader from '@/components/Loader';
 import { ThemedText } from '@/components/ui/ThemedText';
 import Button from '@/components/ui/Button';
-import { Redirect } from 'expo-router';
-import { checkSubscription } from '@/core/accounting/subscriptions/actions';
-import { useQuery } from '@tanstack/react-query';
 globalThis.Buffer = Buffer;
 
 export default function ScanReceiptScreen() {
@@ -35,18 +32,6 @@ export default function ScanReceiptScreen() {
     onPickImages,
     onShutterButtonPress,
   } = useScanReceipts();
-
-  const queryCheckSubscription = useQuery({
-    queryKey: ['hasSubscription'],
-    queryFn: () => checkSubscription(),
-  });
-
-  if (queryCheckSubscription.isLoading) {
-    return <Loader />;
-  }
-
-  if (!queryCheckSubscription.data)
-    return <Redirect href={'/accounting/subscriptions'} />;
 
   const onRequestPermissions = async () => {
     try {

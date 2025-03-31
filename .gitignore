@@ -39,3 +39,5 @@ yarn-error.*
 app-example
 build*
 account-service*
+
+/ios
