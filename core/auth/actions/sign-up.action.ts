@@ -1,4 +1,4 @@
-import { Exception } from '@/core/interfaces/Exception.interface';
+import { Exception } from '@/core/interfaces/exception.interface';
 import { RegisterData, User } from '../interfaces';
 
 export const signup = async (

@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import { Stack } from 'expo-router';
-import { theme } from '@/components/ui/theme';
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import Loader from '@/components/Loader';
-import Signin from '../auth/sign-in';
+import React, { useEffect } from "react";
+import { Stack } from "expo-router";
+import { theme } from "@/components/ui/theme";
+import { useAuthStore } from "@/core/auth/store/useAuthStore";
+import Loader from "@/components/Loader";
+import Signin from "../auth/sign-in";
 
 const MyProfileLayout = () => {
   const { status, checkStatus } = useAuthStore();
@@ -13,11 +13,11 @@ const MyProfileLayout = () => {
     checkStatus();
   }, [status]);
 
-  if (status === 'checking') {
+  if (status === "checking") {
     return <Loader />;
   }
 
-  if (status === 'unauthenticated') {
+  if (status === "unauthenticated") {
     return <Signin />;
     // return <Redirect href={'/auth/sign-in'} />;
   }
@@ -28,7 +28,7 @@ const MyProfileLayout = () => {
         headerStyle: {
           backgroundColor: theme.background,
         },
-        headerTitleAlign: 'center',
+        headerTitleAlign: "center",
         headerTintColor: theme.foreground,
         headerShadowVisible: false,
       }}
@@ -36,23 +36,23 @@ const MyProfileLayout = () => {
       <Stack.Screen
         name="index"
         options={{
-          title: '',
+          title: "",
         }}
       />
 
       <Stack.Screen
         name="profile/index"
         options={{
-          title: 'Profile',
+          title: "Account info",
         }}
       />
 
       <Stack.Screen
         name="profile/delete-account-modal"
         options={{
-          presentation: 'modal',
-          animation: 'fade',
-          title: '',
+          presentation: "modal",
+          animation: "fade",
+          title: "",
         }}
       />
     </Stack>

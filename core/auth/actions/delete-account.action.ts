@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
-import { Exception } from '@/core/interfaces/Exception.interface';
 import { User } from '../interfaces';
+import { Exception } from '@/core/interfaces/exception.interface';
 
 export const deleteAccount = async (): Promise<User | Exception> => {
   try {

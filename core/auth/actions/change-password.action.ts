@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
-import { Exception } from '@/core/interfaces/Exception.interface';
 import { UserToken } from '../interfaces';
+import { Exception } from '@/core/interfaces/exception.interface';
 
 export const changePassword = async (
   password: string

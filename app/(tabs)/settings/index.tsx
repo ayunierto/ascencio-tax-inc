@@ -1,34 +1,113 @@
-import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import React from "react";
+import { Linking, TouchableOpacity, View } from "react-native";
 
-import { ThemedText } from '@/components/ui/ThemedText';
-import { Card } from '@/components/ui';
-import { Ionicons } from '@expo/vector-icons';
-import { theme } from '@/components/ui/theme';
-import { router } from 'expo-router';
+import { ThemedText } from "@/components/ui/ThemedText";
+import { Card } from "@/components/ui";
+import { Ionicons } from "@expo/vector-icons";
+import { theme } from "@/components/ui/theme";
+import { router } from "expo-router";
+import Divider from "@/components/ui/Divider";
+import { CardContent } from "@/components/ui/Card/CardContent";
 
 const SettingsScreen = () => {
   return (
     <View style={{ padding: 20 }}>
-      <View>
-        <ThemedText style={{ fontSize: 24, marginBottom: 20 }}>
+      <View style={{ gap: 20 }}>
+        <ThemedText
+          style={{ fontSize: 28, marginBottom: 10, fontWeight: "bold" }}
+        >
           Settings
         </ThemedText>
 
-        <TouchableOpacity onPress={() => router.push('/settings/profile')}>
+        <View>
+          <ThemedText
+            style={{ fontSize: 20, marginBottom: 10, fontWeight: "bold" }}
+          >
+            My account
+          </ThemedText>
+
+          <TouchableOpacity onPress={() => router.push("/settings/profile")}>
+            <Card>
+              <CardContent>
+                <View
+                  style={{
+                    justifyContent: "space-between",
+                    flexDirection: "row",
+                  }}
+                >
+                  <ThemedText style={{ fontSize: 18, marginLeft: 10 }}>
+                    Update account info
+                  </ThemedText>
+                  <Ionicons
+                    name="arrow-forward"
+                    size={24}
+                    color={theme.foreground}
+                  />
+                </View>
+              </CardContent>
+            </Card>
+          </TouchableOpacity>
+        </View>
+
+        <View>
+          <ThemedText
+            style={{ fontSize: 20, marginBottom: 10, fontWeight: "bold" }}
+          >
+            About us
+          </ThemedText>
+
           <Card>
-            <View
-              style={{ justifyContent: 'space-between', flexDirection: 'row' }}
+            <TouchableOpacity
+              onPress={() =>
+                Linking.openURL("https://www.ascenciotax.com/privacy")
+              }
             >
-              <ThemedText style={{ fontSize: 20 }}>Profile</ThemedText>
-              <Ionicons
-                name="arrow-forward"
-                size={24}
-                color={theme.foreground}
-              />
-            </View>
+              <CardContent>
+                <View
+                  style={{
+                    justifyContent: "space-between",
+                    flexDirection: "row",
+                  }}
+                >
+                  <ThemedText style={{ fontSize: 20, marginLeft: 10 }}>
+                    Terms of use
+                  </ThemedText>
+                  <Ionicons
+                    name="arrow-forward"
+                    size={24}
+                    color={theme.foreground}
+                  />
+                </View>
+              </CardContent>
+            </TouchableOpacity>
+
+            <Divider />
+
+            <TouchableOpacity
+              onPress={() =>
+                Linking.openURL("https://www.ascenciotax.com/termsofuse")
+              }
+            >
+              <CardContent>
+                <View
+                  style={{
+                    justifyContent: "space-between",
+                    flexDirection: "row",
+                  }}
+                >
+                  <ThemedText style={{ fontSize: 20, marginLeft: 10 }}>
+                    Privacy policy
+                  </ThemedText>
+                  <Ionicons
+                    name="arrow-forward"
+                    size={24}
+                    color={theme.foreground}
+                  />
+                </View>
+              </CardContent>
+            </TouchableOpacity>
           </Card>
-        </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

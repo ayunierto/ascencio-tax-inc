@@ -1,7 +1,7 @@
 import { User } from '@/core/auth/interfaces/user.interface';
 import { UpdateProfile } from '../interfaces/update-profile.interface';
 import * as SecureStore from 'expo-secure-store';
-import { Exception } from '@/core/interfaces/Exception.interface';
+import { Exception } from '@/core/interfaces/exception.interface';
 
 export const updateProfile = async ({
   lastName,

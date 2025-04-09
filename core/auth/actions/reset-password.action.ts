@@ -1,4 +1,4 @@
-import { Exception } from '@/core/interfaces/Exception.interface';
+import { Exception } from '@/core/interfaces/exception.interface';
 import { User } from '../interfaces';
 
 export const resetPassword = async (

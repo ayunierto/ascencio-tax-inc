@@ -13,10 +13,6 @@ import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import ErrorMessage from '@/core/components/ErrorMessage';
 
-// export const forgotPasswordSchema = z.object({
-//   username: z.string(),
-//   // .nonempty('You must write your email or password.'),
-// });
 export const forgotPasswordSchema = z.object({
   username: z.string().nonempty('You must write your email or phone number.'),
 });

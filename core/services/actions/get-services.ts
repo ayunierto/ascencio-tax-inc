@@ -1,6 +1,6 @@
-import { ServiceResponse } from '../interfaces/services.interface';
+import { Service } from "../interfaces";
 
-export const getServices = async (): Promise<ServiceResponse[] | null> => {
+export const getServices = async (): Promise<Service[] | null> => {
   try {
     const API_URL = process.env.EXPO_PUBLIC_API_URL;
     const response = await fetch(`${API_URL}/services`);

@@ -1,20 +1,21 @@
-import React from 'react';
+import React from "react";
 
-import { FlatList, Linking, TouchableOpacity, View } from 'react-native';
-import { DateTime } from 'luxon';
-import { useQuery } from '@tanstack/react-query';
+import { FlatList, Linking, TouchableOpacity, View } from "react-native";
+import { DateTime } from "luxon";
+import { useQuery } from "@tanstack/react-query";
 
-import { getPosts } from '@/core/posts/actions/get-posts';
-import { EmptyList } from '@/core/components';
-import Loader from '@/components/Loader';
-import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from '@/components/ui';
-import { Ionicons } from '@expo/vector-icons';
-import { theme } from '@/components/ui/theme';
-import { ThemedText } from '@/components/ui/ThemedText';
+import { getPosts } from "@/core/posts/actions/get-posts";
+import { EmptyList } from "@/core/components";
+import Loader from "@/components/Loader";
+import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from "@/components/ui";
+import { Ionicons } from "@expo/vector-icons";
+import { theme } from "@/components/ui/theme";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { CardContent } from "@/components/ui/Card/CardContent";
 
 const BlogScreen = (): JSX.Element => {
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ['posts'],
+    queryKey: ["posts"],
     queryFn: () => getPosts(),
   });
 
@@ -31,27 +32,33 @@ const BlogScreen = (): JSX.Element => {
       renderItem={({ item }) => (
         <TouchableOpacity onPress={() => Linking.openURL(item.url)}>
           <Card style={{ marginBottom: 10 }}>
-            <SimpleCardHeader>
-              <Ionicons
-                name={'link-outline'}
-                size={20}
-                color={theme.foreground}
-              />
-              <SimpleCardHeaderTitle
-                style={{ textDecorationLine: 'underline' }}
-              >
-                {item.title}
-              </SimpleCardHeaderTitle>
-            </SimpleCardHeader>
-            <View>
-              <ThemedText
-                style={{ color: theme.muted, textAlign: 'right', fontSize: 12 }}
-              >{`By: ${item.user.name} ${
-                item.user.lastName
-              } \n${DateTime.fromISO(
-                item.createdAt
-              ).toRelative()}`}</ThemedText>
-            </View>
+            <CardContent>
+              <SimpleCardHeader>
+                <Ionicons
+                  name={"link-outline"}
+                  size={20}
+                  color={theme.foreground}
+                />
+                <SimpleCardHeaderTitle
+                  style={{ textDecorationLine: "underline" }}
+                >
+                  {item.title}
+                </SimpleCardHeaderTitle>
+              </SimpleCardHeader>
+              <View>
+                <ThemedText
+                  style={{
+                    color: theme.muted,
+                    textAlign: "right",
+                    fontSize: 12,
+                  }}
+                >{`By: ${item.user.name} ${
+                  item.user.lastName
+                } \n${DateTime.fromISO(
+                  item.createdAt
+                ).toRelative()}`}</ThemedText>
+              </View>
+            </CardContent>
           </Card>
         </TouchableOpacity>
       )}

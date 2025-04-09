@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
-import Divider from '../../../../theme/components/ui/Divider';
-import { theme } from '../../../../theme/components/ui/Theme';
+import { theme } from '@/components/ui/theme';
+import Divider from '@/components/ui/Divider';
 
 interface ReceiptsFooterProps {
   data: any[];

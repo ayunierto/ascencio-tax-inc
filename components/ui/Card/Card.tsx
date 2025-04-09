@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   ViewProps,
   StyleProp,
   ViewStyle,
   StyleSheet,
-} from 'react-native';
-import { theme } from '../theme';
+} from "react-native";
+import { theme } from "../theme";
 
 interface SimpleCardProps extends ViewProps {
   style?: StyleProp<ViewStyle>;
@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: theme.card,
     borderRadius: theme.radius,
-    padding: 15,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
 });

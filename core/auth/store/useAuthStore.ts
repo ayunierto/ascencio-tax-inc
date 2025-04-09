@@ -1,7 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
 
-import { Exception } from '@/core/interfaces/Exception.interface';
 import { UserToken, User, Credentials, RegisterData } from '../interfaces';
 import {
   signin,
@@ -12,6 +11,7 @@ import {
   signup,
   verifyCode,
 } from '../actions';
+import { Exception } from '@/core/interfaces/exception.interface';
 
 export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking';
 

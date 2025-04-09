@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 package-lock.json
+*.lock.json
+yarn-error.log
+
 
 # Expo
 .expo/

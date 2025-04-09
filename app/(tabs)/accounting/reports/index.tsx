@@ -1,24 +1,25 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, FlatList, Linking, Modal, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import * as Sharing from 'expo-sharing';
+import React, { useCallback, useEffect, useState } from "react";
+import { Alert, FlatList, Linking, Modal, View } from "react-native";
+import { useFocusEffect } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import * as Sharing from "expo-sharing";
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import Button from '@/components/ui/Button';
-import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from '@/components/ui';
-import { ThemedText } from '@/components/ui/ThemedText';
-import { theme } from '@/components/ui/theme';
-import Divider from '@/components/ui/Divider';
-import DateTimeInput from '@/components/ui/DateTimePicker/DateTimePicker';
+import Button from "@/components/ui/Button";
+import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from "@/components/ui";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { theme } from "@/components/ui/theme";
+import Divider from "@/components/ui/Divider";
+import DateTimeInput from "@/components/ui/DateTimePicker/DateTimePicker";
 import {
   DownloadAndSaveReport,
   getReports,
-} from '@/core/accounting/reports/actions';
-import { Report } from '@/core/accounting/reports/interfaces';
-import { useRevenueCat } from '@/providers/RevenueCat';
-import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
+} from "@/core/accounting/reports/actions";
+import { Report } from "@/core/accounting/reports/interfaces";
+import { useRevenueCat } from "@/providers/RevenueCat";
+import RevenueCatUI, { PAYWALL_RESULT } from "react-native-purchases-ui";
+import { CardContent } from "@/components/ui/Card/CardContent";
 
 const ReportsScreen = () => {
   const [recentReports, setRecentReports] = useState<Report[]>([]);
@@ -28,7 +29,7 @@ const ReportsScreen = () => {
   const { isPro } = useRevenueCat();
 
   const reportsQuery = useQuery({
-    queryKey: ['reports'],
+    queryKey: ["reports"],
     queryFn: () => getReports(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
@@ -67,7 +68,7 @@ const ReportsScreen = () => {
 
   const downloadAndOpenPDFReport = async () => {
     if (!startDate || !endDate) {
-      Alert.alert('Error', 'Please select a start and end date');
+      Alert.alert("Error", "Please select a start and end date");
       return;
     }
 
@@ -77,11 +78,11 @@ const ReportsScreen = () => {
     }
 
     if (new Date(startDate) > new Date(endDate)) {
-      Alert.alert('Error', 'Start date must be before end date');
+      Alert.alert("Error", "Start date must be before end date");
       return;
     }
     if (startDate === endDate) {
-      Alert.alert('Error', 'Start date and end date must be different');
+      Alert.alert("Error", "Start date and end date must be different");
       return;
     }
 
@@ -101,18 +102,18 @@ const ReportsScreen = () => {
         console.error("You can't open the uri:", uri);
       }
     } catch (error) {
-      console.error('Error opening the PDF:', error);
+      console.error("Error opening the PDF:", error);
       try {
-        await Sharing.shareAsync(uri, { mimeType: 'application/pdf' });
+        await Sharing.shareAsync(uri, { mimeType: "application/pdf" });
       } catch (error) {
-        console.error('Error opening the PDF:', error);
+        console.error("Error opening the PDF:", error);
       }
     }
   };
 
   return (
     <View
-      style={{ padding: 20, gap: 10, flex: 1, justifyContent: 'space-between' }}
+      style={{ padding: 20, gap: 10, flex: 1, justifyContent: "space-between" }}
     >
       <Button onPress={() => setModalVisible(true)}>Generate new report</Button>
 
@@ -125,9 +126,9 @@ const ReportsScreen = () => {
         <View
           style={{
             flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: '#0009',
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#0009",
           }}
         >
           <View
@@ -135,9 +136,9 @@ const ReportsScreen = () => {
               backgroundColor: theme.background,
               borderRadius: 20,
               padding: 20,
-              width: '90%',
+              width: "90%",
               maxWidth: 360,
-              maxHeight: '80%',
+              maxHeight: "80%",
             }}
           >
             <View style={{ gap: 10 }}>
@@ -149,7 +150,7 @@ const ReportsScreen = () => {
 
             <Divider style={{ marginVertical: 20 }} />
 
-            <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View style={{ flexDirection: "row", gap: 10 }}>
               <Button
                 variant="outlined"
                 style={{ flex: 1 }}
@@ -171,33 +172,39 @@ const ReportsScreen = () => {
       </Modal>
 
       <Card style={{ flex: 1 }}>
-        <SimpleCardHeader>
-          <Ionicons name={'flash-outline'} size={20} color={theme.foreground} />
-          <SimpleCardHeaderTitle>Recent Reports</SimpleCardHeaderTitle>
-        </SimpleCardHeader>
-        <FlatList
-          style={{ paddingHorizontal: 20 }}
-          data={recentReports}
-          numColumns={1}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={{}}>
-              <ThemedText>
-                Report created at:{' '}
-                <ThemedText style={{ color: theme.muted }}>
-                  {new Date(item.createdAt).toLocaleString()}
+        <CardContent>
+          <SimpleCardHeader>
+            <Ionicons
+              name={"flash-outline"}
+              size={20}
+              color={theme.foreground}
+            />
+            <SimpleCardHeaderTitle>Recent Reports</SimpleCardHeaderTitle>
+          </SimpleCardHeader>
+          <FlatList
+            style={{ paddingHorizontal: 20 }}
+            data={recentReports}
+            numColumns={1}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={{}}>
+                <ThemedText>
+                  Report created at:{" "}
+                  <ThemedText style={{ color: theme.muted }}>
+                    {new Date(item.createdAt).toLocaleString()}
+                  </ThemedText>
                 </ThemedText>
+              </View>
+            )}
+            onEndReachedThreshold={0.8}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <ThemedText style={{ color: theme.muted }}>
+                There is no recent reports
               </ThemedText>
-            </View>
-          )}
-          onEndReachedThreshold={0.8}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <ThemedText style={{ color: theme.muted }}>
-              There is no recent reports
-            </ThemedText>
-          }
-        />
+            }
+          />
+        </CardContent>
       </Card>
     </View>
   );

@@ -1,4 +1,4 @@
-import { Exception } from '@/core/interfaces/Exception.interface';
+import { Exception } from '@/core/interfaces/exception.interface';
 import { UserToken } from '../interfaces';
 
 export const verifyCode = async (

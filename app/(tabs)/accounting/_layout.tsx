@@ -1,8 +1,8 @@
-import React from 'react';
-import { Drawer } from 'expo-router/drawer';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { theme } from '@/components/ui/theme';
-import { RevenueCatProvider } from '@/providers/RevenueCat';
+import React from "react";
+import { Drawer } from "expo-router/drawer";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { theme } from "@/components/ui/theme";
+import { RevenueCatProvider } from "@/providers/RevenueCat";
 
 const _layout = () => {
   return (
@@ -16,8 +16,8 @@ const _layout = () => {
           drawerStyle: {
             backgroundColor: theme.background,
           },
-          drawerType: 'slide',
-          headerTitleAlign: 'center',
+          drawerType: "slide",
+          headerTitleAlign: "center",
         }}
       >
         <Drawer.Screen
@@ -33,13 +33,13 @@ const _layout = () => {
               size: number;
             }) => (
               <MaterialCommunityIcons
-                name={focused ? 'view-dashboard' : 'view-dashboard-outline'}
+                name={focused ? "view-dashboard" : "view-dashboard-outline"}
                 size={size}
                 color={color}
               />
             ),
-            drawerLabel: 'Dashboard',
-            title: 'Dashboard',
+            drawerLabel: "Dashboard",
+            title: "Dashboard",
           }}
         />
 
@@ -57,12 +57,12 @@ const _layout = () => {
             }) => (
               <Ionicons
                 color={color}
-                name={focused ? 'receipt' : 'receipt-outline'}
+                name={focused ? "receipt" : "receipt-outline"}
                 size={size}
               />
             ),
-            drawerLabel: 'Expenses',
-            title: 'Expenses',
+            drawerLabel: "Expenses",
+            title: "Expenses",
           }}
         />
 
@@ -80,12 +80,35 @@ const _layout = () => {
             }) => (
               <Ionicons
                 color={color}
-                name={focused ? 'receipt' : 'receipt-outline'}
+                name={focused ? "receipt" : "receipt-outline"}
                 size={size}
               />
             ),
-            drawerLabel: 'Reports',
-            title: 'Reports',
+            drawerLabel: "Reports",
+            title: "Reports",
+          }}
+        />
+
+        <Drawer.Screen
+          name="support/index"
+          options={{
+            drawerIcon: ({
+              color,
+              focused,
+              size,
+            }: {
+              color: string;
+              focused: boolean;
+              size: number;
+            }) => (
+              <Ionicons
+                color={color}
+                name={focused ? "help-circle" : "help-circle-outline"}
+                size={size}
+              />
+            ),
+            drawerLabel: "Contact Support",
+            title: "Support",
           }}
         />
       </Drawer>
