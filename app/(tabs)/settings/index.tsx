@@ -3,7 +3,7 @@ import { Linking, TouchableOpacity, View } from "react-native";
 
 import { ThemedText } from "@/components/ui/ThemedText";
 import { Card } from "@/components/ui";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { theme } from "@/components/ui/theme";
 import { router } from "expo-router";
 import Divider from "@/components/ui/Divider";
@@ -69,13 +69,13 @@ const SettingsScreen = () => {
                     flexDirection: "row",
                   }}
                 >
-                  <ThemedText style={{ fontSize: 20, marginLeft: 10 }}>
+                  <ThemedText style={{ fontSize: 18, marginLeft: 10 }}>
                     Terms of use
                   </ThemedText>
-                  <Ionicons
-                    name="arrow-forward"
-                    size={24}
+                  <Feather
                     color={theme.foreground}
+                    name="external-link"
+                    size={24}
                   />
                 </View>
               </CardContent>
@@ -95,13 +95,13 @@ const SettingsScreen = () => {
                     flexDirection: "row",
                   }}
                 >
-                  <ThemedText style={{ fontSize: 20, marginLeft: 10 }}>
+                  <ThemedText style={{ fontSize: 18, marginLeft: 10 }}>
                     Privacy policy
                   </ThemedText>
-                  <Ionicons
-                    name="arrow-forward"
-                    size={24}
+                  <Feather
                     color={theme.foreground}
+                    name="external-link"
+                    size={24}
                   />
                 </View>
               </CardContent>

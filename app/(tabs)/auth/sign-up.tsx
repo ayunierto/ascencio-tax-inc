@@ -1,26 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 import {
   View,
   SafeAreaView,
   ScrollView,
   KeyboardAvoidingView,
-} from 'react-native';
-import { router } from 'expo-router';
-import { z } from 'zod';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+} from "react-native";
+import { router } from "expo-router";
+import { z } from "zod";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import { countries } from '@/countryData';
-import { signupSchema } from '@/core/auth/schemas/signupSchema';
-import useIPGeolocation from '@/core/hooks/useIPGeolocation';
-import Logo from '@/components/Logo';
-import Header from '@/core/auth/components/Header';
-import { Input } from '@/components/ui/Input';
-import Select from '@/components/ui/Select';
-import ErrorMessage from '@/core/components/ErrorMessage';
-import Button from '@/components/ui/Button';
+import { useAuthStore } from "@/core/auth/store/useAuthStore";
+import { countries } from "@/countryData";
+import { signupSchema } from "@/core/auth/schemas/signupSchema";
+import useIPGeolocation from "@/core/hooks/useIPGeolocation";
+import Logo from "@/components/Logo";
+import Header from "@/core/auth/components/Header";
+import { Input } from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import ErrorMessage from "@/core/components/ErrorMessage";
+import Button from "@/components/ui/Button";
+import TermsAndPrivacy from "@/components/TermsAndPrivacy";
 
 const countryCodes: { label: string; value: string }[] = [];
 
@@ -50,7 +51,7 @@ const Signup = () => {
   useEffect(() => {
     if (location) {
       setCallingCode(`+${location.location.calling_code}`);
-      setValue('countryCode', `+${location.location.calling_code}`);
+      setValue("countryCode", `+${location.location.calling_code}`);
     }
   }, [location]);
 
@@ -62,7 +63,7 @@ const Signup = () => {
   ): Promise<void> => {
     setLoading(true);
     const response = await signup({
-      verificationPlatform: 'email',
+      verificationPlatform: "email",
       email: values.email,
       lastName: values.lastName,
       name: values.name,
@@ -73,32 +74,32 @@ const Signup = () => {
     setLoading(false);
 
     // Success record
-    if ('id' in response) {
-      router.push({ pathname: '/auth/verify', params: { action: 'verify' } });
+    if ("id" in response) {
+      router.push({ pathname: "/auth/verify", params: { action: "verify" } });
       return;
     }
 
     if (response.statusCode === 400) {
-      setError('root', {
-        type: 'manual',
+      setError("root", {
+        type: "manual",
         message: response.message,
       });
     }
 
     if (response.statusCode === 409) {
-      if (response.message.toLowerCase().includes('email')) {
-        setError('email', {
-          type: 'manual',
+      if (response.message.toLowerCase().includes("email")) {
+        setError("email", {
+          type: "manual",
           message:
-            'Your email is already being used by an existing AscencioTax account. You can go the AscencioTax login screen to login using this email.',
+            "Your email is already being used by an existing AscencioTax account. You can go the AscencioTax login screen to login using this email.",
         });
         return;
       }
-      if (response.message.includes('phoneNumber')) {
-        setError('phoneNumber', {
-          type: 'manual',
+      if (response.message.includes("phoneNumber")) {
+        setError("phoneNumber", {
+          type: "manual",
           message:
-            'Your phone number is already being used by an existing AscencioTax account. You can go the AscencioTax login screen to login using this phone number.',
+            "Your phone number is already being used by an existing AscencioTax account. You can go the AscencioTax login screen to login using this phone number.",
         });
         return;
       }
@@ -114,14 +115,14 @@ const Signup = () => {
             style={{
               flex: 1,
               gap: 20,
-              width: '100%',
+              width: "100%",
               maxWidth: 380,
-              marginHorizontal: 'auto',
+              marginHorizontal: "auto",
               padding: 20,
             }}
           >
             <Header
-              link={'/auth/sign-in'}
+              link={"/auth/sign-in"}
               linkText="Sign In"
               subtitle="Already have an account? "
               title="Sign Up"
@@ -186,14 +187,14 @@ const Signup = () => {
               </View>
 
               <View style={{ gap: 6 }}>
-                <View style={{ flexDirection: 'row', gap: 10, flex: 1 }}>
+                <View style={{ flexDirection: "row", gap: 10, flex: 1 }}>
                   <Select
                     options={countryCodes}
                     selectedOptions={countryCodes.find(
                       (item) => item.value === callingCode
                     )}
                     // onSelect={(item) => setValue('countryCode', item?.value)}
-                    onChange={(value) => setValue('countryCode', value)}
+                    onChange={(value) => setValue("countryCode", value)}
                     placeholder="+1"
                     style={{ flex: 3 }}
                   />
@@ -265,6 +266,8 @@ const Signup = () => {
             >
               Sign up
             </Button>
+
+            <TermsAndPrivacy />
           </View>
         </KeyboardAvoidingView>
       </ScrollView>

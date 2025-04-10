@@ -1,25 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
   SafeAreaView,
   ScrollView,
   KeyboardAvoidingView,
-} from 'react-native';
-import { router } from 'expo-router';
+} from "react-native";
+import { router } from "expo-router";
 
-import { z } from 'zod';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { z } from "zod";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuthStore } from "@/core/auth/store/useAuthStore";
 
-import { signinSchema } from '@/core/auth/schemas/signinSchema';
-import Button from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import Header from '@/core/auth/components/Header';
-import Logo from '@/components/Logo';
-import ErrorMessage from '@/core/components/ErrorMessage';
-import { theme } from '@/components/ui/theme';
+import { signinSchema } from "@/core/auth/schemas/signinSchema";
+import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import Header from "@/core/auth/components/Header";
+import Logo from "@/components/Logo";
+import ErrorMessage from "@/core/components/ErrorMessage";
+import { theme } from "@/components/ui/theme";
+import TermsAndPrivacy from "@/components/TermsAndPrivacy";
 
 const Signin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,8 +34,8 @@ const Signin = () => {
   } = useForm<z.infer<typeof signinSchema>>({
     resolver: zodResolver(signinSchema),
     defaultValues: {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
     },
   });
 
@@ -43,28 +44,28 @@ const Signin = () => {
     const response = await signin(values);
     setIsLoading(false);
 
-    if ('token' in response) {
-      router.push('/(tabs)/(home)');
+    if ("token" in response) {
+      router.push("/(tabs)/(home)");
       return;
     }
 
-    if (response.message === 'User is not verified') {
+    if (response.message === "User is not verified") {
       setUser({
         email: values.username,
-        id: '',
-        name: '',
-        lastName: '',
-        phoneNumber: '',
+        id: "",
+        name: "",
+        lastName: "",
+        phoneNumber: "",
         isActive: false,
         roles: [],
-        createdAt: '',
+        createdAt: "",
       });
-      router.push({ pathname: '/auth/verify', params: { action: 'verify' } });
+      router.push({ pathname: "/auth/verify", params: { action: "verify" } });
       return;
     }
 
-    setError('root', {
-      type: 'manual',
+    setError("root", {
+      type: "manual",
       message:
         "We didn't recognize the username or password you entered. Please try again.",
     });
@@ -79,16 +80,16 @@ const Signin = () => {
             style={{
               flex: 1,
               gap: 20,
-              width: '100%',
+              width: "100%",
               maxWidth: 380,
-              marginHorizontal: 'auto',
+              marginHorizontal: "auto",
               marginBottom: 20,
               padding: 20,
             }}
           >
             <Header
               subtitle=" Don’t have an account?"
-              title={'Sign In'}
+              title={"Sign In"}
               link="/auth/sign-up"
               linkText="Sign Up"
             />
@@ -134,8 +135,8 @@ const Signin = () => {
               </View>
             </View>
             <Text
-              style={{ color: theme.primary, textAlign: 'center' }}
-              onPress={() => router.push('/auth/forgot-password')}
+              style={{ color: theme.primary, textAlign: "center" }}
+              onPress={() => router.push("/auth/forgot-password")}
             >
               Forgot password?
             </Text>
@@ -147,6 +148,8 @@ const Signin = () => {
             >
               Log In
             </Button>
+
+            <TermsAndPrivacy />
           </View>
         </KeyboardAvoidingView>
       </ScrollView>

@@ -256,17 +256,13 @@ const ProfileScreen = () => {
             <Link
               href={'/settings/profile/delete-account-modal'}
               style={{
-                textAlign: 'center',
                 color: theme.destructive,
-                padding: 10,
+                padding: 13,
                 borderColor: theme.destructive,
                 borderWidth: 1,
                 borderRadius: theme.radius,
                 height: 48,
-                justifyContent: 'center',
-                alignItems: 'center',
-                alignContent: 'center',
-                textAlignVertical: 'center',
+                textAlign: 'center',
               }}
             >
               Delete account

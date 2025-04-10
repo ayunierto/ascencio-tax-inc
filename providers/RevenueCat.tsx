@@ -22,20 +22,32 @@ export const RevenueCatProvider = ({
 }) => {
   const [isPro, setIsPro] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [isConfigured, setIsConfigured] = useState(false);
+  const [customerInfoReceived, setCustomerInfoReceived] = useState(false);
 
   useEffect(() => {
     init();
   }, []);
 
+  console.warn({ isConfigured });
+  console.warn({ customerInfoReceived });
+
   const init = async () => {
-    if (Platform.OS === 'android') {
-      await Purchases.configure({ apiKey: APIKeys.android });
-    } else {
-      await Purchases.configure({ apiKey: APIKeys.ios });
-    }
     setIsReady(true);
 
-    Purchases.setLogLevel(LOG_LEVEL.ERROR);
+    try {
+      if (Platform.OS === 'android') {
+        await Purchases.configure({ apiKey: APIKeys.android });
+      } else {
+        await Purchases.configure({ apiKey: APIKeys.ios });
+      }
+      setIsConfigured(true);
+    } catch (error) {
+      console.error('Error configuring RevenueCat:', error);
+      setIsConfigured(false);
+    }
+
+    await Purchases.setLogLevel(LOG_LEVEL.ERROR);
 
     Purchases.addCustomerInfoUpdateListener((customerInfo) => {
       console.log('customerInfo', customerInfo);
@@ -49,6 +61,7 @@ export const RevenueCatProvider = ({
     } else {
       setIsPro(false);
     }
+    setCustomerInfoReceived(true);
   };
 
   if (!isReady) return <></>;
