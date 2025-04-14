@@ -14,7 +14,7 @@ import { theme } from '@/components/ui/theme';
 import Button from '@/components/ui/Button';
 import { Service } from '@/core/services/interfaces';
 
-const Services = (): JSX.Element => {
+const Services = () => {
   const { selectService } = useBookingStore();
   const { token } = useAuthStore();
 
@@ -31,10 +31,10 @@ const Services = (): JSX.Element => {
   const onSelectService = (service: Service): void => {
     selectService(service);
     if (!token) {
-      router.push('/settings');
+      router.push('/(tabs)/auth/sign-in');
       Toast.show({
         type: 'info',
-        text1: 'Info',
+        text1: 'Please, sign in',
         text2: 'You must be authenticated to book a service',
         text1Style: { fontSize: 14 },
         text2Style: { fontSize: 12 },
@@ -60,7 +60,6 @@ const Services = (): JSX.Element => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   gap: 10,
-                  // backgroundColor: 'red',
                 }}
                 key={service.id}
               >

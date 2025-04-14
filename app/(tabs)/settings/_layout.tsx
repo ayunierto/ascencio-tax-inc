@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { theme } from "@/components/ui/theme";
 import { useAuthStore } from "@/core/auth/store/useAuthStore";
 import Loader from "@/components/Loader";
@@ -18,8 +18,8 @@ const MyProfileLayout = () => {
   }
 
   if (status === "unauthenticated") {
-    return <Signin />;
-    // return <Redirect href={'/auth/sign-in'} />;
+    // return <Signin />;
+    return <Redirect href={'/auth/sign-in'} />;
   }
 
   return (

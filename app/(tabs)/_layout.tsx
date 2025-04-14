@@ -82,6 +82,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
+          href: status === 'authenticated' ? '/(tabs)/settings' : null,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               size={28}
@@ -103,8 +104,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="auth"
         options={{
-          href: null,
+          title: 'Settings',
+          href: status === 'authenticated' ? null : '/(tabs)/auth/sign-in',
           headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              size={28}
+              name={focused ? 'settings' : 'settings-outline'}
+              color={color}
+            />
+          ),
         }}
       />
     </Tabs>

@@ -56,9 +56,6 @@ const VerifyCode = () => {
     setValue,
   } = useForm<z.infer<typeof verifyUserSchema>>({
     resolver: zodResolver(verifyUserSchema),
-    defaultValues: {
-      verificationCode: '',
-    },
   });
 
   const onVerify = async ({
