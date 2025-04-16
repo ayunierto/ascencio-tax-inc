@@ -28,7 +28,7 @@ const ExpensesScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, padding: 20 }}>
       <ExpensesList
         expenses={expensesQuery.data?.pages.flatMap((page) => page) ?? []}
         loadNextPage={loadNextPage}

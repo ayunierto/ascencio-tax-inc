@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 
 import { getExpenses } from '@/core/accounting/expenses/actions';
 import { getLogs } from '@/core/logs/actions';
@@ -14,6 +13,8 @@ import { QuickActions } from './QuickActions';
 import { RecentActivity } from './RecentActivity';
 import Loader from '@/components/Loader';
 import { useRevenueCat } from '@/providers/RevenueCat';
+import { goPro } from '@/core/accounting/actions';
+import Toast from 'react-native-toast-message';
 
 const ReceiptsDashboard = () => {
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -66,7 +67,13 @@ const ReceiptsDashboard = () => {
 
   const getReport = () => {
     if (expenseQuery.data.length === 0) {
-      alert('No expenses to generate report');
+      Toast.show({
+        type: 'info',
+        text1: 'Info',
+        text1Style: { fontSize: 14 },
+        text2: 'No expenses to generate report',
+        text2Style: { fontSize: 12 },
+      });
       return;
     }
     router.push('/(tabs)/accounting/reports');
@@ -77,14 +84,14 @@ const ReceiptsDashboard = () => {
     // { label: 'Today', value: `$${totalExpenses}` },
     // { label: 'This Week', value: `$${totalExpenses}` },
     // { label: 'This month', value: `$${totalExpenses}` },
-    { label: 'Expenses', value: `$${totalExpenses}` },
+    { label: 'Total Expenses', value: `$${totalExpenses}` },
     // { label: 'Net Profit', value: '$4,000' },
   ];
 
   const quickActions = [
     {
       label: 'Add Expense',
-      onPress: () => createExpense(),
+      onPress: () => addExpense(),
     },
 
     {
@@ -95,28 +102,8 @@ const ReceiptsDashboard = () => {
     { label: 'View Reports', onPress: () => viewReport() },
   ];
 
-  const goPro = async () => {
-    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall({
-      displayCloseButton: true,
-    });
-
-    console.log(paywallResult);
-
-    switch (paywallResult) {
-      case PAYWALL_RESULT.NOT_PRESENTED:
-      case PAYWALL_RESULT.ERROR:
-      case PAYWALL_RESULT.CANCELLED:
-        return false;
-      case PAYWALL_RESULT.PURCHASED:
-      case PAYWALL_RESULT.RESTORED:
-        return true;
-      default:
-        return false;
-    }
-  };
-
-  const createExpense = () => {
-    if (!isPro) {
+  const addExpense = () => {
+    if (!isPro && expenseQuery.data.length >= 5) {
       goPro();
     } else {
       router.push('/(tabs)/accounting/receipts/expense/create');
@@ -124,7 +111,7 @@ const ReceiptsDashboard = () => {
   };
 
   const scanExpense = () => {
-    if (!isPro) {
+    if (!isPro && expenseQuery.data.length >= 5) {
       goPro();
     } else {
       router.push('/scan-receipts');
@@ -147,7 +134,10 @@ const ReceiptsDashboard = () => {
 
       <QuickActions actions={quickActions} />
 
-      <RecentActivity activities={recentActivity} />
+      <RecentActivity
+        loading={logsQuery.isRefetching}
+        activities={recentActivity}
+      />
     </View>
   );
 };
@@ -156,7 +146,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-
     gap: 10,
   },
 });

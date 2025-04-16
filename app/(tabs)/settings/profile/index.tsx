@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
@@ -40,7 +39,7 @@ export const profileSchema = z
 const ProfileScreen = () => {
   const [loading, setLoading] = useState(false);
 
-  const { token, logout, user, setUser } = useAuthStore();
+  const { token, user, setUser } = useAuthStore();
 
   const {
     control,
@@ -237,18 +236,6 @@ const ProfileScreen = () => {
               onPress={handleSubmit(handleUpdateProfile)}
             >
               Update
-            </Button>
-
-            <Divider />
-
-            <Button
-              iconRight={
-                <Ionicons name="log-out-outline" size={24} color="white" />
-              }
-              variant="outlined"
-              onPress={() => logout()}
-            >
-              Sign out
             </Button>
 
             <Divider />

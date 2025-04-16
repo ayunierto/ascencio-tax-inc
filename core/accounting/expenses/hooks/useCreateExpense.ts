@@ -18,6 +18,7 @@ import { Subcategory } from '../../subcategories/interfaces';
 import { createExpense } from '../actions';
 import { CreateUpdateExpense, Expense } from '../interfaces';
 import { useCameraStore } from '@/core/camera/store';
+import { DateTime } from 'luxon';
 
 interface Option {
   label: string;
@@ -40,36 +41,7 @@ export const useCreateExpense = () => {
     setValue('merchant', params.merchant as string);
     setValue('total', params.total as string);
     setValue('tax', params.tax as string);
-    setValue('date', params.date as string);
-
-    // let dateObtained: Date = new Date();
-
-    // if (params.date) {
-    //   try {
-    //     dateObtained = new Date(params.date as string);
-    //     if (isNaN(dateObtained.getTime())) {
-    //       dateObtained = new Date();
-    //     }
-    //   } catch (error) {
-    //     console.error('Error parsing date:', error);
-    //     dateObtained = new Date();
-    //   }
-    // } else {
-    // }
-
-    // setValue('date', dateObtained.toISOString());
-
-    // const currentDate = new Date();
-    // currentDate.setFullYear(currentDate.getFullYear() - 2);
-    // const ISODate = currentDate;
-    // const dateObtained = new Date(params.date);
-
-    // setValue(
-    //   'date',
-    //   dateObtained <= ISODate
-    //     ? ISODate.toISOString()
-    //     : dateObtained.toISOString()
-    // );
+    setValue('date', (params.date as string) || DateTime.now().toISO());
     return () => {
       clearImages();
     };

@@ -198,7 +198,7 @@ const CreateExpenseScreen = () => {
                 placeholder="Notes"
                 multiline
                 numberOfLines={5}
-                style={{ height: 'auto', minHeight: 48 }}
+                style={{ minHeight: 48, paddingVertical: 15 }}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}

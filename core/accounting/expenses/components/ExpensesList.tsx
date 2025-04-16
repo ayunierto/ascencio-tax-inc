@@ -28,7 +28,6 @@ const ExpensesList = ({ expenses, loadNextPage }: ExpenseListProps) => {
 
   return (
     <FlatList
-      style={{ paddingHorizontal: 20 }}
       data={expenses}
       numColumns={1}
       keyExtractor={(item) => item.id}
@@ -37,7 +36,14 @@ const ExpensesList = ({ expenses, loadNextPage }: ExpenseListProps) => {
       onEndReachedThreshold={0.8}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={onPullToRefresh} />
+        <RefreshControl
+          style={{}}
+          refreshing={isRefreshing}
+          onRefresh={onPullToRefresh}
+          title="Pull to refresh"
+          tintColor="#fff"
+          titleColor="#fff"
+        />
       }
       ListEmptyComponent={
         <EmptyList

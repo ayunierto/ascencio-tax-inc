@@ -5,8 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import Button from '@/components/ui/Button';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { theme } from '@/components/ui/theme';
-import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { useRevenueCat } from '@/providers/RevenueCat';
+import { goPro } from '../actions';
 
 export const FAB = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -38,26 +38,6 @@ export const FAB = () => {
   //   inputRange: [0, 1],
   //   outputRange: ['0deg', '45deg'],
   // });
-
-  const goPro = async () => {
-    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall({
-      displayCloseButton: true,
-    });
-
-    console.log(paywallResult);
-
-    switch (paywallResult) {
-      case PAYWALL_RESULT.NOT_PRESENTED:
-      case PAYWALL_RESULT.ERROR:
-      case PAYWALL_RESULT.CANCELLED:
-        return false;
-      case PAYWALL_RESULT.PURCHASED:
-      case PAYWALL_RESULT.RESTORED:
-        return true;
-      default:
-        return false;
-    }
-  };
 
   return (
     <View

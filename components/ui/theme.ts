@@ -12,30 +12,34 @@ export const theme = {
   cardForeground: '#333333',
 
   // Background color for popovers such as <DropdownMenu />, <HoverCard />, <Popover />
-  popover: 'hsl(0, 0%, 100%)',
-  popoverForeground: 'hsl(222, 84%, 4.9%)',
+  popover: '#ffffff',
+  popoverForeground: '#020817',
 
   // Border color
   border: '#3b82f655',
 
   // Border color for inputs such as <Input />, <Select />, <Textarea />
-  input: 'hsl(214, 31.8%, 91.4%)',
+  input: '#e2e8f0',
 
   // Primary colors for <Button />
   primary: '#3b82f6',
   primaryForeground: '#ffffff',
 
+  // Success colors
+  success: 'green',
+  successForeground: '#ffffff',
+
   // Secondary colors for <Button />
   secondary: '#ffffff',
-  secondaryForeground: 'hsl(222, 47.4%, 11.2%)',
+  secondaryForeground: '#0f172a',
 
   // Used for accents such as hover effects on <DropdownMenuItem>, <SelectItem>...etc
-  accent: 'hsl(209, 57.40%, 90.80%)',
-  accentForeground: 'hsl(222, 47.4%, 11.2%)',
+  accent: '#dae8f5',
+  accentForeground: '#0f172a',
 
   // Used for destructive actions such as <Button variant="destructive">
-  destructive: 'hsl(0, 84.2%, 60.2%)',
-  destructiveForeground: 'hsl(210, 40%, 98%)',
+  destructive: '#ef4444',
+  destructiveForeground: '#f8fafc',
 
   // Border radius for card, input and buttons
   radius: 16,
