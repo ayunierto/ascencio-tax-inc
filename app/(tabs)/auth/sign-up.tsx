@@ -110,12 +110,11 @@ const Signup = () => {
 
   return (
     <SafeAreaView>
-      <ScrollView>
-        <KeyboardAvoidingView>
+      <KeyboardAvoidingView behavior="padding">
+        <ScrollView>
           <Logo />
           <View
             style={{
-              flex: 1,
               gap: 20,
               width: '100%',
               maxWidth: 380,
@@ -271,8 +270,8 @@ const Signup = () => {
 
             <TermsAndPrivacy />
           </View>
-        </KeyboardAvoidingView>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

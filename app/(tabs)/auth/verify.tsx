@@ -118,7 +118,7 @@ const VerifyCode = () => {
   return (
     <SafeAreaView>
       <ScrollView>
-        <KeyboardAvoidingView>
+        <KeyboardAvoidingView behavior="padding">
           <View
             style={{
               flex: 1,
