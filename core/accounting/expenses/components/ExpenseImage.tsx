@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { useCameraStore } from '@/core/camera/store';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { theme } from '@/components/ui/theme';
+import { SinglePhotoViewer } from '@/core/components/SinglePhotoViewer';
 
 interface ExpenseImageProps {
   image: string | null;
@@ -15,6 +16,11 @@ interface ExpenseImageProps {
 
 const ExpenseImage = ({ image, onChange }: ExpenseImageProps) => {
   const { selectedImages, clearImages } = useCameraStore();
+
+  const [isViewerVisible, setIsViewerVisible] = useState(false);
+
+  const openViewer = () => setIsViewerVisible(true);
+  const closeViewer = () => setIsViewerVisible(false);
 
   useEffect(() => {
     if (onChange) {
@@ -41,44 +47,53 @@ const ExpenseImage = ({ image, onChange }: ExpenseImageProps) => {
         }}
       >
         {image ? (
-          <View>
-            <Image
-              source={{ uri: image }}
+          <>
+            <TouchableOpacity onPress={openViewer}>
+              <Image
+                source={{ uri: image }}
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: theme.radius,
+                }}
+              />
+            </TouchableOpacity>
+            <SinglePhotoViewer
+              imageUrl={image}
+              isVisible={isViewerVisible}
+              onClose={closeViewer}
+            />
+          </>
+        ) : (
+          <ThemedText>No receipt selected</ThemedText>
+        )}
+
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity onPress={() => removeImage()}>
+            <Ionicons
+              name="trash-outline"
+              color={theme.foreground}
+              size={24}
               style={{
-                width: 50,
-                height: 50,
+                backgroundColor: theme.mutedForeground,
                 borderRadius: theme.radius,
-                marginTop: 10,
+                padding: 8,
               }}
             />
-            <TouchableOpacity
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/camera')}>
+            <Ionicons
+              name="camera-outline"
+              color={theme.foreground}
+              size={24}
               style={{
-                backgroundColor: theme.muted,
-                position: 'absolute',
+                backgroundColor: theme.mutedForeground,
                 borderRadius: theme.radius,
-                padding: 4,
-                right: 0,
+                padding: 8,
               }}
-              onPress={() => removeImage()}
-            >
-              <Ionicons name="close-outline" />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <ThemedText>No images found</ThemedText>
-        )}
-        <TouchableOpacity onPress={() => router.push('/camera')}>
-          <Ionicons
-            name="camera-outline"
-            color={theme.foreground}
-            size={24}
-            style={{
-              backgroundColor: theme.mutedForeground,
-              borderRadius: theme.radius,
-              padding: 8,
-            }}
-          />
-        </TouchableOpacity>
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
