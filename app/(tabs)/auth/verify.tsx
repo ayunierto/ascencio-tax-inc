@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   KeyboardAvoidingView,
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
@@ -26,14 +26,7 @@ const VerifyCode = () => {
 
   const { user, verifyCode } = useAuthStore();
 
-  const navigation = useNavigation();
   const { action } = useLocalSearchParams();
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerBackVisible: false,
-    });
-  }, []);
 
   if (!action) {
     throw new Error('Action is required: verify or reset-password');
@@ -64,6 +57,7 @@ const VerifyCode = () => {
     if (user) {
       setIsLoading(true);
       const response = await verifyCode(user.email, verificationCode);
+      console.warn({ VerifyCodeResponse: response });
       setIsLoading(false);
 
       if ('token' in response) {
@@ -80,7 +74,7 @@ const VerifyCode = () => {
         }
 
         if (action === 'reset-password') {
-          router.push('/auth/new-password');
+          router.replace('/auth/new-password');
           return;
         }
         return;

@@ -27,6 +27,8 @@ export default function AuthLayout() {
         name="new-password"
         options={{
           title: '',
+          headerShown: true,
+          headerBackVisible: false,
         }}
       />
 
@@ -49,6 +51,7 @@ export default function AuthLayout() {
         options={{
           title: '',
           headerShown: true,
+          headerBackVisible: false,
         }}
       />
     </Stack>

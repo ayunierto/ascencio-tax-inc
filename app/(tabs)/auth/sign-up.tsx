@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import {
   View,
@@ -6,15 +6,9 @@ import {
   ScrollView,
   KeyboardAvoidingView,
 } from 'react-native';
-import { router } from 'expo-router';
-import { z } from 'zod';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller } from 'react-hook-form';
 
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { countries } from '@/countryData';
-import { signupSchema } from '@/core/auth/schemas/signupSchema';
-import useIPGeolocation from '@/core/hooks/useIPGeolocation';
 import Logo from '@/components/Logo';
 import Header from '@/core/auth/components/Header';
 import { Input } from '@/components/ui/Input';
@@ -22,6 +16,7 @@ import Select from '@/components/ui/Select';
 import ErrorMessage from '@/core/components/ErrorMessage';
 import Button from '@/components/ui/Button';
 import TermsAndPrivacy from '@/components/TermsAndPrivacy';
+import { useSignup } from '@/core/auth/hooks/useSignup';
 
 const countryCodes: { label: string; value: string }[] = [];
 
@@ -36,77 +31,15 @@ const transformCountries = (): void => {
 transformCountries();
 
 const Signup = () => {
-  const { location } = useIPGeolocation();
-  const [callingCode, setCallingCode] = useState<string | undefined>();
   const {
+    errors,
     control,
+    callingCode,
     handleSubmit,
-    formState: { errors },
-    setError,
+    onSignup,
     setValue,
-  } = useForm<z.infer<typeof signupSchema>>({
-    resolver: zodResolver(signupSchema),
-  });
-
-  useEffect(() => {
-    if (location) {
-      if ('error' in location) return;
-      console.warn({ location });
-      setCallingCode(`+${location.location.calling_code}`);
-      setValue('countryCode', `+${location.location.calling_code}`);
-    }
-  }, [location]);
-
-  const { signup } = useAuthStore();
-  const [loading, setLoading] = useState(false);
-
-  const onSignup = async (
-    values: z.infer<typeof signupSchema>
-  ): Promise<void> => {
-    setLoading(true);
-    const response = await signup({
-      verificationPlatform: 'email',
-      email: values.email,
-      lastName: values.lastName,
-      name: values.name,
-      password: values.password,
-      countryCode: values.countryCode,
-      phoneNumber: values.phoneNumber,
-    });
-    setLoading(false);
-
-    // Success record
-    if ('id' in response) {
-      router.push({ pathname: '/auth/verify', params: { action: 'verify' } });
-      return;
-    }
-
-    if (response.statusCode === 400) {
-      setError('root', {
-        type: 'manual',
-        message: response.message,
-      });
-    }
-
-    if (response.statusCode === 409) {
-      if (response.message.toLowerCase().includes('email')) {
-        setError('email', {
-          type: 'manual',
-          message:
-            'Your email is already being used by an existing AscencioTax account. You can go the AscencioTax login screen to login using this email.',
-        });
-        return;
-      }
-      if (response.message.includes('phoneNumber')) {
-        setError('phoneNumber', {
-          type: 'manual',
-          message:
-            'Your phone number is already being used by an existing AscencioTax account. You can go the AscencioTax login screen to login using this phone number.',
-        });
-        return;
-      }
-    }
-  };
+    loading,
+  } = useSignup();
 
   return (
     <SafeAreaView>

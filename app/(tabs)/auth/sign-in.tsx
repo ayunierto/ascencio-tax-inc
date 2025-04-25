@@ -1,19 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
-  Text,
   SafeAreaView,
   ScrollView,
   KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { router } from 'expo-router';
 
-import { z } from 'zod';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { Controller } from 'react-hook-form';
 
-import { signinSchema } from '@/core/auth/schemas/signinSchema';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import Header from '@/core/auth/components/Header';
@@ -21,60 +17,20 @@ import Logo from '@/components/Logo';
 import ErrorMessage from '@/core/components/ErrorMessage';
 import { theme } from '@/components/ui/theme';
 import TermsAndPrivacy from '@/components/TermsAndPrivacy';
+import { ThemedText } from '@/components/ui/ThemedText';
+import { useSignin } from '@/core/auth/hooks/useSignin';
 
-const Signin = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { signin, setUser } = useAuthStore();
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    setError,
-  } = useForm<z.infer<typeof signinSchema>>({
-    resolver: zodResolver(signinSchema),
-    defaultValues: {
-      username: '',
-      password: '',
-    },
-  });
-
-  const onSignin = async (values: z.infer<typeof signinSchema>) => {
-    setIsLoading(true);
-    const response = await signin(values);
-    setIsLoading(false);
-
-    if ('token' in response) {
-      router.push('/(tabs)/(home)');
-      return;
-    }
-
-    if (response.message === 'User is not verified') {
-      setUser({
-        email: values.username,
-        id: '',
-        name: '',
-        lastName: '',
-        phoneNumber: '',
-        isActive: false,
-        roles: [],
-        createdAt: '',
-      });
-      router.push({ pathname: '/auth/verify', params: { action: 'verify' } });
-      return;
-    }
-
-    setError('root', {
-      type: 'manual',
-      message:
-        "We didn't recognize the username or password you entered. Please try again.",
-    });
-  };
+const SigninScreen = () => {
+  const { errors, control, signinMutation, onSigninSubmit, handleSubmit } =
+    useSignin();
 
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <KeyboardAvoidingView behavior="padding">
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <ScrollView>
           <Logo />
           <View
             style={{
@@ -134,16 +90,19 @@ const Signin = () => {
                 <ErrorMessage fieldErrors={errors.password} />
               </View>
             </View>
-            <Text
+            <ThemedText
               style={{ color: theme.primary, textAlign: 'center' }}
-              onPress={() => router.push('/auth/forgot-password')}
+              onPress={() =>
+                !signinMutation.isPending &&
+                router.push('/auth/forgot-password')
+              }
             >
               Forgot password?
-            </Text>
+            </ThemedText>
             <Button
-              loading={isLoading}
-              disabled={isLoading}
-              onPress={handleSubmit(onSignin)}
+              loading={signinMutation.isPending}
+              disabled={signinMutation.isPending}
+              onPress={handleSubmit(onSigninSubmit)}
               focusable
             >
               Log In
@@ -151,10 +110,10 @@ const Signin = () => {
 
             <TermsAndPrivacy />
           </View>
-        </KeyboardAvoidingView>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
-export default Signin;
+export default SigninScreen;

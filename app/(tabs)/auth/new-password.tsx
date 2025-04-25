@@ -19,7 +19,7 @@ export const newPasswordSchema = z.object({
   // ),
 });
 
-const NewPassword = () => {
+const NewPasswordScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { changePassword } = useAuthStore();
   const {
@@ -29,9 +29,6 @@ const NewPassword = () => {
     setError,
   } = useForm<z.infer<typeof newPasswordSchema>>({
     resolver: zodResolver(newPasswordSchema),
-    defaultValues: {
-      password: '',
-    },
   });
 
   const onChangePassword = async ({
@@ -39,6 +36,7 @@ const NewPassword = () => {
   }: z.infer<typeof newPasswordSchema>) => {
     setIsLoading(true);
     const response = await changePassword(password);
+    console.warn({ NewPasswordResponse: response });
     setIsLoading(false);
 
     if ('token' in response) {
@@ -108,4 +106,4 @@ const NewPassword = () => {
   );
 };
 
-export default NewPassword;
+export default NewPasswordScreen;

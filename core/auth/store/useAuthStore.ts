@@ -71,6 +71,8 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   deleteAccount: async () => {
     const response = await deleteAccount();
+    await SecureStore.deleteItemAsync('token');
+
     if ('email' in response) {
       get().setUnauthenticated();
       return response;
@@ -81,16 +83,17 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   checkStatus: async () => {
     const response = await checkStatus();
-
-    if (!response) {
-      get().setUnauthenticated();
-      return false;
-    }
+    console.warn({ CheckStatusResponse: response });
 
     if ('token' in response) {
       await SecureStore.setItemAsync('token', response.token);
       get().setAuthenticated(response.token, response.user);
       return true;
+    }
+
+    if (!response) {
+      get().setUnauthenticated();
+      return false;
     }
 
     get().setUnauthenticated();
@@ -106,7 +109,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     const response = await verifyCode(username, verificationCode);
     if ('token' in response) {
       await SecureStore.setItemAsync('token', response.token);
-      get().setAuthenticated(response.token, response.user);
       return response;
     }
     return response;
@@ -132,6 +134,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       token: token,
       user: user,
     });
+    console.warn('Authenticated');
   },
 
   setUnauthenticated: () => {
@@ -140,6 +143,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       token: undefined,
       user: undefined,
     });
+    console.warn('Unauthenticated');
   },
 
   setUser: (user: User) => {
