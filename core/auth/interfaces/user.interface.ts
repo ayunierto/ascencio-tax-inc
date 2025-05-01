@@ -3,9 +3,9 @@ export interface User {
   name: string;
   lastName: string;
   email: string;
+  countryCode?: string;
   phoneNumber?: string;
   birthdate?: string;
-  isActive: boolean;
   lastLogin?: string;
   roles: string[];
   createdAt: string;

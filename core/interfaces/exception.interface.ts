@@ -1,6 +1,5 @@
 export interface Exception {
   message: string;
-  error?: string;
+  error: string;
   statusCode: number;
-  cause?: string;
 }

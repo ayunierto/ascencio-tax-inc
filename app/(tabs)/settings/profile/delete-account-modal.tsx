@@ -13,9 +13,11 @@ import { Input } from '@/components/ui/Input';
 import { ThemedText } from '@/components/ui/ThemedText';
 import ErrorMessage from '@/core/components/ErrorMessage';
 import { router } from 'expo-router';
+import Toast from 'react-native-toast-message';
 
 export const deleteAccountSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
+  password: z.string().min(6),
 });
 
 const DeleteAccountModal = () => {
@@ -30,16 +32,25 @@ const DeleteAccountModal = () => {
     setError,
   } = useForm<z.infer<typeof deleteAccountSchema>>({
     resolver: zodResolver(deleteAccountSchema),
-    defaultValues: {},
   });
 
   const onDeleteAccount = async ({
     email,
+    password,
   }: z.infer<typeof deleteAccountSchema>) => {
     if (user && user.email === email) {
       setIsDeleting(true);
-      await deleteAccount();
+      const response = await deleteAccount({ password });
       setIsDeleting(false);
+      if ('error' in response) {
+        setError('root', { message: response.message });
+        return;
+      }
+
+      Toast.show({
+        text1: response.message,
+        text2: 'We hope to see you again soon.',
+      });
       router.replace('/auth/sign-in');
       return;
     }
@@ -69,8 +80,10 @@ const DeleteAccountModal = () => {
         address. Are you sure you wish to proceed?.
       </ThemedText>
       <ThemedText style={{ color: theme.muted }}>
-        Email: {user?.email}
+        Email: {user && user.email}
       </ThemedText>
+
+      {errors.root && <ErrorMessage message={errors.root.message} />}
 
       <Controller
         control={control}
@@ -88,6 +101,23 @@ const DeleteAccountModal = () => {
         )}
       />
       <ErrorMessage fieldErrors={errors.email} />
+
+      <Controller
+        control={control}
+        name="password"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <Input
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            keyboardType="default"
+            placeholder="Password"
+            autoCapitalize="none"
+            autoComplete="off"
+          />
+        )}
+      />
+      <ErrorMessage fieldErrors={errors.password} />
 
       <Button
         iconLeft={

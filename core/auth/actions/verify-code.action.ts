@@ -1,10 +1,10 @@
 import { Exception } from '@/core/interfaces/exception.interface';
-import { UserToken } from '../interfaces';
+import { VerifyCodeRequest, VerifyCodeResponse } from '../interfaces';
 
-export const verifyCode = async (
-  username: string,
-  verificationCode: string
-): Promise<UserToken | Exception> => {
+export const verifyCodeAction = async ({
+  code,
+  email,
+}: VerifyCodeRequest): Promise<VerifyCodeResponse | Exception> => {
   const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
   try {
@@ -13,10 +13,10 @@ export const verifyCode = async (
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, verificationCode }),
+      body: JSON.stringify({ code, email }),
     });
 
-    const data: UserToken | Exception = await response.json();
+    const data: VerifyCodeResponse | Exception = await response.json();
 
     return data;
   } catch (error) {

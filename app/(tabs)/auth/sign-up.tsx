@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { Controller } from 'react-hook-form';
 
-import { countries } from '@/countryData';
 import Logo from '@/components/Logo';
 import Header from '@/core/auth/components/Header';
 import { Input } from '@/components/ui/Input';
@@ -17,18 +16,7 @@ import ErrorMessage from '@/core/components/ErrorMessage';
 import Button from '@/components/ui/Button';
 import TermsAndPrivacy from '@/components/TermsAndPrivacy';
 import { useSignup } from '@/core/auth/hooks/useSignup';
-
-const countryCodes: { label: string; value: string }[] = [];
-
-const transformCountries = (): void => {
-  countries.map((country) => {
-    countryCodes.push({
-      label: `${country.name} (${country.phone_code})`,
-      value: country.phone_code,
-    });
-  });
-};
-transformCountries();
+import { useCountryCodes } from '@/core/hooks/useCountryCodes';
 
 const Signup = () => {
   const {
@@ -40,6 +28,8 @@ const Signup = () => {
     setValue,
     loading,
   } = useSignup();
+
+  const { countryCodes } = useCountryCodes();
 
   return (
     <SafeAreaView>
@@ -166,7 +156,6 @@ const Signup = () => {
                       autoCapitalize="none"
                       secureTextEntry
                       placeholder="Password"
-                      autoComplete="new-password"
                     />
                   )}
                 />
@@ -185,7 +174,6 @@ const Signup = () => {
                       autoCapitalize="none"
                       secureTextEntry
                       placeholder="Confirm Password"
-                      autoComplete="new-password"
                     />
                   )}
                 />

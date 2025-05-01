@@ -14,49 +14,38 @@ import { Input } from '@/components/ui/Input';
 import ErrorMessage from '@/core/components/ErrorMessage';
 
 export const forgotPasswordSchema = z.object({
-  username: z.string().nonempty('You must write your email or phone number.'),
+  email: z.string().email(),
 });
 
 const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { resetPassword } = useAuthStore();
+  const { forgotPassword } = useAuthStore();
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<z.infer<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      username: '',
-    },
   });
 
-  const handleResetPassword = async ({
-    username,
-  }: z.infer<typeof forgotPasswordSchema>) => {
+  const onForgotPassword = async (
+    values: z.infer<typeof forgotPasswordSchema>
+  ) => {
     setIsLoading(true);
-    const response = await resetPassword(username);
+    const response = await forgotPassword(values);
     console.warn({ ForgotPasswordResponse: response });
     setIsLoading(false);
-    if ('email' in response) {
-      router.push({
-        pathname: '/auth/verify',
-        params: { action: 'reset-password' },
-      });
-      return;
-    }
 
-    setError('username', {
-      message: response.message,
-    });
     Toast.show({
-      type: 'error',
-      text1: 'Error',
-      text2: response.message,
+      text1: 'Code sended',
       text1Style: { fontSize: 14 },
+      text2: response.message,
       text2Style: { fontSize: 12 },
+    });
+    router.push({
+      pathname: '/auth/verify',
+      params: { action: 'reset-password' },
     });
   };
 
@@ -79,7 +68,7 @@ const ForgotPassword = () => {
 
         <Controller
           control={control}
-          name="username"
+          name="email"
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
               value={value}
@@ -91,12 +80,12 @@ const ForgotPassword = () => {
             />
           )}
         />
-        <ErrorMessage fieldErrors={errors.username} />
+        <ErrorMessage fieldErrors={errors.email} />
 
         <Button
           disabled={isLoading}
           loading={isLoading}
-          onPress={handleSubmit(handleResetPassword)}
+          onPress={handleSubmit(onForgotPassword)}
         >
           Reset Password
         </Button>

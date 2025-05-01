@@ -24,15 +24,6 @@ export default function AuthLayout() {
       />
 
       <Stack.Screen
-        name="new-password"
-        options={{
-          title: '',
-          headerShown: true,
-          headerBackVisible: false,
-        }}
-      />
-
-      <Stack.Screen
         name="sign-in"
         options={{
           title: '',

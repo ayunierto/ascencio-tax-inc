@@ -1,9 +1,9 @@
 import { Exception } from '@/core/interfaces/exception.interface';
-import { RegisterData, User } from '../interfaces';
+import { SignUpRequest, SignUpResponse } from '../interfaces';
 
-export const signup = async (
-  newUser: RegisterData
-): Promise<User | Exception> => {
+export const signupAction = async (
+  newUser: SignUpRequest
+): Promise<SignUpResponse | Exception> => {
   newUser.email = newUser.email.toLocaleLowerCase().trim();
 
   const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -16,7 +16,7 @@ export const signup = async (
       body: JSON.stringify(newUser),
     });
 
-    const data: User | Exception = await response.json();
+    const data: SignUpResponse | Exception = await response.json();
     return data;
   } catch (error) {
     console.error(error);

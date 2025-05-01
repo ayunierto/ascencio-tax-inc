@@ -1,6 +1,6 @@
 import { User } from './user.interface';
 
-export interface UserToken {
+export interface SignUpResponse {
+  message: string;
   user: User;
-  token: string;
 }

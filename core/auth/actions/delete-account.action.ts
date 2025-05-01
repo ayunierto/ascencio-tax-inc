@@ -1,8 +1,11 @@
 import * as SecureStore from 'expo-secure-store';
-import { User } from '../interfaces';
 import { Exception } from '@/core/interfaces/exception.interface';
+import { DeleteAccountRequest, DeleteAccountResponse } from '../interfaces';
 
-export const deleteAccount = async (): Promise<User | Exception> => {
+export const deleteAccountAction = async ({
+  password,
+}: DeleteAccountRequest): Promise<DeleteAccountResponse | Exception> => {
+  console.warn({ password });
   try {
     const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -17,8 +20,10 @@ export const deleteAccount = async (): Promise<User | Exception> => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ password }),
     });
-    const data: User | Exception = await response.json();
+    const data: DeleteAccountResponse | Exception = await response.json();
+    console.warn({ data });
     return data;
   } catch (error) {
     console.error(error);

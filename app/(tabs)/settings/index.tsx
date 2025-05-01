@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking, TouchableOpacity, View } from 'react-native';
+import { Linking, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { ThemedText } from '@/components/ui/ThemedText';
 import { Card } from '@/components/ui';
@@ -15,158 +15,138 @@ const SettingsScreen = () => {
   const { logout } = useAuthStore();
 
   return (
-    <View style={{ padding: 20, flex: 1 }}>
-      <View style={{ flex: 1, justifyContent: 'space-between' }}>
-        <View style={{ gap: 10 }}>
-          <ThemedText
-            style={{ fontSize: 28, marginBottom: 10, fontWeight: 'bold' }}
-          >
-            Settings
-          </ThemedText>
+    <View style={styles.container}>
+      <View style={styles.firstColumn}>
+        <ThemedText style={styles.title}>Settings</ThemedText>
 
-          <TouchableOpacity onPress={() => router.push('/settings/profile')}>
-            <Card>
-              <CardContent>
-                <View
-                  style={{
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                  }}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons
-                      name="person-outline"
-                      size={24}
-                      color={theme.foreground}
-                    />
-                    <ThemedText style={{ fontSize: 18, marginLeft: 10 }}>
-                      My account
-                    </ThemedText>
-                  </View>
+        <TouchableOpacity onPress={() => router.push('/settings/profile')}>
+          <Card>
+            <CardContent>
+              <View style={styles.cardContent}>
+                <View style={styles.cardContentLeft}>
                   <Ionicons
-                    name="arrow-forward"
+                    name="person-outline"
                     size={24}
                     color={theme.foreground}
                   />
+                  <ThemedText style={styles.cardText}>My account</ThemedText>
                 </View>
-              </CardContent>
-            </Card>
+                <Ionicons
+                  name="arrow-forward"
+                  size={24}
+                  color={theme.foreground}
+                />
+              </View>
+            </CardContent>
+          </Card>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => router.push('/settings/subscriptions')}
+        >
+          <Card>
+            <CardContent>
+              <View style={styles.cardContent}>
+                <View style={styles.cardContentLeft}>
+                  <Ionicons
+                    name="diamond-outline"
+                    size={24}
+                    color={theme.foreground}
+                  />
+                  <ThemedText style={styles.cardText}>Subscriptions</ThemedText>
+                </View>
+                <Ionicons
+                  name="arrow-forward"
+                  size={24}
+                  color={theme.foreground}
+                />
+              </View>
+            </CardContent>
+          </Card>
+        </TouchableOpacity>
+
+        <Card>
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL('https://www.ascenciotax.com/privacy')
+            }
+          >
+            <CardContent>
+              <View style={styles.cardContent}>
+                <View style={styles.cardContentLeft}>
+                  <Ionicons
+                    name="book-outline"
+                    size={24}
+                    color={theme.foreground}
+                  />
+                  <ThemedText style={styles.cardText}>Terms of use</ThemedText>
+                </View>
+                <Feather
+                  color={theme.foreground}
+                  name="external-link"
+                  size={24}
+                />
+              </View>
+            </CardContent>
           </TouchableOpacity>
+
+          <Divider />
 
           <TouchableOpacity
-            onPress={() => router.push('/settings/subscriptions')}
+            onPress={() =>
+              Linking.openURL('https://www.ascenciotax.com/termsofuse')
+            }
           >
-            <Card>
-              <CardContent>
-                <View
-                  style={{
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                  }}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons
-                      name="diamond-outline"
-                      size={24}
-                      color={theme.foreground}
-                    />
-                    <ThemedText style={{ fontSize: 18, marginLeft: 10 }}>
-                      Subscriptions
-                    </ThemedText>
-                  </View>
+            <CardContent>
+              <View style={styles.cardContent}>
+                <View style={styles.cardContentLeft}>
                   <Ionicons
-                    name="arrow-forward"
+                    name="book-outline"
                     size={24}
                     color={theme.foreground}
                   />
+                  <ThemedText style={styles.cardText}>
+                    Privacy policy
+                  </ThemedText>
                 </View>
-              </CardContent>
-            </Card>
+                <Feather
+                  color={theme.foreground}
+                  name="external-link"
+                  size={24}
+                />
+              </View>
+            </CardContent>
           </TouchableOpacity>
-
-          <Card>
-            <TouchableOpacity
-              onPress={() =>
-                Linking.openURL('https://www.ascenciotax.com/privacy')
-              }
-            >
-              <CardContent>
-                <View
-                  style={{
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                  }}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons
-                      name="book-outline"
-                      size={24}
-                      color={theme.foreground}
-                    />
-                    <ThemedText style={{ fontSize: 18, marginLeft: 10 }}>
-                      Terms of use
-                    </ThemedText>
-                  </View>
-                  <Feather
-                    color={theme.foreground}
-                    name="external-link"
-                    size={24}
-                  />
-                </View>
-              </CardContent>
-            </TouchableOpacity>
-
-            <Divider />
-
-            <TouchableOpacity
-              onPress={() =>
-                Linking.openURL('https://www.ascenciotax.com/termsofuse')
-              }
-            >
-              <CardContent>
-                <View
-                  style={{
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                  }}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons
-                      name="book-outline"
-                      size={24}
-                      color={theme.foreground}
-                    />
-                    <ThemedText style={{ fontSize: 18, marginLeft: 10 }}>
-                      Privacy policy
-                    </ThemedText>
-                  </View>
-                  <Feather
-                    color={theme.foreground}
-                    name="external-link"
-                    size={24}
-                  />
-                </View>
-              </CardContent>
-            </TouchableOpacity>
-          </Card>
-        </View>
-
-        <Button
-          iconRight={
-            <Ionicons
-              name="log-out-outline"
-              size={24}
-              color={theme.destructiveForeground}
-            />
-          }
-          variant="destructive"
-          onPress={logout}
-        >
-          <ThemedText>Log out</ThemedText>
-        </Button>
+        </Card>
       </View>
+
+      <Button
+        iconRight={
+          <Ionicons
+            name="log-out-outline"
+            size={24}
+            color={theme.destructiveForeground}
+          />
+        }
+        variant="destructive"
+        onPress={logout}
+      >
+        <ThemedText>Log out</ThemedText>
+      </Button>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { padding: 20, flex: 1, justifyContent: 'space-between' },
+  title: { fontSize: 28, marginBottom: 10, fontWeight: 'bold' },
+  firstColumn: { gap: 10 },
+  cardContent: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  cardContentLeft: { flexDirection: 'row', alignItems: 'center' },
+  cardText: { fontSize: 16, marginLeft: 10 },
+});
 
 export default SettingsScreen;

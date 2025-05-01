@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   View,
@@ -18,15 +18,18 @@ import { Input } from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Divider from '@/components/ui/Divider';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import { ThemedText } from '@/components/ui/ThemedText';
 import ErrorMessage from '@/core/components/ErrorMessage';
 import { theme } from '@/components/ui/theme';
+import { useCountryCodes } from '@/core/hooks/useCountryCodes';
+import Select from '@/components/ui/Select';
+import useIPGeolocation from '@/core/hooks/useIPGeolocation';
 
 export const profileSchema = z
   .object({
     name: z.string().min(3, 'First name must be at least 3 characters'),
     lastName: z.string().min(3, 'First name must be at least 3 characters'),
     email: z.string(),
+    countryCode: z.string().optional(),
     phoneNumber: z.string().optional(),
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
@@ -38,8 +41,23 @@ export const profileSchema = z
 
 const ProfileScreen = () => {
   const [loading, setLoading] = useState(false);
+  const { user, setUser } = useAuthStore();
+  const { countryCodes } = useCountryCodes();
+  const [callingCode, setCallingCode] = useState<string | undefined>();
 
-  const { token, user, setUser } = useAuthStore();
+  const { location } = useIPGeolocation();
+
+  useEffect(() => {
+    if (location) {
+      if ('error' in location) return;
+      setCallingCode(`+${location.location.calling_code}`);
+      setValue('countryCode', `+${location.location.calling_code}`);
+    }
+  }, [location]);
+
+  if (!user) {
+    return <Signin />;
+  }
 
   const {
     control,
@@ -47,19 +65,16 @@ const ProfileScreen = () => {
     formState: { errors },
     setError,
     reset,
+    setValue,
   } = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      email: user?.email,
-      lastName: user?.lastName,
-      name: user?.name,
-      phoneNumber: user?.phoneNumber || '',
+      email: user.email,
+      lastName: user.lastName,
+      name: user.name,
+      phoneNumber: user.phoneNumber || '',
     },
   });
-
-  if (!token) {
-    return <Signin />; // Use replace to avoid stacking profile on top of sign-in
-  }
 
   const handleUpdateProfile = async (
     values: z.infer<typeof profileSchema>
@@ -116,19 +131,19 @@ const ProfileScreen = () => {
           <View
             style={{
               flex: 1,
-              gap: 10,
+              gap: 20,
               padding: 20,
               width: '100%',
               maxWidth: 500,
               marginHorizontal: 'auto',
             }}
           >
-            <ThemedText>Name</ThemedText>
             <Controller
               control={control}
               name="name"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
+                  label="First Name"
                   value={value}
                   onBlur={onBlur}
                   onChangeText={onChange}
@@ -140,12 +155,12 @@ const ProfileScreen = () => {
             />
             <ErrorMessage fieldErrors={errors.name} />
 
-            <ThemedText>Last Name</ThemedText>
             <Controller
               control={control}
               name="lastName"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
+                  label="Last Name"
                   placeholder="Last name"
                   value={value}
                   onBlur={onBlur}
@@ -157,12 +172,12 @@ const ProfileScreen = () => {
             />
             <ErrorMessage fieldErrors={errors.lastName} />
 
-            <ThemedText>Email</ThemedText>
             <Controller
               control={control}
               name="email"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
+                  label="Email"
                   value={value}
                   onBlur={onBlur}
                   onChangeText={onChange}
@@ -176,30 +191,48 @@ const ProfileScreen = () => {
             />
             <ErrorMessage fieldErrors={errors.email} />
 
-            <ThemedText>Phone number</ThemedText>
-            <Controller
-              control={control}
-              name="phoneNumber"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  keyboardType="phone-pad"
-                  placeholder="Phone number"
-                  autoCapitalize="none"
-                  autoComplete="tel"
+            <View style={{ gap: 6 }}>
+              <View style={{ flexDirection: 'row', gap: 10, flex: 1 }}>
+                <Select
+                  // label="Country Code"
+                  options={countryCodes}
+                  selectedOptions={countryCodes.find(
+                    (item) => item.value === callingCode
+                  )}
+                  // onSelect={(item) => setValue('countryCode', item?.value)}
+                  onChange={(value) => setValue('countryCode', value)}
+                  placeholder="+1"
+                  style={{ flex: 3 }}
                 />
-              )}
-            />
-            <ErrorMessage fieldErrors={errors.phoneNumber} />
 
-            <ThemedText>Password</ThemedText>
+                <Controller
+                  control={control}
+                  name="phoneNumber"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <Input
+                      label="Phone Number"
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      keyboardType="phone-pad"
+                      placeholder="Phone Number"
+                      autoCapitalize="none"
+                      autoComplete="tel"
+                      style={{ flex: 2 }}
+                    />
+                  )}
+                />
+              </View>
+              <ErrorMessage fieldErrors={errors.countryCode} />
+              <ErrorMessage fieldErrors={errors.phoneNumber} />
+            </View>
+
             <Controller
               control={control}
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
+                  label="Password"
                   value={value}
                   onBlur={onBlur}
                   onChangeText={onChange}
@@ -212,12 +245,12 @@ const ProfileScreen = () => {
             />
             <ErrorMessage fieldErrors={errors.password} />
 
-            <ThemedText>Confirm Password</ThemedText>
             <Controller
               control={control}
               name="confirmPassword"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
+                  label="Confirm Password"
                   value={value}
                   onBlur={onBlur}
                   onChangeText={onChange}

@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-export interface IPIAPIResponse {
+export interface IPAPIResponse {
   ip: string;
   type: string;
   continent_code: string;
@@ -16,7 +15,7 @@ export interface IPIAPIResponse {
   longitude: number;
   msa: null;
   dma: null;
-  radius: null;
+  radius: string;
   ip_routing_type: string;
   connection_type: string;
   location: Location;
@@ -39,44 +38,39 @@ export interface Language {
   native: string;
 }
 
+export interface BadResponse {
+  success: boolean;
+  error: Error;
+}
+
+export interface Error {
+  code: number;
+  type: string;
+  info: string;
+}
+
 const useIPGeolocation = () => {
-  const [location, setLocation] = useState<IPIAPIResponse>();
-  const [error, setError] = useState<Error>();
-
   const IP_API_KEY = process.env.EXPO_PUBLIC_IP_API_KEY;
+  if (!IP_API_KEY) {
+    throw new Error('IP API key is missing');
+  }
 
-  const getLocale = async () => {
+  const getLocaleAction = async () => {
     const response = await fetch(
       `https://api.ipapi.com/check?access_key=${IP_API_KEY}`
     );
-    const data = await response.json();
+    const data: IPAPIResponse | BadResponse = await response.json();
     return data;
   };
 
   const query = useQuery({
     queryKey: ['location'],
-    queryFn: getLocale,
-    staleTime: 1000 * 60 * 60 * 60, // 30 days to execute the consultation again
+    queryFn: getLocaleAction,
+    staleTime: 1000 * 60 * 60 * 24, // 1 day to execute the consultation again
   });
 
-  useEffect(() => {
-    if (query.isPending) {
-      return;
-    }
-
-    if (query.isError) {
-      setError(query.error);
-      return;
-    }
-
-    if (query.isSuccess) {
-      setLocation(query.data);
-    }
-  }, [query.isPending]);
-
   return {
-    location,
-    error,
+    location: query.data,
     isLoading: query.isLoading,
     isSuccess: query.isSuccess,
   };

@@ -13,7 +13,10 @@ interface ThemedTextProps extends TextProps {
 }
 const ThemedText = ({ children, style, ...props }: ThemedTextProps) => {
   return (
-    <NativeText style={[{ color: theme.foreground }, style]} {...props}>
+    <NativeText
+      style={[{ color: theme.foreground, fontSize: 14 }, style]}
+      {...props}
+    >
       {children}
     </NativeText>
   );

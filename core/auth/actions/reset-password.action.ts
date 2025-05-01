@@ -1,21 +1,25 @@
 import { Exception } from '@/core/interfaces/exception.interface';
-import { User } from '../interfaces';
+import { ResetPasswordResponse } from '../interfaces/reset-password-response.interface';
+import { ResetPasswordRequest } from '../interfaces';
 
-export const resetPassword = async (
-  username: string,
-  verificationPlatform: string = 'email'
-): Promise<User | Exception> => {
+export const resetPasswordAction = async ({
+  code,
+  email,
+  newPassword,
+}: ResetPasswordRequest): Promise<ResetPasswordResponse | Exception> => {
   try {
     const API_URL = process.env.EXPO_PUBLIC_API_URL;
+    if (!API_URL) throw new Error('No API_URL found');
+
     const response = await fetch(`${API_URL}/auth/reset-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, verificationPlatform }),
+      body: JSON.stringify({ code, email, newPassword }),
     });
 
-    const data: User | Exception = await response.json();
+    const data: ResetPasswordResponse | Exception = await response.json();
 
     return data;
   } catch (error) {

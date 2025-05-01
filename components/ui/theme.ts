@@ -42,5 +42,5 @@ export const theme = {
   destructiveForeground: '#f8fafc',
 
   // Border radius for card, input and buttons
-  radius: 16,
+  radius: 12,
 };

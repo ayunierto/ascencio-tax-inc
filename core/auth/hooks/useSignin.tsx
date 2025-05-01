@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 
 import { signinSchema } from '../schemas/signinSchema';
 import { useAuthStore } from '../store/useAuthStore';
+import Toast from 'react-native-toast-message';
 
 export const useSignin = () => {
   type SigninFormData = z.infer<typeof signinSchema>;
@@ -34,17 +35,20 @@ export const useSignin = () => {
 
       if (
         'message' in response &&
-        response.message === 'User is not verified'
+        response.message === 'Please verify your email address.'
       ) {
         setUser({
-          email: variables.username,
+          email: variables.email,
           id: '',
           name: '',
           lastName: '',
           phoneNumber: '',
-          isActive: false,
           roles: [],
           createdAt: '',
+        });
+        Toast.show({
+          text1: 'Please verify your email',
+          text1Style: { fontSize: 14 },
         });
         router.push({ pathname: '/auth/verify', params: { action: 'verify' } });
         return;

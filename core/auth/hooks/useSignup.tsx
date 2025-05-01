@@ -6,6 +6,7 @@ import { signupSchema } from '../schemas/signupSchema';
 import { z } from 'zod';
 import { useAuthStore } from '../store/useAuthStore';
 import { router } from 'expo-router';
+import Toast from 'react-native-toast-message';
 
 export const useSignup = () => {
   const { location } = useIPGeolocation();
@@ -23,7 +24,6 @@ export const useSignup = () => {
   useEffect(() => {
     if (location) {
       if ('error' in location) return;
-      console.warn({ location });
       setCallingCode(`+${location.location.calling_code}`);
       setValue('countryCode', `+${location.location.calling_code}`);
     }
@@ -37,7 +37,6 @@ export const useSignup = () => {
   ): Promise<void> => {
     setLoading(true);
     const response = await signup({
-      verificationPlatform: 'email',
       email: values.email,
       lastName: values.lastName,
       name: values.name,
@@ -48,37 +47,21 @@ export const useSignup = () => {
     console.warn({ SignupResponse: response });
     setLoading(false);
 
-    // Success record
-    if ('id' in response) {
+    if ('user' in response) {
       router.push({ pathname: '/auth/verify', params: { action: 'verify' } });
       return;
     }
 
-    if (response.statusCode === 400) {
-      setError('root', {
-        type: 'manual',
-        message: response.message,
-      });
-    }
+    Toast.show({
+      text1: response.error,
+      text2: response.message,
+      type: 'error',
+    });
 
-    if (response.statusCode === 409) {
-      if (response.message.toLowerCase().includes('email')) {
-        setError('email', {
-          type: 'manual',
-          message:
-            'Your email is already being used by an existing AscencioTax account. You can go the AscencioTax login screen to login using this email.',
-        });
-        return;
-      }
-      if (response.message.includes('phoneNumber')) {
-        setError('phoneNumber', {
-          type: 'manual',
-          message:
-            'Your phone number is already being used by an existing AscencioTax account. You can go the AscencioTax login screen to login using this phone number.',
-        });
-        return;
-      }
-    }
+    setError('root', {
+      type: 'manual',
+      message: response.message,
+    });
   };
 
   return {

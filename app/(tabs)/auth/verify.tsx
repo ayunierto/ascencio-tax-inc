@@ -20,12 +20,16 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import ErrorMessage from '@/core/components/ErrorMessage';
 import { ThemedText } from '@/components/ui/ThemedText';
+import { Exception } from '@/core/interfaces/exception.interface';
+import {
+  ResetPasswordResponse,
+  VerifyCodeResponse,
+} from '@/core/auth/interfaces';
 
 const VerifyCode = () => {
   const [isLoading, setIsLoading] = useState(false);
-
-  const { user, verifyCode } = useAuthStore();
-
+  const [newPassword, setNewPassword] = useState('');
+  const { user, verifyCode, resetPassword } = useAuthStore();
   const { action } = useLocalSearchParams();
 
   if (!action) {
@@ -51,43 +55,46 @@ const VerifyCode = () => {
     resolver: zodResolver(verifyUserSchema),
   });
 
-  const onVerify = async ({
-    verificationCode,
-  }: z.infer<typeof verifyUserSchema>) => {
+  const onVerify = async ({ code }: z.infer<typeof verifyUserSchema>) => {
     if (user) {
-      setIsLoading(true);
-      const response = await verifyCode(user.email, verificationCode);
-      console.warn({ VerifyCodeResponse: response });
-      setIsLoading(false);
+      let response: Exception | VerifyCodeResponse | ResetPasswordResponse;
+      if (action === 'verify') {
+        setIsLoading(true);
+        response = await verifyCode({
+          code,
+          email: user.email,
+        });
+        setIsLoading(false);
+      } else {
+        if (newPassword.length < 6) return;
+        setIsLoading(true);
 
-      if ('token' in response) {
-        if (action === 'verify') {
-          router.replace('/auth/sign-in');
-          Toast.show({
-            type: 'success',
-            text1: 'Account verified successfully',
-            text2: `Please sign in`,
-            text1Style: { fontSize: 14 },
-            text2Style: { fontSize: 12 },
-          });
-          return;
-        }
-
-        if (action === 'reset-password') {
-          router.replace('/auth/new-password');
-          return;
-        }
-        return;
+        response = await resetPassword({
+          code,
+          email: user.email,
+          newPassword,
+        });
+        setIsLoading(false);
       }
+      console.warn({ ResetPasswordResponse: response });
 
-      if (response.statusCode === 401) {
-        setValue('verificationCode', '');
-        setError('verificationCode', {
-          type: 'manual',
-          message: `${response.message} . Please check your message or talk to an administrator`,
+      if ('user' in response) {
+        router.replace('/auth/sign-in');
+        Toast.show({
+          type: 'success',
+          text1: 'Please sign in',
+          text2: response.message,
+          text1Style: { fontSize: 14 },
+          text2Style: { fontSize: 12 },
         });
         return;
       }
+
+      setValue('code', '');
+      setError('code', {
+        type: 'manual',
+        message: response.message,
+      });
     }
     return;
   };
@@ -135,10 +142,10 @@ const VerifyCode = () => {
                 }
               />
 
-              <ThemedText>Code:</ThemedText>
+              <ThemedText>Code</ThemedText>
               <Controller
                 control={control}
-                name="verificationCode"
+                name="code"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
                     value={value}
@@ -149,14 +156,34 @@ const VerifyCode = () => {
                   />
                 )}
               />
-              <ErrorMessage fieldErrors={errors.verificationCode} />
+              <ErrorMessage fieldErrors={errors.code} />
+
+              {action === 'reset-password' && (
+                <>
+                  <ThemedText>New Password</ThemedText>
+                  <Input
+                    value={newPassword}
+                    onChangeText={(newPassword) => setNewPassword(newPassword)}
+                    placeholder="New Password"
+                    keyboardType="default"
+                    autoCapitalize="none"
+                  />
+                  <ErrorMessage
+                    message={
+                      newPassword.length < 6
+                        ? 'Password must be at least 6 characters'
+                        : ''
+                    }
+                  />
+                </>
+              )}
 
               <Button
                 disabled={isLoading}
                 loading={isLoading}
                 onPress={handleSubmit(onVerify)}
               >
-                Verify
+                {action === 'verify' ? 'Verify' : 'Change Password'}
               </Button>
               <Button
                 disabled={!canResend}

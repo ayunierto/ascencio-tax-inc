@@ -1,11 +1,14 @@
 import { Exception } from '@/core/interfaces/exception.interface';
-import { UserToken, Credentials } from '../interfaces';
+import { SigninResponse, SigninRequest } from '../interfaces';
 
-export const signin = async (
-  credentials: Credentials
-): Promise<UserToken | Exception> => {
+export const signinAction = async (
+  credentials: SigninRequest
+): Promise<SigninResponse | Exception> => {
   try {
     const API_URL = process.env.EXPO_PUBLIC_API_URL;
+    if (!API_URL) {
+      throw new Error('API_URL mising');
+    }
 
     const response = await fetch(`${API_URL}/auth/signin`, {
       method: 'POST',
@@ -14,7 +17,7 @@ export const signin = async (
       },
       body: JSON.stringify(credentials),
     });
-    const data: UserToken | Exception = await response.json();
+    const data: SigninResponse | Exception = await response.json();
     return data;
   } catch (error) {
     console.error(error);

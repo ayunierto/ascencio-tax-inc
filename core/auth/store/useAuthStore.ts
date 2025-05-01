@@ -1,17 +1,31 @@
 import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
 
-import { UserToken, User, Credentials, RegisterData } from '../interfaces';
 import {
-  signin,
-  changePassword,
+  User,
+  SignUpRequest,
+  SignUpResponse,
+  VerifyCodeResponse,
+  VerifyCodeRequest,
+  SigninRequest,
+  SigninResponse,
+  ForgotPasswordResponse,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
+  DeleteAccountResponse,
+} from '../interfaces';
+import {
   checkStatus,
-  deleteAccount,
-  resetPassword,
-  signup,
-  verifyCode,
+  deleteAccountAction,
+  forgotPasswordAction,
+  resetPasswordAction,
+  signinAction,
+  signupAction,
+  verifyCodeAction,
 } from '../actions';
 import { Exception } from '@/core/interfaces/exception.interface';
+import { DeleteAccountRequest } from '../interfaces/delete-account-request.interface';
 
 export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking';
 
@@ -20,20 +34,25 @@ export interface AuthState {
   token?: string;
   user?: User;
 
-  signin: (credentials: Credentials) => Promise<UserToken | Exception>;
-  signup: (values: RegisterData) => Promise<User | Exception>;
-  deleteAccount: () => Promise<User | Exception>;
-  checkStatus: () => Promise<boolean>;
-  logout: () => Promise<void>;
+  signup: (values: SignUpRequest) => Promise<SignUpResponse | Exception>;
   verifyCode: (
-    username: string,
-    verificationCode: string
-  ) => Promise<UserToken | Exception>;
+    data: VerifyCodeRequest
+  ) => Promise<VerifyCodeResponse | Exception>;
+  signin: (credentials: SigninRequest) => Promise<SigninResponse | Exception>;
+  checkStatus: () => Promise<boolean>;
+  deleteAccount: (
+    data: DeleteAccountRequest
+  ) => Promise<DeleteAccountResponse | Exception>;
+  logout: () => Promise<void>;
   setAuthenticated: (token: string, user: User) => void;
   setUnauthenticated: () => void;
   setUser: (user: User) => void;
-  resetPassword: (username: string) => Promise<User | Exception>;
-  changePassword: (password: string) => Promise<UserToken | Exception>;
+  forgotPassword: (
+    data: ForgotPasswordRequest
+  ) => Promise<ForgotPasswordResponse>;
+  resetPassword: (
+    data: ResetPasswordRequest
+  ) => Promise<ResetPasswordResponse | Exception>;
 }
 
 export const useAuthStore = create<AuthState>()((set, get) => ({
@@ -41,8 +60,21 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   token: undefined,
   user: undefined,
 
-  signin: async (credentials: Credentials) => {
-    const response = await signin(credentials);
+  signup: async (data: SignUpRequest) => {
+    const response = await signupAction(data);
+    if ('user' in response) {
+      set({ user: response.user });
+    }
+    return response;
+  },
+
+  verifyCode: async (data: VerifyCodeRequest) => {
+    const response = await verifyCodeAction(data);
+    return response;
+  },
+
+  signin: async (credentials: SigninRequest) => {
+    const response = await signinAction(credentials);
 
     if ('token' in response) {
       await SecureStore.setItemAsync('token', response.token);
@@ -54,30 +86,15 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     return response;
   },
 
-  signup: async (data: RegisterData) => {
-    const response = await signup(data);
-    if ('email' in response) {
-      set({
-        status: 'unauthenticated',
-        token: undefined,
-        user: response,
-      });
+  deleteAccount: async (data: DeleteAccountRequest) => {
+    const response = await deleteAccountAction(data);
+
+    if ('error' in response) {
       return response;
     }
 
-    get().setUnauthenticated();
-    return response;
-  },
-
-  deleteAccount: async () => {
-    const response = await deleteAccount();
     await SecureStore.deleteItemAsync('token');
-
-    if ('email' in response) {
-      get().setUnauthenticated();
-      return response;
-    }
-
+    get().setUnauthenticated();
     return response;
   },
 
@@ -105,26 +122,23 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     get().setUnauthenticated();
   },
 
-  verifyCode: async (username: string, verificationCode: string) => {
-    const response = await verifyCode(username, verificationCode);
-    if ('token' in response) {
-      await SecureStore.setItemAsync('token', response.token);
-      return response;
-    }
+  forgotPassword: async (data: ForgotPasswordRequest) => {
+    const response = await forgotPasswordAction(data);
+    set({
+      user: {
+        email: data.email,
+        createdAt: '',
+        id: '',
+        lastName: '',
+        name: '',
+        roles: [],
+      },
+    });
     return response;
   },
 
-  resetPassword: async (username: string) => {
-    const response = await resetPassword(username);
-    if ('id' in response) {
-      set({ user: response });
-      return response;
-    }
-    return response;
-  },
-
-  changePassword: async (password: string) => {
-    const response = await changePassword(password);
+  resetPassword: async (data: ResetPasswordRequest) => {
+    const response = await resetPasswordAction(data);
     return response;
   },
 
@@ -147,8 +161,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   setUser: (user: User) => {
-    set({
-      user: user,
-    });
+    set({ user: user });
   },
 }));

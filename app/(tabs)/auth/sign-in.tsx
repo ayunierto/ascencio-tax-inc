@@ -49,15 +49,16 @@ const SigninScreen = () => {
               link="/auth/sign-up"
               linkText="Sign Up"
             />
-            <View style={{ gap: 10 }}>
+            <View style={{ gap: 14 }}>
               <ErrorMessage message={errors.root?.message} />
 
               <View style={{ gap: 6 }}>
                 <Controller
                   control={control}
-                  name="username"
+                  name="email"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <Input
+                      label="Email"
                       value={value}
                       onBlur={onBlur}
                       onChangeText={onChange}
@@ -68,7 +69,7 @@ const SigninScreen = () => {
                     />
                   )}
                 />
-                <ErrorMessage fieldErrors={errors.username} />
+                <ErrorMessage fieldErrors={errors.email} />
               </View>
 
               <View style={{ gap: 6 }}>
@@ -77,6 +78,7 @@ const SigninScreen = () => {
                   name="password"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <Input
+                      label="Password"
                       value={value}
                       onBlur={onBlur}
                       onChangeText={onChange}
