@@ -26,6 +26,7 @@ import {
 } from '../actions';
 import { Exception } from '@/core/interfaces/exception.interface';
 import { DeleteAccountRequest } from '../interfaces/delete-account-request.interface';
+import { Alert } from 'react-native';
 
 export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking';
 
@@ -39,7 +40,7 @@ export interface AuthState {
     data: VerifyCodeRequest
   ) => Promise<VerifyCodeResponse | Exception>;
   signin: (credentials: SigninRequest) => Promise<SigninResponse | Exception>;
-  checkStatus: () => Promise<boolean>;
+  checkStatus: () => Promise<SigninResponse | Exception>;
   deleteAccount: (
     data: DeleteAccountRequest
   ) => Promise<DeleteAccountResponse | Exception>;
@@ -100,21 +101,24 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   checkStatus: async () => {
     const response = await checkStatus();
-    console.warn({ CheckStatusResponse: response });
 
     if ('token' in response) {
       await SecureStore.setItemAsync('token', response.token);
       get().setAuthenticated(response.token, response.user);
-      return true;
+      return response;
     }
 
-    if (!response) {
+    if (response.error === 'Network Error') {
+      console.error('Network error occurred while checking status.');
+      Alert.alert(
+        'Network Error',
+        'Please check your internet connection and try again. Close and restart the app.'
+      );
+      set({ status: 'checking' });
+    } else {
       get().setUnauthenticated();
-      return false;
     }
-
-    get().setUnauthenticated();
-    return false;
+    return response;
   },
 
   logout: async () => {
@@ -157,7 +161,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       token: undefined,
       user: undefined,
     });
-    console.warn('Unauthenticated');
   },
 
   setUser: (user: User) => {

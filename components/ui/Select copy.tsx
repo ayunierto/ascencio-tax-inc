@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  StyleProp,
-  ViewStyle,
-  ScrollView,
-} from 'react-native';
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { View, Modal, StyleProp, ViewStyle, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Input } from './Input';
 import Button from './Button';
 import { theme } from './theme';
@@ -17,10 +9,10 @@ import { ThemedText } from './ThemedText';
 import { BlurView } from 'expo-blur';
 
 interface SelectProps {
+  label?: string;
   enableFilter?: boolean;
   options: Option[];
   placeholder?: string;
-  readOnly?: boolean;
   selectedOptions?: Option;
   style?: StyleProp<ViewStyle>;
 
@@ -33,13 +25,13 @@ export interface Option {
   value: string;
 }
 
-const Select = ({
+export const Select = ({
+  label = 'Select your item',
   enableFilter = true,
   onChange,
   onSelect,
   options: initialOptions,
   placeholder,
-  readOnly = false,
   selectedOptions,
   style,
 }: SelectProps) => {
@@ -80,13 +72,23 @@ const Select = ({
 
   return (
     <View style={style}>
-      <Button
+      <Input
+        label={label}
+        placeholder={placeholder}
+        onPress={() => setModalVisible(true)}
+      />
+
+      <SelectContent>
+        <SelectItem label="item 1" />
+        <SelectItem label="item 2" />
+        <SelectItem label="item 3" />
+      </SelectContent>
+
+      {/* <Button
         disabled={readOnly}
         iconRight={
           <AntDesign name={modalVisible ? 'up' : 'down'} color={'white'} />
         }
-        variant="outlined"
-        textStyle={{ fontWeight: 'normal', fontSize: 14 }}
         onPress={() => setModalVisible(true)}
         containerTextAndIconsStyle={{ justifyContent: 'space-between' }}
       >
@@ -99,7 +101,7 @@ const Select = ({
             'Select'
           )}
         </Text>
-      </Button>
+      </Button> */}
 
       <Modal
         animationType="fade"
@@ -115,23 +117,18 @@ const Select = ({
             backgroundColor: '#0009',
           }}
         >
-          <BlurView
-            intensity={50}
-            experimentalBlurMethod="dimezisBlurView"
+          <View
             style={{
-              flex: 1,
-              // backgroundColor: theme.background,
+              backgroundColor: theme.background,
+              borderRadius: theme.radius,
               padding: 20,
               width: '90%',
               maxWidth: 360,
               maxHeight: '80%',
-              overflow: 'hidden',
-              borderRadius: theme.radius,
             }}
           >
             {enableFilter && (
               <Input
-                leadingIcon="search-outline"
                 placeholder="Search"
                 onChange={(e) => handleSearchChange(e.nativeEvent.text)}
                 value={searchText}
@@ -193,17 +190,79 @@ const Select = ({
             >
               Close
             </Button>
-          </BlurView>
+          </View>
         </View>
       </Modal>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  selectButtonText: {
-    color: 'white',
-  },
-});
+export const SelectContent = React.forwardRef<
+  React.ElementRef<typeof BlurView>,
+  React.ComponentPropsWithoutRef<typeof BlurView>
+>(({ children, style, ...props }, ref) => (
+  <BlurView
+    intensity={30}
+    experimentalBlurMethod="dimezisBlurView"
+    tint="dark"
+    style={[
+      {
+        flex: 1,
+        overflow: 'hidden',
+        position: 'absolute',
+        zIndex: 2,
+        marginTop: 50,
+        width: '100%',
+        borderRadius: theme.radius,
+        borderColor: theme.border,
+        borderWidth: 1,
+      },
+      style,
+    ]}
+    {...props}
+    ref={ref}
+  >
+    {children}
+  </BlurView>
+));
+SelectContent.displayName = 'SelectContent';
+
+interface SelectItemProps {
+  label: string;
+  active?: boolean;
+  onPress?: () => void;
+}
+
+export const SelectItem = React.forwardRef<
+  React.ElementRef<typeof Button>,
+  React.ComponentPropsWithoutRef<typeof Button> & SelectItemProps
+>(({ label, active, onPress, ...props }, ref) => (
+  <Button
+    ref={ref}
+    {...props}
+    iconLeft={
+      <Ionicons
+        name={active ? 'checkbox-outline' : 'square-outline'}
+        size={20}
+        color={active ? theme.primary : theme.muted}
+      />
+    }
+    variant="ghost"
+    onPress={onPress}
+    containerTextAndIconsStyle={{
+      justifyContent: 'flex-start',
+    }}
+  >
+    <ThemedText
+      style={{
+        color: active ? theme.primary : theme.foreground,
+        fontWeight: active ? 'bold' : 'normal',
+      }}
+    >
+      {label}
+    </ThemedText>
+  </Button>
+));
+SelectItem.displayName = 'SelectItem';
 
 export default Select;

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'; // Import useEffect and useRef
+import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleProp,
   StyleSheet,
@@ -10,16 +10,19 @@ import {
   Animated,
   ViewStyle,
   NativeSyntheticEvent,
-  TextInputFocusEventData, // Import Animated
+  TextInputFocusEventData,
 } from 'react-native';
 // Assuming theme is defined and has properties like primary, background, input, mutedForeground, primaryForeground, radius
 import { theme } from './theme';
+import { Ionicons } from '@expo/vector-icons';
 // Assuming ThemedText is a component that applies theme styles to Text,
 // but for animation, we'll use Animated.Text directly and apply styles.
 // If ThemedText is critical, you might need to make it Animated compatible.
 // import { ThemedText } from './ThemedText'; // Not used directly for the animated part
 
 interface InputProps extends TextInputProps {
+  leadingIcon?: keyof typeof Ionicons.glyphMap;
+  trailingIcon?: keyof typeof Ionicons.glyphMap;
   style?: StyleProp<TextStyle>;
   placeholderTextColor?: string;
   focusedBorderColor?: string;
@@ -28,7 +31,7 @@ interface InputProps extends TextInputProps {
   value?: string;
   onChangeText?: (text: string) => void;
   readOnly?: boolean; // Added readOnly prop type
-  containerStyle?: StyleProp<ViewStyle>; // Add container style prop
+  inputStyle?: StyleProp<ViewStyle>; // Add container style prop
   labelStyle?: StyleProp<TextStyle>; // Add label style prop for base styles
   errorTextStyle?: StyleProp<TextStyle>; // Add error text style prop
   error?: boolean; // Add error prop to influence label/border color
@@ -37,6 +40,8 @@ interface InputProps extends TextInputProps {
 }
 
 export const Input = ({
+  leadingIcon,
+  trailingIcon,
   label,
   placeholder, // Renamed from placeholder to use for native placeholder when label is down
   value = '',
@@ -45,7 +50,7 @@ export const Input = ({
   focusedBorderColor = theme.primary, // Default focused border color
   style,
   readOnly,
-  containerStyle, // Use container style
+  inputStyle, // Use container style
   labelStyle, // Use label style
   errorTextStyle, // Use error text style
   error, // Use error prop
@@ -56,10 +61,11 @@ export const Input = ({
   ...props // Capture all other TextInputProps
 }: InputProps) => {
   const [isFocused, setIsFocused] = useState(false);
-  // No need for inputValue state, use 'value' prop directly as it's a controlled component
 
   // Animated value for the label position/size/color transition (0 = placeholder position, 1 = floating position)
   const animatedIsFloating = useRef(new Animated.Value(0)).current;
+
+  const textInputRef = useRef<TextInput>(null);
 
   // --- Animation Logic ---
   useEffect(() => {
@@ -68,7 +74,7 @@ export const Input = ({
 
     Animated.timing(animatedIsFloating, {
       toValue: shouldFloat ? 1 : 0, // Animate to 1 (floating) or 0 (placeholder)
-      duration: 200, // Animation duration in ms
+      duration: 300, // Animation duration in ms
       useNativeDriver: false, // Layout animations often require useNativeDriver: false
     }).start();
   }, [isFocused, value, animatedIsFloating]); // Re-run effect when focus or value changes
@@ -76,12 +82,12 @@ export const Input = ({
   // --- Interpolated Styles for the Animated Label ---
   const animatedTop = animatedIsFloating.interpolate({
     inputRange: [0, 1],
-    outputRange: [14, -8], // Interpolate from default top (placeholder) to floating top
+    outputRange: [14, -9], // Interpolate from default top (placeholder) to floating top
   });
 
   const animatedLeft = animatedIsFloating.interpolate({
     inputRange: [0, 1],
-    outputRange: [20, 16], // Interpolate from default left (paddingHorizontal) to floating left
+    outputRange: [0, leadingIcon ? -30 : 4], // Interpolate from default left (paddingHorizontal) to floating left
   });
 
   const animatedFontSize = animatedIsFloating.interpolate({
@@ -134,59 +140,114 @@ export const Input = ({
   };
 
   return (
-    <View style={[styles.container, containerStyle]}>
-      {/* Animated Label */}
-      {label && (
-        <Animated.Text
-          style={[
-            styles.labelBase, // Apply base label styles (position absolute, etc.)
-            labelStyle, // Apply user provided label styles
-            {
-              top: animatedTop, // Apply animated top position
-              left: animatedLeft, // Apply animated left position
-              fontSize: animatedFontSize, // Apply animated font size
-              paddingHorizontal: animatedPaddingHorizontal, // Apply animated horizontal padding
-              color: error ? theme.destructive : animatedLabelColor, // Apply error color if error, otherwise animated color
-              backgroundColor: theme.background, // Background to cover the border
-              zIndex: 2, // Ensure label is above the border
-            },
-          ]}
-        >
-          {label}
-        </Animated.Text>
-      )}
-
-      <TextInput
+    <View
+      style={[
+        styles.container,
+        style,
+        {
+          width: '100%',
+        },
+      ]}
+    >
+      <View
         style={[
-          styles.inputBase, // Apply base input styles (height, padding, etc.)
-          style, // Apply user provided input styles
           {
-            // Apply conditional border styles
             borderColor: borderColor,
-            borderWidth: borderWidth, // Use borderWidth for all sides for simplicity or adjust as needed
-            // If you want borderBottom only:
-            // borderBottomColor: borderColor,
-            // borderBottomWidth: borderWidth,
-            // borderLeftWidth: 1, borderRightWidth: 1, borderTopWidth: 1, borderColor: theme.input // Example for outlined look
-            borderRadius: theme.radius, // Keep border radius
-            paddingHorizontal: 20, // Keep horizontal padding inside border
-            height: 48, // Keep height
+            borderWidth: borderWidth,
+            borderRadius: theme.radius,
+            height: 48,
+            width: '100%',
+            paddingHorizontal: 12,
           },
-          // Apply color based on readOnly state
-          { color: readOnly ? theme.mutedForeground : theme.primaryForeground },
         ]}
-        // Use native placeholder only when label is NOT floating
-        placeholder={isFocused && value.length === 0 ? placeholder : ''}
-        placeholderTextColor={placeholderTextColor}
-        readOnly={readOnly}
-        value={value} // Use value prop directly
-        onChangeText={onChangeText} // Use handler for prop update
-        onFocus={_handleFocus} // Use custom focus handler
-        onBlur={_handleBlur} // Use custom blur handler
-        underlineColorAndroid="transparent" // Hide default Android underline
-        {...props} // Spread other TextInputProps
-      />
+      >
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
+          {leadingIcon && (
+            <Ionicons
+              name={leadingIcon}
+              size={24}
+              color={theme.primaryForeground}
+            />
+          )}
 
+          <View style={{ flex: 1 }}>
+            {label && (
+              <Animated.Text
+                style={[
+                  { position: 'absolute' },
+                  labelStyle,
+                  {
+                    top: animatedTop,
+                    left: animatedLeft,
+                    fontSize: animatedFontSize,
+                    paddingHorizontal: animatedPaddingHorizontal,
+                    color: error ? theme.destructive : animatedLabelColor,
+                    backgroundColor: theme.background,
+                    zIndex: 2,
+                  },
+                ]}
+                onPress={() => textInputRef.current?.focus()}
+              >
+                {label}
+              </Animated.Text>
+            )}
+
+            <TextInput
+              ref={textInputRef}
+              style={[
+                styles.inputBase, // Apply base input styles (height, padding, etc.)
+                {
+                  // flex: 1,
+                  // width: '100%',
+                  height: 48,
+                  // If you want borderBottom only:
+                  // borderBottomColor: borderColor,
+                  // borderBottomWidth: borderWidth,
+                  // borderLeftWidth: 1, borderRightWidth: 1, borderTopWidth: 1, borderColor: theme.input // Example for outlined look
+                },
+                inputStyle, // Apply user provided input styles
+                // Apply color based on readOnly state
+                {
+                  color: readOnly
+                    ? theme.mutedForeground
+                    : theme.primaryForeground,
+                },
+              ]}
+              // Use native placeholder only when label is NOT floating
+              placeholder={
+                !label
+                  ? placeholder
+                  : isFocused && value.length === 0
+                  ? placeholder
+                  : ''
+              }
+              placeholderTextColor={placeholderTextColor}
+              readOnly={readOnly}
+              value={value} // Use value prop directly
+              onChangeText={onChangeText} // Use handler for prop update
+              onFocus={_handleFocus} // Use custom focus handler
+              onBlur={_handleBlur} // Use custom blur handler
+              underlineColorAndroid="transparent" // Hide default Android underline
+              {...props} // Spread other TextInputProps
+            />
+          </View>
+
+          {trailingIcon && (
+            <Ionicons
+              name={trailingIcon}
+              size={24}
+              color={theme.primaryForeground}
+            />
+          )}
+        </View>
+      </View>
       {/* Helper or Error Text */}
       {(helperText || errorMessage) && (
         <Text

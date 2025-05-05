@@ -54,7 +54,6 @@ const TypingSplash: React.FC<TypingSplashProps> = ({
       } else {
         // Typing is finished
         setIsTypingComplete(true);
-        console.log('Typing effect finished in component.');
         // Call the completion callback after a short delay if provided
         if (onAnimationComplete) {
           // Add a slight pause after typing is complete before calling the callback

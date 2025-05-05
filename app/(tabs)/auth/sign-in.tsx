@@ -52,24 +52,26 @@ const SigninScreen = () => {
             <View style={{ gap: 14 }}>
               <ErrorMessage message={errors.root?.message} />
 
-              <View style={{ gap: 6 }}>
+              <View style={{ gap: 10 }}>
                 <Controller
                   control={control}
                   name="email"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <Input
+                      leadingIcon="at-outline"
                       label="Email"
                       value={value}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       keyboardType="email-address"
-                      placeholder="Email or phone number"
+                      placeholder="user@example.com"
                       autoCapitalize="none"
                       autoComplete="email"
+                      error={!!errors.email}
+                      errorMessage={errors.email?.message}
                     />
                   )}
                 />
-                <ErrorMessage fieldErrors={errors.email} />
               </View>
 
               <View style={{ gap: 6 }}>
@@ -78,18 +80,21 @@ const SigninScreen = () => {
                   name="password"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <Input
+                      leadingIcon="lock-closed-outline"
+                      // trailingIcon="eye-outline"
                       label="Password"
                       value={value}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       secureTextEntry={true}
-                      placeholder="Enter password"
+                      placeholder="Password"
                       autoComplete="password"
                       autoCapitalize="none"
+                      error={!!errors.password}
+                      errorMessage={errors.password?.message}
                     />
                   )}
                 />
-                <ErrorMessage fieldErrors={errors.password} />
               </View>
             </View>
             <ThemedText
@@ -105,7 +110,6 @@ const SigninScreen = () => {
               loading={signinMutation.isPending}
               disabled={signinMutation.isPending}
               onPress={handleSubmit(onSigninSubmit)}
-              focusable
             >
               Log In
             </Button>

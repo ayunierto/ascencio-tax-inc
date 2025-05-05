@@ -90,7 +90,6 @@ const ProfileScreen = () => {
 
     if ('id' in response) {
       setUser(response);
-      console.log({ response });
       reset({
         password: '',
         confirmPassword: '',

@@ -17,7 +17,6 @@ const MyProfileLayout = () => {
   }
 
   if (status === 'unauthenticated') {
-    // return <Signin />;
     return <Redirect href={'/auth/sign-in'} />;
   }
 

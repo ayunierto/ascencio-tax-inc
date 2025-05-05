@@ -6,7 +6,6 @@ export default function AuthLayout() {
   return (
     <Stack
       screenOptions={{
-        animation: 'fade',
         headerStyle: {
           backgroundColor: theme.background,
         },

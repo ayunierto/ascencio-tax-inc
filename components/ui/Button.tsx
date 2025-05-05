@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Pressable,
-  type PressableProps,
   StyleProp,
   Text,
   TextStyle,
@@ -12,7 +11,7 @@ import {
 } from 'react-native';
 import { theme } from './theme';
 
-interface ButtonProps extends PressableProps {
+interface ButtonProps {
   children?: React.ReactNode;
   loading?: boolean;
   disabled?: boolean;
@@ -27,116 +26,127 @@ interface ButtonProps extends PressableProps {
   size?: 'small' | 'medium' | 'large';
 }
 
-export const Button = ({
-  children,
-  disabled,
-  iconLeft,
-  iconRight,
-  loading,
-  onPress,
-  style,
-  textStyle,
-  containerTextAndIconsStyle,
-  variant = 'primary',
-  size = 'medium',
-  ...props
-}: ButtonProps) => {
-  const [pressed, setPressed] = useState(false);
+export const Button = React.forwardRef<
+  React.ElementRef<typeof Pressable>,
+  ButtonProps
+>(
+  (
+    {
+      children,
+      disabled,
+      iconLeft,
+      iconRight,
+      loading,
+      onPress,
+      style,
+      textStyle,
+      containerTextAndIconsStyle,
+      variant = 'primary',
+      size = 'medium',
+      ...props
+    },
+    ref
+  ) => {
+    const [pressed, setPressed] = useState(false);
 
-  const variantStyles = {
-    primary: buttonStyles.primary,
-    secondary: buttonStyles.secondary,
-    destructive: buttonStyles.destructive,
-    outlined: buttonStyles.outlined,
-    ghost: buttonStyles.ghost,
-  };
+    const variantStyles = {
+      primary: buttonStyles.primary,
+      secondary: buttonStyles.secondary,
+      destructive: buttonStyles.destructive,
+      outlined: buttonStyles.outlined,
+      ghost: buttonStyles.ghost,
+    };
 
-  const sizeStyles = {
-    small: buttonStyles.small,
-    medium: buttonStyles.medium,
-    large: buttonStyles.large,
-  };
+    const sizeStyles = {
+      small: buttonStyles.small,
+      medium: buttonStyles.medium,
+      large: buttonStyles.large,
+    };
 
-  const variantTextStyles = {
-    primary: buttonStyles.textPrimary,
-    secondary: buttonStyles.textSecondary,
-    destructive: buttonStyles.textDestructive,
-    outlined: buttonStyles.textOutlined,
-    ghost: buttonStyles.textGhost,
-  };
+    const variantTextStyles = {
+      primary: buttonStyles.textPrimary,
+      secondary: buttonStyles.textSecondary,
+      destructive: buttonStyles.textDestructive,
+      outlined: buttonStyles.textOutlined,
+      ghost: buttonStyles.textGhost,
+    };
 
-  return (
-    <Pressable
-      onPress={disabled || loading ? () => {} : onPress}
-      style={[
-        buttonStyles.button,
-        variantStyles[variant],
-        sizeStyles[size],
-        disabled && buttonStyles.disabled,
-        loading && buttonStyles.disabled,
-        pressed && buttonStyles.disabled,
-        style,
-      ]}
-      onPressIn={() => {
-        setPressed(true);
-      }}
-      onPressOut={() => {
-        setPressed(false);
-      }}
-      {...props}
-    >
-      {loading ? (
-        <View style={buttonStyles.loadingContainer}>
-          <ActivityIndicator
-            size="small"
-            color={
-              variant === 'outlined'
-                ? theme.foreground
-                : theme.primaryForeground
-            }
-          />
-          <Text
+    return (
+      <Pressable
+        ref={ref}
+        onPress={disabled || loading ? () => {} : onPress}
+        style={[
+          buttonStyles.button,
+          variantStyles[variant],
+          sizeStyles[size],
+          disabled && buttonStyles.disabled,
+          loading && buttonStyles.disabled,
+          pressed && buttonStyles.disabled,
+          style,
+        ]}
+        onPressIn={() => {
+          setPressed(true);
+        }}
+        onPressOut={() => {
+          setPressed(false);
+        }}
+        {...props}
+      >
+        {loading ? (
+          <View style={buttonStyles.loadingContainer}>
+            <ActivityIndicator
+              size="small"
+              color={
+                variant === 'outlined'
+                  ? theme.foreground
+                  : theme.primaryForeground
+              }
+            />
+            <Text
+              style={[
+                buttonStyles.buttonText,
+                variantTextStyles[variant],
+                textStyle,
+              ]}
+            >
+              Please wait ...
+            </Text>
+          </View>
+        ) : (
+          <View
             style={[
-              buttonStyles.buttonText,
-              variantTextStyles[variant],
-              textStyle,
+              {
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+                width: '100%',
+                justifyContent: 'center',
+              },
+              containerTextAndIconsStyle,
             ]}
           >
-            Please wait ...
-          </Text>
-        </View>
-      ) : (
-        <View
-          style={[
-            {
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 10,
-              width: '100%',
-              justifyContent: 'center',
-            },
-            containerTextAndIconsStyle,
-          ]}
-        >
-          {iconLeft && iconLeft}
-          <Text
-            style={[
-              buttonStyles.buttonText,
-              variantTextStyles[variant],
-              disabled && buttonStyles.disabledText,
+            {iconLeft && iconLeft}
+            <Text
+              style={[
+                buttonStyles.buttonText,
+                variantTextStyles[variant],
+                disabled && buttonStyles.disabledText,
 
-              textStyle,
-            ]}
-          >
-            {children}
-          </Text>
-          {iconRight && iconRight}
-        </View>
-      )}
-    </Pressable>
-  );
-};
+                textStyle,
+              ]}
+            >
+              {children}
+            </Text>
+            {iconRight && iconRight}
+          </View>
+        )}
+      </Pressable>
+    );
+  }
+);
+
+Button.displayName = 'Button';
 
 export const buttonStyles = StyleSheet.create({
   button: {

@@ -11,7 +11,6 @@ import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import { z } from 'zod';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import ErrorMessage from '@/core/components/ErrorMessage';
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email(),
@@ -34,7 +33,6 @@ const ForgotPassword = () => {
   ) => {
     setIsLoading(true);
     const response = await forgotPassword(values);
-    console.warn({ ForgotPasswordResponse: response });
     setIsLoading(false);
 
     Toast.show({
@@ -71,16 +69,18 @@ const ForgotPassword = () => {
           name="email"
           render={({ field: { onChange, onBlur, value } }) => (
             <Input
+              label="Email"
               value={value}
               onBlur={onBlur}
               onChangeText={onChange}
-              placeholder="Email or phone number"
+              placeholder="Email"
               autoCapitalize="none"
               keyboardType="email-address"
+              errorMessage={errors.email?.message}
+              error={!!errors.email}
             />
           )}
         />
-        <ErrorMessage fieldErrors={errors.email} />
 
         <Button
           disabled={isLoading}

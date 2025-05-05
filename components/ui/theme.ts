@@ -12,8 +12,8 @@ export const theme = {
   cardForeground: '#333333',
 
   // Background color for popovers such as <DropdownMenu />, <HoverCard />, <Popover />
-  popover: '#ffffff',
-  popoverForeground: '#020817',
+  popover: '#002e5d',
+  popoverForeground: '#fafafa',
 
   // Border color
   border: '#3b82f655',
@@ -34,8 +34,8 @@ export const theme = {
   secondaryForeground: '#0f172a',
 
   // Used for accents such as hover effects on <DropdownMenuItem>, <SelectItem>...etc
-  accent: '#dae8f5',
-  accentForeground: '#0f172a',
+  accent: '#ffffff90',
+  accentForeground: '#071024',
 
   // Used for destructive actions such as <Button variant="destructive">
   destructive: '#ef4444',

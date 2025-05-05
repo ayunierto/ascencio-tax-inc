@@ -19,7 +19,6 @@ import Header from '@/core/auth/components/Header';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import ErrorMessage from '@/core/components/ErrorMessage';
-import { ThemedText } from '@/components/ui/ThemedText';
 import { Exception } from '@/core/interfaces/exception.interface';
 import {
   ResetPasswordResponse,
@@ -76,7 +75,6 @@ const VerifyCode = () => {
         });
         setIsLoading(false);
       }
-      console.warn({ ResetPasswordResponse: response });
 
       if ('user' in response) {
         router.replace('/auth/sign-in');
@@ -142,41 +140,49 @@ const VerifyCode = () => {
                 }
               />
 
-              <ThemedText>Code</ThemedText>
-              <Controller
-                control={control}
-                name="code"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    value={value}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    placeholder="123456"
-                    keyboardType="numeric"
-                  />
-                )}
-              />
-              <ErrorMessage fieldErrors={errors.code} />
+              <View style={{ gap: 10 }}>
+                <Controller
+                  control={control}
+                  name="code"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <Input
+                      label="Code"
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      placeholder="123456"
+                      keyboardType="numeric"
+                      autoCapitalize="none"
+                      autoComplete="off"
+                      autoCorrect={false}
+                      maxLength={6}
+                    />
+                  )}
+                />
+                <ErrorMessage fieldErrors={errors.code} />
 
-              {action === 'reset-password' && (
-                <>
-                  <ThemedText>New Password</ThemedText>
-                  <Input
-                    value={newPassword}
-                    onChangeText={(newPassword) => setNewPassword(newPassword)}
-                    placeholder="New Password"
-                    keyboardType="default"
-                    autoCapitalize="none"
-                  />
-                  <ErrorMessage
-                    message={
-                      newPassword.length < 6
-                        ? 'Password must be at least 6 characters'
-                        : ''
-                    }
-                  />
-                </>
-              )}
+                {action === 'reset-password' && (
+                  <>
+                    <Input
+                      label="New Password"
+                      value={newPassword}
+                      onChangeText={(newPassword) =>
+                        setNewPassword(newPassword)
+                      }
+                      placeholder="New Password"
+                      keyboardType="default"
+                      autoCapitalize="none"
+                    />
+                    <ErrorMessage
+                      message={
+                        newPassword.length < 6
+                          ? 'Password must be at least 6 characters'
+                          : ''
+                      }
+                    />
+                  </>
+                )}
+              </View>
 
               <Button
                 disabled={isLoading}

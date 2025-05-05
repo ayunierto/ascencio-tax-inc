@@ -6,12 +6,57 @@ import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import Loader from '@/components/Loader';
 import { theme } from '@/components/ui/theme';
 import { RevenueCatProvider } from '@/providers/RevenueCat';
+import { Exception } from '@/core/interfaces/exception.interface';
+import Toast from 'react-native-toast-message';
 
 export default function TabLayout() {
   const { status, checkStatus } = useAuthStore();
 
   useEffect(() => {
-    checkStatus();
+    const checkAuth = async () => {
+      const response = await checkStatus();
+      if (!('token' in response)) {
+        console.error(
+          'Error caught by checkStatus in main layout:',
+          response.error
+        );
+
+        let errorMessage = 'An unexpected error occurred. Please try again.';
+        let errorTitle = 'Error';
+
+        // Intenta extraer la información del error original adjunto
+        const originalException = response as Exception | undefined;
+
+        if (originalException) {
+          errorMessage = originalException.message || errorMessage;
+          // Podrías diferenciar entre errores de red y otros errores basados en statusCode o el mensaje
+          if (
+            originalException.error === 'Network Error' ||
+            originalException.statusCode === 408
+          ) {
+            errorTitle = 'Network Error';
+          } else if (originalException.statusCode >= 500) {
+            errorTitle = 'Server Error';
+          } else if (originalException.statusCode >= 400) {
+            errorTitle = 'Request Error';
+          }
+        } else if (response instanceof Error) {
+          // Si no hay originalError pero es una instancia de Error
+          errorMessage = response.message || errorMessage;
+        } else {
+          errorMessage = 'An unexpected error occurred. Please try again.';
+        }
+
+        console.error('Auth check error:', errorMessage);
+
+        Toast.show({
+          type: 'error',
+          text1: errorTitle,
+          text2: errorMessage,
+        });
+      }
+    };
+    checkAuth();
   }, []);
 
   if (status === 'checking') {
@@ -37,7 +82,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="(home)"
           options={{
-            title: 'My Sites',
+            title: 'Home',
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 size={28}
@@ -108,13 +153,13 @@ export default function TabLayout() {
         <Tabs.Screen
           name="auth"
           options={{
-            title: 'Settings',
+            title: 'User',
             href: status === 'authenticated' ? null : '/(tabs)/auth/sign-in',
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 size={28}
-                name={focused ? 'settings' : 'settings-outline'}
+                name={focused ? 'person' : 'person-outline'}
                 color={color}
               />
             ),
