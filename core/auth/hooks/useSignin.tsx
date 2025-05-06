@@ -73,47 +73,9 @@ export const useSignin = () => {
         type: 'manual',
         message: 'Received an unexpected success response structure.',
       });
-
-      // if (
-      //   'message' in response &&
-      //   response.message === 'Please verify your email address.'
-      // ) {
-      //   setUser({
-      //     email: variables.email,
-      //     id: '',
-      //     name: '',
-      //     lastName: '',
-      //     phoneNumber: '',
-      //     roles: [],
-      //     createdAt: '',
-      //   });
-      //   Toast.show({
-      //     text1: 'Please verify your email',
-      //     text1Style: { fontSize: 14 },
-      //   });
-      //   router.push({ pathname: '/auth/verify', params: { action: 'verify' } });
-      //   return;
-      // }
-
-      // if ('message' in response) {
-      //   console.log('Error de API recibido:', response.message);
-      //   setError('root', {
-      //     // Shows the error in the form
-      //     type: 'manual',
-      //     message:
-      //       response.message ||
-      //       "We didn't recognize the username or password you entered. Please try again.",
-      //   });
-      // } else {
-      //   // Caso inesperado donde la respuesta no es ni UserToken ni Exception conocida
-      //   console.error('Unexpected response of meaning::', response);
-      //   setError('root', {
-      //     type: 'manual',
-      //     message: 'An unexpected response was received from the server.',
-      //   });
-      // }
     },
     onError: (error: any, variables) => {
+      console.warn({ error });
       // El error ahora es probablemente Error, con originalError adjunto
       console.error('Error caught by useMutation onError:', error);
 

@@ -8,55 +8,14 @@ import {
 
 export const checkStatus = async (): Promise<SigninResponse | Exception> => {
   try {
-    // const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    // const token = await SecureStore.getItemAsync('token');
-    // if (!token) {
-    //   return {
-    //     message: 'There is no stored token',
-    //     statusCode: 401,
-    //     error: 'Unauthorized',
-    //   };
-    // }
-
-    // const controller = new AbortController();
-    // const timeoutId = setTimeout(() => controller.abort(), 5000);
-
     const response = await httpClient.get<SigninResponse>(
-      '/auth/check-status',
+      'auth/check-status',
       {}
     );
     return response;
-    // const response = await fetch(`${API_URL}/auth/check-status`, {
-    //   method: 'GET',
-    //   headers: {
-    //     Authorization: `Bearer ${token}`,
-    //     'Content-Type': 'application/json',
-    //   },
-    //   signal: controller.signal,
-    // });
-
-    // clearTimeout(timeoutId);
-
-    // if (!response.ok) {
-    //   console.error('Error en la respuesta del servidor:', response.statusText);
-    //   return {
-    //     message: `Error de servidor: ${response.statusText}`,
-    //     statusCode: response.status,
-    //     error: response.statusText,
-    //   };
-    // }
-
-    // const data = await response.json();
-
-    // if (!data.user || !data.token) {
-    //   throw new Error('Respuesta inválida del servidor');
-    // }
-
-    // return data as SigninResponse;
   } catch (error) {
     // El adaptador ya ha manejado y clasificado el error (NetworkError, HttpError)
-    console.error('Error caught in signinAction:', error);
+    console.error('Error caught in CheckStatusAction:', error);
 
     // Si es un error HTTP con datos (posiblemente formato Exception)
     if (error instanceof HttpError && error.errorData) {
@@ -91,7 +50,7 @@ export const checkStatus = async (): Promise<SigninResponse | Exception> => {
 
     // Fallback para errores desconocidos
     return {
-      message: 'An unexpected error occurred in signinAction.',
+      message: 'An unexpected error occurred in CheckStatusAction.',
       statusCode: 500,
       error: 'Unknown Error',
     } as Exception;

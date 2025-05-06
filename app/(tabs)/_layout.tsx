@@ -35,6 +35,12 @@ export default function TabLayout() {
             originalException.statusCode === 408
           ) {
             errorTitle = 'Network Error';
+            errorMessage = response.message || errorMessage;
+            Toast.show({
+              type: 'error',
+              text1: errorTitle,
+              text2: errorMessage,
+            });
           } else if (originalException.statusCode >= 500) {
             errorTitle = 'Server Error';
           } else if (originalException.statusCode >= 400) {
@@ -47,13 +53,7 @@ export default function TabLayout() {
           errorMessage = 'An unexpected error occurred. Please try again.';
         }
 
-        console.error('Auth check error:', errorMessage);
-
-        Toast.show({
-          type: 'error',
-          text1: errorTitle,
-          text2: errorMessage,
-        });
+        console.error('Auth check error:', errorMessage, errorTitle);
       }
     };
     checkAuth();

@@ -12,7 +12,7 @@ export const signinAction = async (
   // Mantenemos el tipo de retorno por compatibilidad con store/hooks
   try {
     // Llama al método post del adaptador
-    const response = await httpClient.post<SigninResponse>('/auth/signin', {
+    const response = await httpClient.post<SigninResponse>('auth/signin', {
       body: credentials,
     });
     // Si la petición es exitosa, el adaptador devuelve los datos parseados

@@ -15,13 +15,19 @@ export class FetchAdapter implements HttpAdapter {
   private readonly baseUrl: string;
 
   constructor() {
-    const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+    let apiUrl = process.env.EXPO_PUBLIC_API_URL;
     if (!apiUrl) {
       throw new Error(
         'FetchAdapter: EXPO_PUBLIC_API_URL environment variable is not set.'
       );
     }
+    if (!apiUrl.endsWith('/')) {
+      apiUrl += '/';
+    }
     this.baseUrl = apiUrl;
+    console.log(
+      `[FetchAdapter] Initialized with effective baseUrl: ${this.baseUrl}`
+    );
   }
 
   private async _refreshTokenIfNeeded(): Promise<string | null> {
@@ -37,6 +43,9 @@ export class FetchAdapter implements HttpAdapter {
     method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' // Añade otros si los implementas
   ): Promise<T> {
     const url = new URL(endpoint, this.baseUrl);
+    console.warn(
+      `[FetchAdapter] Attempting ${method} request to: ${url.toString()}`
+    ); // <--- AÑADE ESTO
 
     // Añadir query params si existen
     if (options.params) {
