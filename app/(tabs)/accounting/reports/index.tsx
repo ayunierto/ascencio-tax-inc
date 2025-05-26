@@ -18,8 +18,8 @@ import {
 } from '@/core/accounting/reports/actions';
 import { Report } from '@/core/accounting/reports/interfaces';
 import { useRevenueCat } from '@/providers/RevenueCat';
-import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui';
 import { CardContent } from '@/components/ui/Card/CardContent';
+import { goPro } from '@/core/accounting/actions/go-pro.action';
 
 const ReportsScreen = () => {
   const [recentReports, setRecentReports] = useState<Report[]>([]);
@@ -45,24 +45,6 @@ const ReportsScreen = () => {
       setRecentReports(reportsQuery.data);
     }
   }, [reportsQuery.data]);
-
-  const goPro = async () => {
-    const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall({
-      displayCloseButton: true,
-    });
-
-    switch (paywallResult) {
-      case PAYWALL_RESULT.NOT_PRESENTED:
-      case PAYWALL_RESULT.ERROR:
-      case PAYWALL_RESULT.CANCELLED:
-        return false;
-      case PAYWALL_RESULT.PURCHASED:
-      case PAYWALL_RESULT.RESTORED:
-        return true;
-      default:
-        return false;
-    }
-  };
 
   const downloadAndOpenPDFReport = async () => {
     if (!startDate || !endDate) {
