@@ -26,14 +26,7 @@ export const useSignin = () => {
 
   const signinMutation = useMutation({
     mutationFn: async (values: SigninFormData) => {
-      // Llama a la función del store que usa signinAction
-      const response = await signin(values); // signin viene de useAuthStore
-
-      // IMPORTANTE: Tu función `signin` en useAuthStore ahora retorna
-      // SigninResponse en caso de éxito, o Exception en caso de error.
-      // TanStack Query considerará una Exception retornada como un "éxito"
-      // en términos de la promesa. Debes lanzar un error aquí si
-      // recibes una Exception para que se active `onError`.
+      const response = await signin(values);
 
       if (
         response &&
@@ -42,13 +35,11 @@ export const useSignin = () => {
         typeof response.statusCode === 'number' &&
         response.statusCode >= 400
       ) {
-        // Es una Exception retornada por la action, lánzala para que onError la capture
         const errorToThrow = new Error(response.message || 'API Error');
         (errorToThrow as any).originalError = response; // Adjunta la data original si quieres
         throw errorToThrow;
       }
 
-      // Verifica si la respuesta es realmente SigninResponse
       if (!response || typeof response !== 'object' || !('token' in response)) {
         console.error(
           'Invalid success response structure after signin action:',
@@ -57,14 +48,10 @@ export const useSignin = () => {
         throw new Error('Unexpected response format from signin.');
       }
 
-      // Si todo va bien, retorna la respuesta exitosa
-      return response as import('../interfaces').SigninResponse; //
+      return response as import('../interfaces').SigninResponse;
     },
     onSuccess: (response) => {
-      // Esta lógica ahora solo se ejecuta si mutationFn retorna SigninResponse
-      console.log('Signin successful:', response);
       if ('token' in response) {
-        // Esta verificación puede ser redundante ahora
         router.push('/(tabs)/(home)');
         return;
       }
@@ -141,7 +128,6 @@ export const useSignin = () => {
   });
 
   const onSigninSubmit = (values: SigninFormData) => {
-    console.log('Send form with:', values);
     setError('root', { message: '' });
     signinMutation.mutate(values);
   };

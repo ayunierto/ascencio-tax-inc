@@ -24,6 +24,9 @@ const DateTimeInput = ({
   useEffect(() => {
     if (value) {
       setDate(new Date(value));
+      if (onChange) {
+        onChange(new Date(value).toISOString());
+      }
     }
   }, [value]);
 

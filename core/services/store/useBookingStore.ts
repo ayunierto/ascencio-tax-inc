@@ -48,10 +48,6 @@ export const useBookingStore = create<BookingState>()((set, get) => ({
   bookNow: async () => {
     const { endDateAndTime, selectedService, staffId, startDateAndTime } =
       get();
-    console.log({ endDateAndTime });
-    console.log({ selectedService });
-    console.log({ staffId });
-    console.log({ startDateAndTime });
     if (endDateAndTime && selectedService && staffId && startDateAndTime) {
       const response = bookAppointment({
         startDateAndTime,
