@@ -87,6 +87,12 @@ export const useCreateExpense = () => {
     }
   }, [categoryQuery.isSuccess, categoryQuery.data]);
 
+  useEffect(() => {
+    if (accountQuery.isSuccess) {
+      setValue('accountId', accountQuery.data[0].id);
+    }
+  }, [accountQuery.isSuccess]);
+
   const onChangeCategory = async (categoryId: string) => {
     setValue('categoryId', categoryId);
 
@@ -119,7 +125,7 @@ export const useCreateExpense = () => {
         queryKey: ['expenses', 'infinite'],
       });
 
-      // For dashboard
+      // To update dashboard
       await queryClient.invalidateQueries({
         queryKey: ['totalExpenses'],
       });
@@ -139,7 +145,7 @@ export const useCreateExpense = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof expenseSchema>) => {
+  const onCreateExpense = async (values: z.infer<typeof expenseSchema>) => {
     setIsFetching(true);
     await expenseMutation.mutateAsync({
       ...values,
@@ -160,7 +166,7 @@ export const useCreateExpense = () => {
     setValue,
     handleSubmit,
     onChangeCategory,
-    onSubmit,
+    onCreateExpense,
     selectedImages,
     isFetching,
     selectedSubcategory,

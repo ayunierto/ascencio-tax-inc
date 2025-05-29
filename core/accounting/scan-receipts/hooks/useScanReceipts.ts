@@ -43,7 +43,6 @@ export const useScanReceipts = () => {
   };
 
   const onPictureConfirm = async () => {
-    // TODO: Implement
     setLoading(true);
     if (!selectedImage) return;
     await MediaLibrary.createAssetAsync(selectedImage);
@@ -51,15 +50,14 @@ export const useScanReceipts = () => {
     addSelectedImage({ uri: selectedImage });
 
     const response = await getReceiptValues(selectedBase64Image as string);
+    console.log({ response });
 
     setLoading(false);
 
     if ('statusCode' in response) {
       Toast.show({
         text1: 'Error getting values.',
-        text1Style: { fontSize: 14 },
         text2: response.message,
-        text2Style: { fontSize: 12 },
       });
       return;
     }
@@ -108,7 +106,6 @@ export const useScanReceipts = () => {
     if ('statusCode' in response) {
       Toast.show({
         text1: 'Error getting values.',
-        text1Style: { fontSize: 14 },
       });
       return;
     }

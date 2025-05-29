@@ -28,7 +28,7 @@ const CreateExpenseScreen = () => {
     categoryOptions,
     subcategoryOptions,
     onChangeCategory,
-    onSubmit,
+    onCreateExpense,
     control,
     handleSubmit,
     setValue,
@@ -50,7 +50,7 @@ const CreateExpenseScreen = () => {
         isFetching ? (
           <ActivityIndicator color={theme.foreground} />
         ) : (
-          <TouchableOpacity onPress={handleSubmit(onSubmit)}>
+          <TouchableOpacity onPress={handleSubmit(onCreateExpense)}>
             <Ionicons name="save-outline" color={tintColor} size={24} />
           </TouchableOpacity>
         ),
@@ -63,6 +63,15 @@ const CreateExpenseScreen = () => {
     categoryQuery.isPending
   ) {
     return <Loader />;
+  }
+
+  if (!accountQuery.data || !subcategoryQuery.data || !categoryQuery.data) {
+    return (
+      <View>
+        <ThemedText>Error</ThemedText>
+        <ThemedText>Some error occurred while fetching data.</ThemedText>
+      </View>
+    );
   }
 
   return (
@@ -147,6 +156,10 @@ const CreateExpenseScreen = () => {
                 }
                 placeholder="Account"
                 onChange={onChange}
+                selectedOptions={{
+                  label: accountQuery.data[0].name,
+                  value: accountQuery.data[0].id.toString(),
+                }}
               />
             )}
           />
@@ -208,7 +221,7 @@ const CreateExpenseScreen = () => {
           <ErrorMessage fieldErrors={errors.notes} />
 
           <Button
-            onPress={handleSubmit(onSubmit)}
+            onPress={handleSubmit(onCreateExpense)}
             loading={isFetching}
             disabled={isFetching}
             iconRight={

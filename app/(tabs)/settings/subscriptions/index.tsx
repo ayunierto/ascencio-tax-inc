@@ -17,16 +17,14 @@ import { theme } from '@/components/ui/theme';
 import { ThemedText } from '@/components/ui/ThemedText';
 import Button from '@/components/ui/Button';
 
-// --- Constantes de Color para Dark Mode ---
-const secondaryTextColor = '#A9CCE3'; // Azul pálido para texto secundario/etiquetas
-const cardBackgroundColor = 'rgba(255, 255, 255, 0.08)'; // Blanco semi-transparente sutil para la tarjeta
-const separatorColor = 'rgba(255, 255, 255, 0.15)'; // Blanco semi-transparente para separadores
-const secondaryButtonBackground = 'rgba(255, 255, 255, 0.15)'; // Botón secundario semi-transparente
-const secondaryButtonText = '#E0F2FE'; // Texto del botón secundario, azul muy claro
+// --- Consts Color for Dark Mode ---
+const secondaryTextColor = '#A9CCE3';
+const cardBackgroundColor = 'rgba(255, 255, 255, 0.08)';
+const separatorColor = 'rgba(255, 255, 255, 0.15)';
+const secondaryButtonBackground = 'rgba(255, 255, 255, 0.15)';
+const secondaryButtonText = '#E0F2FE';
 
-// La función para abrir la gestión de suscripciones (sin cambios)
 const openSubscriptionManagement = async () => {
-  // ... (código igual que antes) ...
   Alert.alert(
     'Manage Subscription',
     "You'll be redirected to your app store's subscription settings to manage your subscription.",
@@ -47,9 +45,6 @@ const openSubscriptionManagement = async () => {
 
             if (url) {
               await Linking.openURL(url);
-              console.log(
-                'SubscriptionManager: Redirección a la tienda iniciada.'
-              );
             } else {
               console.warn(
                 'SubscriptionManager: Plataforma no soportada para deep linking de suscripciones.'
@@ -65,9 +60,6 @@ const openSubscriptionManagement = async () => {
               'No se pudo abrir la página de gestión de suscripciones. Por favor, hazlo manualmente desde la App Store o Google Play Store.'
             );
           }
-          console.log(
-            'SubscriptionManager: Intentando abrir la gestión de suscripciones...'
-          );
           try {
             let url = '';
             if (Platform.OS === 'ios') {
@@ -84,7 +76,6 @@ const openSubscriptionManagement = async () => {
               );
             }
           } catch (error) {
-            // ... (manejo de error igual que antes) ...
             console.error(
               'SubscriptionManager: Error al abrir la gestión de suscripciones:',
               error
@@ -97,12 +88,10 @@ const openSubscriptionManagement = async () => {
         },
       },
     ],
-    // Alert an iOS usa el esquema de color del sistema, en Android podría necesitar estilo
-    { userInterfaceStyle: 'dark' } // Sugiere un estilo oscuro para el Alert si es posible
+    { userInterfaceStyle: 'dark' }
   );
 };
 
-// --- Componente Principal Mejorado ---
 const SubscriptionManager = () => {
   const { customerInfo, isPro, isReady } = useRevenueCat();
   const [isPaywallLoading, setIsPaywallLoading] = useState(false);
@@ -111,24 +100,19 @@ const SubscriptionManager = () => {
     if (isPaywallLoading) return;
     setIsPaywallLoading(true);
     try {
-      // ... (lógica de llamada a goPro igual que antes) ...
-      console.log('SubscriptionManager: Presentando Paywall...');
       const success = await goPro();
       if (success) {
         console.log(
-          'SubscriptionManager: Paywall resultó en compra o restauración exitosa.'
+          'SubscriptionManager: Paywall successful purchase or restoration.'
         );
       } else {
         console.log(
-          'SubscriptionManager: Paywall cerrado, cancelado o con error.'
+          'SubscriptionManager: Paywall closed without purchase or restoration.'
         );
       }
     } catch (error) {
-      // ... (manejo de error igual que antes) ...
-      console.error(
-        'SubscriptionManager: Error al presentar el paywall:',
-        error
-      );
+      console.error('SubscriptionManager: Error to present paywall:', error);
+
       Alert.alert('Error', 'The purchase screen could not be displayed.');
     } finally {
       setIsPaywallLoading(false);

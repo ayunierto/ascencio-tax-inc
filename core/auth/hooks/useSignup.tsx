@@ -44,7 +44,6 @@ export const useSignup = () => {
       countryCode: values.countryCode,
       phoneNumber: values.phoneNumber,
     });
-    console.warn({ SignupResponse: response });
     setLoading(false);
 
     if ('user' in response) {

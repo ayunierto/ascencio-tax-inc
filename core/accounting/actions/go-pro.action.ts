@@ -5,8 +5,6 @@ export const goPro = async () => {
     displayCloseButton: true,
   });
 
-  console.log(paywallResult);
-
   switch (paywallResult) {
     case PAYWALL_RESULT.NOT_PRESENTED:
     case PAYWALL_RESULT.ERROR:

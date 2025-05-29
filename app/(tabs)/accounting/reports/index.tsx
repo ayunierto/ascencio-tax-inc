@@ -52,10 +52,10 @@ const ReportsScreen = () => {
       return;
     }
 
-    if (!isPro) {
-      goPro();
-      return;
-    }
+    // if (!isPro) {
+    //   goPro();
+    //   return;
+    // }
 
     if (new Date(startDate) > new Date(endDate)) {
       Alert.alert('Error', 'Start date must be before end date');
@@ -121,9 +121,23 @@ const ReportsScreen = () => {
           >
             <View style={{ gap: 10 }}>
               <ThemedText>Start date</ThemedText>
-              <DateTimeInput onChange={(date) => setStartDate(date)} />
+              <DateTimeInput
+                onChange={(date) => setStartDate(date)}
+                value={new Date(
+                  new Date().getFullYear(),
+                  new Date().getMonth(),
+                  1
+                ).toISOString()}
+              />
               <ThemedText>End date</ThemedText>
-              <DateTimeInput onChange={(date) => setEndDate(date)} />
+              <DateTimeInput
+                onChange={(date) => setEndDate(date)}
+                value={new Date(
+                  new Date().getFullYear(),
+                  new Date().getMonth() + 1,
+                  0
+                ).toISOString()}
+              />
             </View>
 
             <Divider style={{ marginVertical: 20 }} />

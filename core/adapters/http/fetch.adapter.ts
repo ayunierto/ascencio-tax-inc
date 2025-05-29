@@ -25,9 +25,6 @@ export class FetchAdapter implements HttpAdapter {
       apiUrl += '/';
     }
     this.baseUrl = apiUrl;
-    console.log(
-      `[FetchAdapter] Initialized with effective baseUrl: ${this.baseUrl}`
-    );
   }
 
   private async _refreshTokenIfNeeded(): Promise<string | null> {

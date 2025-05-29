@@ -19,7 +19,7 @@ export const getReceiptValues = async (
       throw new Error('Token not found');
     }
 
-    const response = await fetch(`${API_URL}/aws/analyze-expense`, {
+    const response = await fetch(`${API_URL}/expense/analyze-expense`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
