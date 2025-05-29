@@ -52,10 +52,10 @@ const ReportsScreen = () => {
       return;
     }
 
-    // if (!isPro) {
-    //   goPro();
-    //   return;
-    // }
+    if (!isPro) {
+      goPro();
+      return;
+    }
 
     if (new Date(startDate) > new Date(endDate)) {
       Alert.alert('Error', 'Start date must be before end date');
