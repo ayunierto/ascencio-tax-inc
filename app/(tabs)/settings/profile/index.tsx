@@ -7,13 +7,10 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Link } from 'expo-router';
-import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Toast from 'react-native-toast-message';
 
 import Signin from '../../auth/sign-in';
-import { updateProfile } from '@/core/user/actions';
 import { Input } from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Divider from '@/components/ui/Divider';
@@ -23,25 +20,14 @@ import { theme } from '@/components/ui/theme';
 import { useCountryCodes } from '@/core/hooks/useCountryCodes';
 import Select from '@/components/ui/Select';
 import useIPGeolocation from '@/core/hooks/useIPGeolocation';
-
-export const profileSchema = z
-  .object({
-    name: z.string().min(3, 'First name must be at least 3 characters'),
-    lastName: z.string().min(3, 'First name must be at least 3 characters'),
-    email: z.string(),
-    countryCode: z.string().optional(),
-    phoneNumber: z.string().optional(),
-    password: z.string().optional(),
-    confirmPassword: z.string().optional(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords must match',
-    path: ['confirmPassword'],
-  });
+import {
+  ProfileFormValues,
+  profileSchema,
+} from '@/core/user/schemas/updateProfileSchema';
+import { useUpdateProfileMutation } from '@/core/user/hooks/useUpdateProfileMutation';
 
 const ProfileScreen = () => {
-  const [loading, setLoading] = useState(false);
-  const { user, setUser } = useAuthStore();
+  const { user } = useAuthStore();
   const { countryCodes } = useCountryCodes();
   const [callingCode, setCallingCode] = useState<string | undefined>();
 
@@ -63,64 +49,23 @@ const ProfileScreen = () => {
     control,
     handleSubmit,
     formState: { errors },
-    setError,
-    reset,
     setValue,
-  } = useForm<z.infer<typeof profileSchema>>({
+  } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      email: user.email,
+      firstName: user.firstName,
       lastName: user.lastName,
-      name: user.name,
+      email: user.email,
       phoneNumber: user.phoneNumber || '',
+      countryCode: user.countryCode || callingCode || '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
-  const handleUpdateProfile = async (
-    values: z.infer<typeof profileSchema>
-  ): Promise<void> => {
-    setLoading(true);
-    const response = await updateProfile({
-      name: values.name,
-      lastName: values.lastName,
-      phoneNumber: values.phoneNumber,
-      password: values.password,
-    });
-    setLoading(false);
-
-    if ('id' in response) {
-      setUser(response);
-      reset({
-        password: '',
-        confirmPassword: '',
-        name: response.name,
-        lastName: response.lastName,
-        phoneNumber: response.phoneNumber || '',
-      });
-      Toast.show({
-        type: 'success',
-        text1: 'Data update d successfully',
-        text1Style: { fontSize: 14 },
-        text2Style: { fontSize: 12 },
-      });
-    }
-
-    // Unauthorized
-    if ('statusCode' in response && response.statusCode === 400) {
-      setError('root', {
-        type: 'manual',
-        message: response.message,
-      });
-
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: response.message,
-        text1Style: { fontSize: 14 },
-        text2Style: { fontSize: 12 },
-      });
-      return;
-    }
+  const { mutate: updateProfile, isPending } = useUpdateProfileMutation();
+  const handleUpdateProfile = async (values: ProfileFormValues) => {
+    updateProfile(values);
   };
 
   return (
@@ -139,7 +84,7 @@ const ProfileScreen = () => {
           >
             <Controller
               control={control}
-              name="name"
+              name="firstName"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
                   label="First Name"
@@ -152,7 +97,7 @@ const ProfileScreen = () => {
                 />
               )}
             />
-            <ErrorMessage fieldErrors={errors.name} />
+            <ErrorMessage fieldErrors={errors.firstName} />
 
             <Controller
               control={control}
@@ -217,7 +162,7 @@ const ProfileScreen = () => {
                       placeholder="Phone Number"
                       autoCapitalize="none"
                       autoComplete="tel"
-                      style={{ flex: 2 }}
+                      rootStyle={{ flex: 2 }}
                     />
                   )}
                 />
@@ -263,8 +208,8 @@ const ProfileScreen = () => {
             <ErrorMessage fieldErrors={errors.confirmPassword} />
 
             <Button
-              loading={loading}
-              disabled={loading}
+              loading={isPending}
+              disabled={isPending}
               onPress={handleSubmit(handleUpdateProfile)}
             >
               Update

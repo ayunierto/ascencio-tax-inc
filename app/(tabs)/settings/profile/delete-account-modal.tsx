@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 
-import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -12,46 +11,35 @@ import { theme } from '@/components/ui/theme';
 import { Input } from '@/components/ui/Input';
 import { ThemedText } from '@/components/ui/ThemedText';
 import ErrorMessage from '@/core/components/ErrorMessage';
-import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
-
-export const deleteAccountSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
-  password: z.string().min(6),
-});
+import {
+  DeleteAccountInputs,
+  deleteAccountSchema,
+} from '@/core/auth/schemas/deleteAccountSchema';
+import { useDeleteAccountMutation } from '@/core/auth/hooks';
 
 const DeleteAccountModal = () => {
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const { deleteAccount, user } = useAuthStore();
+  const { user } = useAuthStore();
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm<z.infer<typeof deleteAccountSchema>>({
+  } = useForm<DeleteAccountInputs>({
     resolver: zodResolver(deleteAccountSchema),
   });
 
-  const onDeleteAccount = async ({
+  const { mutate: deleteAccount, isPending } = useDeleteAccountMutation();
+
+  const handleAccountDeletion = async ({
     email,
     password,
-  }: z.infer<typeof deleteAccountSchema>) => {
+  }: DeleteAccountInputs) => {
+    // Verify if email matches the user's email
     if (user && user.email === email) {
-      setIsDeleting(true);
-      const response = await deleteAccount({ password });
-      setIsDeleting(false);
-      if ('error' in response) {
-        setError('root', { message: response.message });
-        return;
-      }
+      deleteAccount({ password });
 
-      Toast.show({
-        text1: response.message,
-        text2: 'We hope to see you again soon.',
-      });
-      router.replace('/auth/sign-in');
       return;
     }
 
@@ -59,25 +47,33 @@ const DeleteAccountModal = () => {
       type: 'validate',
       message: 'The email entered does not match the registered one.',
     });
-    setIsDeleting(false);
+    Toast.show({
+      type: 'error',
+      text1: 'Email Mismatch',
+      text2: 'The email entered does not match the registered one.',
+    });
   };
 
   return (
     <View style={{ padding: 20, gap: 10, flex: 1 }}>
-      <Text
-        style={{
-          textAlign: 'center',
-          fontSize: 24,
-          color: 'orange',
-          fontWeight: 'bold',
-        }}
-      >
-        Warning!!!
-      </Text>
+      <View style={{ alignItems: 'center', marginBottom: 8 }}>
+        <Ionicons name="warning-outline" size={32} color={theme.destructive} />
+        <ThemedText
+          style={{
+            textAlign: 'center',
+            fontSize: 22,
+            color: theme.destructive,
+            fontWeight: 'bold',
+            marginTop: 4,
+          }}
+        >
+          Warning!
+        </ThemedText>
+      </View>
       <ThemedText style={{ fontSize: 16 }}>
         Deleting your account will permanently erase all your data and access to
         associated services. To confirm deletion, please enter your email
-        address. Are you sure you wish to proceed?.
+        address and password. Are you sure you wish to proceed?.
       </ThemedText>
       <ThemedText style={{ color: theme.muted }}>
         Email: {user && user.email}
@@ -90,6 +86,7 @@ const DeleteAccountModal = () => {
         name="email"
         render={({ field: { onChange, onBlur, value } }) => (
           <Input
+            label="Email"
             value={value}
             onBlur={onBlur}
             onChangeText={onChange}
@@ -97,16 +94,18 @@ const DeleteAccountModal = () => {
             placeholder="Email"
             autoCapitalize="none"
             autoComplete="off"
+            error={!!errors.email}
+            errorMessage={errors.email?.message}
           />
         )}
       />
-      <ErrorMessage fieldErrors={errors.email} />
 
       <Controller
         control={control}
         name="password"
         render={({ field: { onChange, onBlur, value } }) => (
           <Input
+            label="Password"
             value={value}
             onBlur={onBlur}
             onChangeText={onChange}
@@ -114,18 +113,19 @@ const DeleteAccountModal = () => {
             placeholder="Password"
             autoCapitalize="none"
             autoComplete="off"
+            error={!!errors.password}
+            errorMessage={errors.password?.message}
           />
         )}
       />
-      <ErrorMessage fieldErrors={errors.password} />
 
       <Button
         iconLeft={
           <Ionicons name="trash-outline" color={theme.foreground} size={24} />
         }
-        loading={isDeleting}
-        disabled={isDeleting}
-        onPress={handleSubmit(onDeleteAccount)}
+        loading={isPending}
+        disabled={isPending}
+        onPress={handleSubmit(handleAccountDeletion)}
         variant="destructive"
       >
         Delete Account

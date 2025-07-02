@@ -52,7 +52,7 @@ export interface Error {
 const useIPGeolocation = () => {
   const IP_API_KEY = process.env.EXPO_PUBLIC_IP_API_KEY;
   if (!IP_API_KEY) {
-    throw new Error('IP API key is missing');
+    throw new Error('IP_API_KEY is not defined in environment variables');
   }
 
   const getLocaleAction = async () => {
@@ -63,16 +63,24 @@ const useIPGeolocation = () => {
     return data;
   };
 
-  const query = useQuery({
+  const {
+    data: location,
+    isPending,
+    isSuccess,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ['location'],
     queryFn: getLocaleAction,
     staleTime: 1000 * 60 * 60 * 24, // 1 day to execute the consultation again
   });
 
   return {
-    location: query.data,
-    isLoading: query.isLoading,
-    isSuccess: query.isSuccess,
+    location,
+    isLoading: isPending,
+    isSuccess,
+    isError,
+    error,
   };
 };
 

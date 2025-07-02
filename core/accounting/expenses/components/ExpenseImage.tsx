@@ -8,14 +8,29 @@ import { useCameraStore } from '@/core/camera/store';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { theme } from '@/components/ui/theme';
 import { SinglePhotoViewer } from '@/core/components/SinglePhotoViewer';
+import { ImagePickerAsset } from 'expo-image-picker';
 
-interface ExpenseImageProps {
-  image: string | null;
-  onChange?: (image: string | undefined) => void;
-}
+type ExpenseImageProps = {
+  image?: string | ImagePickerAsset;
+  onChange?: (image: ImagePickerAsset | undefined) => void;
+};
 
+/**
+ * @component ExpenseImage
+ * @description A component for displaying and managing an expense receipt image. Allows viewing, removing and capturing new images.
+ *
+ * @param {Object} props
+ * @param {string|ImagePickerAsset} [props.image] - The image to display, can be a URI string or ImagePickerAsset
+ * @param {function} [props.onChange] - Callback function triggered when the image changes or is removed
+ *
+ * @example
+ * <ExpenseImage
+ *   image={receiptImage}
+ *   onChange={(newImage) => handleImageChange(newImage)}
+ * />
+ */
 const ExpenseImage = ({ image, onChange }: ExpenseImageProps) => {
-  const { selectedImages, clearImages } = useCameraStore();
+  const { selectedImage, removeImage } = useCameraStore();
 
   const [isViewerVisible, setIsViewerVisible] = useState(false);
 
@@ -24,17 +39,19 @@ const ExpenseImage = ({ image, onChange }: ExpenseImageProps) => {
 
   useEffect(() => {
     if (onChange) {
-      onChange(selectedImages[0]?.uri);
+      onChange(selectedImage);
     }
-  }, [selectedImages]);
+  }, [selectedImage]);
 
-  const removeImage = () => {
-    clearImages();
+  const handleRemoveImage = () => {
+    removeImage();
 
     if (onChange) {
       onChange(undefined);
     }
   };
+
+  const imageToShow = typeof image === 'string' ? image : image && image.uri;
 
   return (
     <View style={styles.imageContainer}>
@@ -50,7 +67,7 @@ const ExpenseImage = ({ image, onChange }: ExpenseImageProps) => {
           <>
             <TouchableOpacity onPress={openViewer}>
               <Image
-                source={{ uri: image }}
+                source={{ uri: imageToShow }}
                 style={{
                   width: 50,
                   height: 50,
@@ -58,22 +75,23 @@ const ExpenseImage = ({ image, onChange }: ExpenseImageProps) => {
                 }}
               />
             </TouchableOpacity>
+
             <SinglePhotoViewer
-              imageUrl={image}
+              imageUrl={imageToShow}
               isVisible={isViewerVisible}
               onClose={closeViewer}
             />
           </>
         ) : (
-          <ThemedText>No receipt selected</ThemedText>
+          <ThemedText>No receipt image selected</ThemedText>
         )}
 
         <View style={{ flexDirection: 'row', gap: 10 }}>
-          <TouchableOpacity onPress={() => removeImage()}>
+          <TouchableOpacity onPress={() => handleRemoveImage()}>
             <Ionicons
               name="trash-outline"
               color={theme.foreground}
-              size={24}
+              size={28}
               style={{
                 backgroundColor: theme.mutedForeground,
                 borderRadius: theme.radius,

@@ -1,15 +1,18 @@
-import { Post } from '../interfaces';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
+import { handleApiErrors } from '@/core/auth/utils';
+import { GetPostsResponse } from '../interfaces';
 
-export const getPosts = async (): Promise<Post[]> => {
+export const getPosts = async (): Promise<GetPostsResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-    const response = await fetch(`${API_URL}/posts`);
+    const res = await httpClient.get<GetPostsResponse>(`posts`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-    const posts: Post[] = await response.json();
-
-    return posts;
+    return res;
   } catch (error) {
     console.error(error);
-    throw new Error('Error fetching posts');
+    return handleApiErrors(error, 'getPosts');
   }
 };

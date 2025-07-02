@@ -1,6 +1,6 @@
 export interface Report {
-    id: string;
-    startDate: string;
-    endDate: string;
-    createdAt: string;
-  }
+  id: string;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+}

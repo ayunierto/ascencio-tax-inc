@@ -1,24 +1,23 @@
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 import { ForgotPasswordRequest, ForgotPasswordResponse } from '../interfaces';
+import { handleApiErrors } from '../utils';
 
-export const forgotPasswordAction = async ({
+export const forgotPassword = async ({
   email,
 }: ForgotPasswordRequest): Promise<ForgotPasswordResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const response = await fetch(`${API_URL}/auth/forgot-password`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email }),
-    });
-
-    const data: ForgotPasswordResponse = await response.json();
-
-    return data;
+    const res = await httpClient.post<ForgotPasswordResponse>(
+      'auth/forgot-password',
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      }
+    );
+    return res;
   } catch (error) {
-    console.error(error);
-    throw new Error('Reset Password: Network request failed');
+    console.error('Error caught in forgotPassword:', error);
+    return handleApiErrors(error, 'forgotPassword');
   }
 };

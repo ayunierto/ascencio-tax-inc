@@ -52,9 +52,11 @@ const ExpenseScreen = () => {
     navigation.setOptions({
       title: merchant.length === 0 ? 'New' : merchant,
       headerRight: ({ tintColor }: { tintColor: string }) =>
+        // amazonq-ignore-next-line
         isFetching ? (
           <ActivityIndicator color={theme.foreground} />
         ) : (
+          // amazonq-ignore-next-line
           <TouchableOpacity onPress={handleSubmit(onSubmit)}>
             <Ionicons name="save-outline" color={tintColor} size={24} />
           </TouchableOpacity>

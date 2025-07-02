@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -6,60 +6,20 @@ import { useAuthStore } from '@/core/auth/store/useAuthStore';
 import Loader from '@/components/Loader';
 import { theme } from '@/components/ui/theme';
 import { RevenueCatProvider } from '@/providers/RevenueCat';
-import { Exception } from '@/core/interfaces/exception.interface';
-import Toast from 'react-native-toast-message';
+import { useQuery } from '@tanstack/react-query';
+import { CheckStatusResponse } from '@/core/auth/interfaces';
 
 export default function TabLayout() {
   const { status, checkStatus } = useAuthStore();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const response = await checkStatus();
-      if (!('token' in response)) {
-        console.error(
-          'Error caught by checkStatus in main layout:',
-          response.error
-        );
+  const { isPending } = useQuery<CheckStatusResponse>({
+    queryKey: ['checkStatus'],
+    queryFn: checkStatus,
+    staleTime: 1000 * 5, // 5 seconds
+    refetchOnWindowFocus: true,
+  });
 
-        let errorMessage = 'An unexpected error occurred. Please try again.';
-        let errorTitle = 'Error';
-
-        // Intenta extraer la información del error original adjunto
-        const originalException = response as Exception | undefined;
-
-        if (originalException) {
-          errorMessage = originalException.message || errorMessage;
-          // Podrías diferenciar entre errores de red y otros errores basados en statusCode o el mensaje
-          if (
-            originalException.error === 'Network Error' ||
-            originalException.statusCode === 408
-          ) {
-            errorTitle = 'Network Error';
-            errorMessage = response.message || errorMessage;
-            Toast.show({
-              type: 'error',
-              text1: errorTitle,
-              text2: errorMessage,
-            });
-          } else if (originalException.statusCode >= 500) {
-            errorTitle = 'Server Error';
-          } else if (originalException.statusCode >= 400) {
-            errorTitle = 'Request Error';
-          }
-        } else if (response instanceof Error) {
-          // Si no hay originalError pero es una instancia de Error
-          errorMessage = response.message || errorMessage;
-        } else {
-          errorMessage = 'An unexpected error occurred. Please try again.';
-        }
-
-        console.error('Auth check error:', errorMessage, errorTitle);
-      }
-    };
-    checkAuth();
-  }, []);
-
-  if (status === 'checking') {
+  if (status === 'checking' || isPending) {
     return <Loader />;
   }
 

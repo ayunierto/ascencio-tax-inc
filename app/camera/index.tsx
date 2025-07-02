@@ -19,7 +19,7 @@ import { ThemedText } from '@/components/ui/ThemedText';
 import Button from '@/components/ui/Button';
 
 export default function CameraScreen() {
-  const { addSelectedImage, clearImages } = useCameraStore();
+  const { selectImage: addSelectedImage, clearImages } = useCameraStore();
 
   const [facing, setFacing] = useState<CameraType>('back');
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();

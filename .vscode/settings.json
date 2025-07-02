@@ -1,0 +1,14 @@
+{
+    "cSpell.words": [
+        "appt",
+        "Appts",
+        "IPAPI",
+        "luxon",
+        "REVENUECAT",
+        "subcat",
+        "videocam"
+    ],
+    "exportall.config.folderListener": [
+        "/core/accounting/subcategories/interfaces"
+    ]
+}

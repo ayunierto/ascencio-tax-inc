@@ -1,1 +1,2 @@
-export * from './services.interface';
+export * from './services-responses.interface';
+export * from './service.interface';

@@ -1,24 +1,22 @@
 import { countries } from '@/countryData';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
+
+type CountryCode = {
+  label: string;
+  value: string;
+};
 
 export const useCountryCodes = () => {
-  const [countryCodes, setCountryCodes] = useState<
-    { label: string; value: string }[]
-  >([]);
+  const countryCodes = useMemo((): CountryCode[] => {
+    if (!Array.isArray(countries)) {
+      console.error("Data source 'countries' is not an array.");
+      return [];
+    }
 
-  useEffect(() => {
-    const transformCountries = (): void => {
-      countries.map((country) => {
-        setCountryCodes((prev) => [
-          ...prev,
-          {
-            label: `${country.name} (${country.phone_code})`,
-            value: country.phone_code,
-          },
-        ]);
-      });
-    };
-    transformCountries();
+    return countries.map((country) => ({
+      label: `${country.name} (${country.phone_code})`,
+      value: country.phone_code,
+    }));
   }, []);
 
   return { countryCodes };

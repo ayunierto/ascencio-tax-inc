@@ -1,4 +1,4 @@
-import { User } from '@/core/auth/interfaces';
+import { BasicUser } from '@/core/auth/interfaces';
 import { Service } from '@/core/services/interfaces';
 import { Staff } from '@/core/staff/interfaces';
 
@@ -10,7 +10,7 @@ export interface Appointment {
   zoomMeetingId: number;
   zoomMeetingLink: string;
   service: Service;
-  user: User;
+  user: BasicUser;
   staff: Staff;
   updatedAt: null;
   id: string;

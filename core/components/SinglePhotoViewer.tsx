@@ -1,11 +1,12 @@
 // Import necessary components
 import React from 'react';
 import { Modal, View, Button, StyleSheet } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
-import { ActivityIndicator } from 'react-native'; // Make sure to import ActivityIndicator if using loadingRender
+import { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
 
 interface SinglePhotoViewerProps {
-  imageUrl: string | null | undefined;
+  imageUrl: string | undefined;
   isVisible: boolean;
   onClose: () => void;
 }
@@ -18,7 +19,7 @@ export const SinglePhotoViewer = ({
 }: SinglePhotoViewerProps) => {
   // Prepare the image data structure required by ImageViewer
   // It expects an array of objects, even for a single image.
-  const images = imageUrl ? [{ url: imageUrl }] : [];
+  const images: IImageInfo[] = imageUrl ? [{ url: imageUrl }] : [];
 
   if (!isVisible || !imageUrl) {
     return null; // Don't render anything if not visible or no URL
@@ -41,7 +42,7 @@ export const SinglePhotoViewer = ({
         // Optional: Customize the rendering for failed image loads
         failImageSource={{
           // Display a placeholder if the image fails to load
-          url: 'https://via.placeholder.com/300?text=Load+Error', // Example placeholder URL
+          url: 'https://placehold.co/300x300?text=Load+Error&font=source-sans-pro', // Example placeholder URL
           width: 300,
           height: 300,
         }}

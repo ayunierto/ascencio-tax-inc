@@ -1,0 +1,63 @@
+import { router } from 'expo-router';
+import Toast from 'react-native-toast-message';
+import { useMutation } from '@tanstack/react-query';
+
+import { useAuthStore } from '../store/useAuthStore';
+import { SignInRequest, SignInResponse } from '../interfaces';
+import { resendEmailCode } from '../actions';
+
+export const useSignInMutation = () => {
+  const { signIn, setUser } = useAuthStore();
+
+  return useMutation<SignInResponse, Error, SignInRequest>({
+    mutationFn: async (values: SignInRequest) => {
+      const response = await signIn(values);
+      return response;
+    },
+    onSuccess: (response, variables) => {
+      if ('access_token' in response) {
+        router.push('/(tabs)/(home)');
+        Toast.show({
+          type: 'success',
+          text1: 'Sign in successful',
+          text2: 'Welcome back!',
+        });
+        return;
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: 'Sign in failed',
+        text2: response.message || 'An unexpected error occurred.',
+      });
+
+      // If the response indicates that the email is not verified,
+      // redirect to the verification page
+      if (response.error === 'EmailNotVerified') {
+        const emptyUser = {
+          createdAt: new Date(),
+          email: variables.email,
+          id: '',
+          firstName: '',
+          lastName: '',
+          roles: [],
+        };
+        setUser(emptyUser);
+        resendEmailCode({ email: variables.email });
+        router.replace('/auth/verify-email');
+        Toast.show({
+          type: 'info',
+          text1: 'Email not verified',
+          text2: 'Please verify your email to continue.',
+        });
+      }
+    },
+    onError: (error) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Sign in failed',
+        text2: error.message || 'An unexpected error occurred.',
+      });
+    },
+  });
+};

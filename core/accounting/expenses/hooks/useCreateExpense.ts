@@ -1,49 +1,41 @@
 import { useEffect, useState } from 'react';
 
-import { router, useNavigation } from 'expo-router';
-import Toast from 'react-native-toast-message';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
+import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DateTime } from 'luxon';
 
-import { Category } from '../../categories/interfaces/category.interface';
-import { expenseSchema } from '../schemas/expenseSchema';
 import { getAccounts } from '../../accounts/actions';
 import { getCategories } from '../../categories/actions';
 import { getSubcategories } from '../../subcategories/actions';
 import { Subcategory } from '../../subcategories/interfaces';
-import { createExpense } from '../actions';
-import { CreateUpdateExpense, Expense } from '../interfaces';
 import { useCameraStore } from '@/core/camera/store';
-import { DateTime } from 'luxon';
-
-interface Option {
-  label: string;
-  value: string;
-}
+import { SelectOption } from '@/components/ui/Select';
+import { useCreateExpenseMutation } from './useCreateExpenseMutation';
+import { CreateExpenseFormInputs, createExpenseSchema } from '../schemas';
 
 export const useCreateExpense = () => {
   const params = useLocalSearchParams();
-  const navigation = useNavigation();
-  const [categoryOptions, setCategoryOptions] = useState<Option[]>([]);
-  const [subcategoryOptions, setSubcategoryOptions] = useState<Option[]>([]);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<Option>();
-  const [isFetching, setIsFetching] = useState<boolean>(false);
 
-  const { selectedImages, clearImages } = useCameraStore();
+  const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>([]);
+  const [subcategoryOptions, setSubcategoryOptions] = useState<SelectOption[]>(
+    []
+  );
+  const [selectedSubcategory, setSelectedSubcategory] =
+    useState<SelectOption>();
 
-  const queryClient = useQueryClient();
+  const { selectedImage, removeImage } = useCameraStore();
 
+  // Set values if provided
   useEffect(() => {
-    setValue('merchant', params.merchant as string);
-    setValue('total', params.total as string);
-    setValue('tax', params.tax as string);
+    setValue('merchant', (params.merchant as string) || '');
+    setValue('total', Number(params.total as string) || 0);
+    setValue('tax', Number(params.tax as string) || 0);
     setValue('date', (params.date as string) || DateTime.now().toISO());
+
     return () => {
-      clearImages();
+      removeImage();
     };
   }, []);
 
@@ -52,55 +44,56 @@ export const useCreateExpense = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-    getValues,
-    watch,
-  } = useForm<z.infer<typeof expenseSchema>>({
-    resolver: zodResolver(expenseSchema),
+  } = useForm<CreateExpenseFormInputs>({
+    resolver: zodResolver(createExpenseSchema),
     defaultValues: {
       date: new Date().toISOString(),
     },
   });
 
-  const accountQuery = useQuery({
+  // Fetching necessary data.
+  const { data: accounts, isPending: isAccountsLoading } = useQuery({
     queryKey: ['accounts'],
     queryFn: () => getAccounts(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
-  const categoryQuery = useQuery({
+  const { data: categories, isPending: isCategoriesLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: () => getCategories(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
-  const subcategoryQuery = useQuery({
+  const { data: subcategories, isPending: isSubcategoriesLoading } = useQuery({
     queryKey: ['subcategories'],
     queryFn: () => getSubcategories(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
 
+  // Set category options.
   useEffect(() => {
-    if (categoryQuery.isSuccess) {
-      const options = categoryQuery.data.map((category: Category) => ({
+    if (categories && !('error' in categories)) {
+      const options = categories.map((category) => ({
         label: category.name,
-        value: category.id.toString(),
+        value: category.id,
       }));
       setCategoryOptions(options);
     }
-  }, [categoryQuery.isSuccess, categoryQuery.data]);
+  }, [categories]);
 
+  // Sets the first selected account as default.
   useEffect(() => {
-    if (accountQuery.isSuccess) {
-      setValue('accountId', accountQuery.data[0].id);
+    if (accounts && !('error' in accounts) && accounts.length > 0) {
+      setValue('accountId', accounts[0].id);
     }
-  }, [accountQuery.isSuccess]);
+  }, [accounts]);
 
-  const onChangeCategory = async (categoryId: string) => {
+  const handleChangeCategory = async (categoryId: string) => {
     setValue('categoryId', categoryId);
 
-    if (subcategoryQuery.data) {
-      const subcategories = subcategoryQuery.data.filter(
-        (subcategory: Subcategory) => subcategory.category!.id === categoryId
+    if (subcategories && !('error' in subcategories)) {
+      const subcat = subcategories.filter(
+        (subcategory: Subcategory) => subcategory.category.id === categoryId
       );
-      const options = subcategories.map((subcategory: Subcategory) => ({
+      const options = subcat.map((subcategory: Subcategory) => ({
         label: subcategory.name,
         value: subcategory.id,
       }));
@@ -110,67 +103,30 @@ export const useCreateExpense = () => {
     }
   };
 
-  const expenseMutation = useMutation({
-    mutationFn: async (values: CreateUpdateExpense): Promise<Expense> => {
-      const image = getValues('image');
-      const data = await createExpense({
-        image: image && image.includes('file') ? image : undefined,
-        ...values,
-      });
-      return data;
-    },
+  const { mutate: saveReceipt, isPending: isSavingExpense } =
+    useCreateExpenseMutation();
 
-    onSuccess: async (data: Expense) => {
-      await queryClient.invalidateQueries({
-        queryKey: ['expenses', 'infinite'],
-      });
-
-      // To update dashboard
-      await queryClient.invalidateQueries({
-        queryKey: ['totalExpenses'],
-      });
-      await queryClient.invalidateQueries({
-        queryKey: ['logs'],
-      });
-
-      Toast.show({
-        type: 'success',
-        text1: `Receipt ${data.merchant} saved`,
-        text2: 'Receipt was saved correctly',
-        text1Style: { fontSize: 14 },
-        text2Style: { fontSize: 12 },
-      });
-      clearImages();
-      router.replace('/accounting/receipts/expense');
-    },
-  });
-
-  const onCreateExpense = async (values: z.infer<typeof expenseSchema>) => {
-    setIsFetching(true);
-    await expenseMutation.mutateAsync({
-      ...values,
-      total: +values.total,
-      tax: +values.tax,
-    });
-    setIsFetching(false);
+  const handleCreateExpense = async (data: CreateExpenseFormInputs) => {
+    saveReceipt(data);
   };
 
   return {
-    accountQuery,
-    categoryQuery,
-    subcategoryQuery,
+    accounts,
+    isAccountsLoading,
+    categories,
+    isCategoriesLoading,
+    subcategories,
+    isSubcategoriesLoading,
     categoryOptions,
     subcategoryOptions,
     control,
     errors,
     setValue,
     handleSubmit,
-    onChangeCategory,
-    onCreateExpense,
-    selectedImages,
-    isFetching,
+    handleChangeCategory,
+    handleCreateExpense,
+    selectedImage,
     selectedSubcategory,
-    watch,
-    navigation,
+    isSavingExpense,
   };
 };

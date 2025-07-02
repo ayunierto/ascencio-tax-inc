@@ -1,25 +1,20 @@
-import * as SecureStore from 'expo-secure-store';
-import { Expense } from '../interfaces';
+import { handleApiErrors } from '@/core/auth/utils';
+import { DeleteExpenseRequest, DeleteExpenseResponse } from '../interfaces';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 
-export const removeExpense = async (expenseId: string): Promise<Expense> => {
+export const removeExpense = async ({
+  id,
+}: DeleteExpenseRequest): Promise<DeleteExpenseResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const token = await SecureStore.getItemAsync('token');
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    const response = await fetch(`${API_URL}/expense/${expenseId}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const data: Expense = await response.json();
-    return data;
+    const res = await httpClient.delete<DeleteExpenseResponse>(
+      `expense/${id}`,
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+    return res;
   } catch (error) {
     console.error('Error deleting expense:', error);
-    throw new Error('Unable to delete expense');
+    return handleApiErrors(error, 'removeExpense');
   }
 };

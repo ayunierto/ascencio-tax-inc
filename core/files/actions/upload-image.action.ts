@@ -1,38 +1,31 @@
-import * as SecureStore from 'expo-secure-store';
-
 import { UploadImageFile } from '../interfaces/upload-image.interface';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
+import { handleApiErrors } from '@/core/auth/utils';
+import { ExceptionResponse } from '@/core/interfaces';
+import { ImagePickerAsset } from 'expo-image-picker';
 
-export const uploadImage = async (image: string): Promise<UploadImageFile> => {
+export const uploadImage = async (
+  image: ImagePickerAsset
+): Promise<UploadImageFile | ExceptionResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const token = await SecureStore.getItemAsync('token');
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const formdata = new FormData() as any;
     formdata.append('file', {
-      uri: image,
+      uri: image.uri,
       name: 'image.jpg',
       type: 'image/jpeg',
     });
 
-    const requestOptions = {
-      method: 'POST',
-      body: formdata,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
+    const response = await httpClient.post<UploadImageFile | ExceptionResponse>(
+      'files/upload',
+      {
+        body: formdata,
+      }
+    );
 
-    const response = await fetch(`${API_URL}/files/upload`, requestOptions);
-
-    const data: UploadImageFile = await response.json();
-    return data;
+    return response;
   } catch (error) {
     console.error(error);
-    throw new Error('The image could not be uploaded');
+    return handleApiErrors(error, 'uploadImage');
   }
 };

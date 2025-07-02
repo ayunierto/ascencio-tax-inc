@@ -35,7 +35,7 @@ export const useScanReceipts = () => {
     setSelectedImage(picture.uri);
     setSelectedBase64Image(picture.base64);
   };
-  const { addSelectedImage, clearImages } = useCameraStore();
+  const { selectImage: addSelectedImage, clearImages } = useCameraStore();
 
   const onReturnCancel = () => {
     clearImages();

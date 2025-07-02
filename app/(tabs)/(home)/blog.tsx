@@ -1,21 +1,25 @@
-import React from "react";
+import React from 'react';
 
-import { FlatList, Linking, TouchableOpacity, View } from "react-native";
-import { DateTime } from "luxon";
-import { useQuery } from "@tanstack/react-query";
+import { FlatList, Linking, TouchableOpacity, View } from 'react-native';
+import { DateTime } from 'luxon';
+import { useQuery } from '@tanstack/react-query';
 
-import { getPosts } from "@/core/posts/actions/get-posts";
-import { EmptyList } from "@/core/components";
-import Loader from "@/components/Loader";
-import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from "@/components/ui";
-import { Ionicons } from "@expo/vector-icons";
-import { theme } from "@/components/ui/theme";
-import { ThemedText } from "@/components/ui/ThemedText";
-import { CardContent } from "@/components/ui/Card/CardContent";
+import { getPosts } from '@/core/posts/actions/get-posts';
+import { EmptyList } from '@/core/components';
+import Loader from '@/components/Loader';
+import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from '@/components/ui';
+import { Ionicons } from '@expo/vector-icons';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/ui/ThemedText';
+import { CardContent } from '@/components/ui/Card/CardContent';
 
 const BlogScreen = (): JSX.Element => {
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["posts"],
+  const {
+    data: posts,
+    isLoading,
+    isFetching,
+  } = useQuery({
+    queryKey: ['posts'],
     queryFn: () => getPosts(),
   });
 
@@ -23,10 +27,23 @@ const BlogScreen = (): JSX.Element => {
     return <Loader />;
   }
 
+  if (!posts || 'error' in posts) {
+    return (
+      <EmptyList
+        title="Error"
+        subtitle="An unexpected error occurred while fetching logs."
+      />
+    );
+  }
+
+  if (posts.length === 0) {
+    return <EmptyList title="No entries found." />;
+  }
+
   return (
     <FlatList
       style={{ padding: 20 }}
-      data={data ?? []}
+      data={posts ?? []}
       numColumns={1}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
@@ -35,12 +52,12 @@ const BlogScreen = (): JSX.Element => {
             <CardContent>
               <SimpleCardHeader>
                 <Ionicons
-                  name={"link-outline"}
+                  name={'link-outline'}
                   size={20}
                   color={theme.foreground}
                 />
                 <SimpleCardHeaderTitle
-                  style={{ textDecorationLine: "underline" }}
+                  style={{ textDecorationLine: 'underline' }}
                 >
                   {item.title}
                 </SimpleCardHeaderTitle>
@@ -49,10 +66,10 @@ const BlogScreen = (): JSX.Element => {
                 <ThemedText
                   style={{
                     color: theme.muted,
-                    textAlign: "right",
+                    textAlign: 'right',
                     fontSize: 12,
                   }}
-                >{`By: ${item.user.name} ${
+                >{`By: ${item.user.firstName} ${
                   item.user.lastName
                 } \n${DateTime.fromISO(
                   item.createdAt

@@ -18,11 +18,11 @@ import ErrorMessage from '@/core/components/ErrorMessage';
 import { theme } from '@/components/ui/theme';
 import TermsAndPrivacy from '@/components/TermsAndPrivacy';
 import { ThemedText } from '@/components/ui/ThemedText';
-import { useSignin } from '@/core/auth/hooks/useSignin';
+import { useSignIn } from '@/core/auth/hooks';
 
-const SigninScreen = () => {
-  const { errors, control, signinMutation, onSigninSubmit, handleSubmit } =
-    useSignin();
+const SignInScreen = () => {
+  const { control, handleSubmit, formErrors, isPending, handleSignIn } =
+    useSignIn();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -50,7 +50,7 @@ const SigninScreen = () => {
               linkText="Sign Up"
             />
             <View style={{ gap: 14 }}>
-              <ErrorMessage message={errors.root?.message} />
+              <ErrorMessage message={formErrors.root?.message} />
 
               <View style={{ gap: 10 }}>
                 <Controller
@@ -67,8 +67,8 @@ const SigninScreen = () => {
                       placeholder="user@example.com"
                       autoCapitalize="none"
                       autoComplete="email"
-                      error={!!errors.email}
-                      errorMessage={errors.email?.message}
+                      error={!!formErrors.email}
+                      errorMessage={formErrors.email?.message}
                     />
                   )}
                 />
@@ -90,26 +90,27 @@ const SigninScreen = () => {
                       placeholder="Password"
                       autoComplete="password"
                       autoCapitalize="none"
-                      error={!!errors.password}
-                      errorMessage={errors.password?.message}
+                      error={!!formErrors.password}
+                      errorMessage={formErrors.password?.message}
                     />
                   )}
                 />
               </View>
             </View>
             <ThemedText
-              style={{ color: theme.primary, textAlign: 'center' }}
-              onPress={() =>
-                !signinMutation.isPending &&
-                router.push('/auth/forgot-password')
-              }
+              style={{
+                color: theme.primary,
+                textAlign: 'center',
+                textDecorationLine: 'underline',
+              }}
+              onPress={() => !isPending && router.push('/auth/forgot-password')}
             >
               Forgot password?
             </ThemedText>
             <Button
-              loading={signinMutation.isPending}
-              disabled={signinMutation.isPending}
-              onPress={handleSubmit(onSigninSubmit)}
+              loading={isPending}
+              disabled={isPending}
+              onPress={handleSubmit(handleSignIn)}
             >
               Log In
             </Button>
@@ -122,4 +123,4 @@ const SigninScreen = () => {
   );
 };
 
-export default SigninScreen;
+export default SignInScreen;

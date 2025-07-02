@@ -50,6 +50,7 @@ const ResumeScreen = () => {
         }
       })
       .catch((error) => {
+        // amazonq-ignore-next-line
         console.error(error);
       });
   };

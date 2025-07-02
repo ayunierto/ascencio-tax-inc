@@ -1,28 +1,18 @@
-import * as SecureStore from 'expo-secure-store';
-import { Log } from '../interfaces';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
+import { GetLogsResponse } from '../interfaces';
+import { handleApiErrors } from '@/core/auth/utils';
 
-export const getLogs = async (limit = 6, offset = 0): Promise<Log[]> => {
+export const getLogs = async (
+  limit = 6,
+  offset = 0
+): Promise<GetLogsResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const token = await SecureStore.getItemAsync('token');
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    const response = await fetch(
-      `${API_URL}/logs?limit=${limit}&offset=${offset}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const res = await httpClient.get<GetLogsResponse>(
+      `logs?limit=${limit}&offset=${offset}`
     );
-    const data: Log[] = await response.json();
-    return data;
+    return res;
   } catch (error) {
     console.error(error);
-    throw new Error('Unable to load logs');
+    return handleApiErrors(error, 'getLogs');
   }
 };

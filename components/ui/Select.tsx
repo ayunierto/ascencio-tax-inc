@@ -18,17 +18,17 @@ import { BlurView } from 'expo-blur';
 
 interface SelectProps {
   enableFilter?: boolean;
-  options: Option[];
+  options: SelectOption[];
   placeholder?: string;
   readOnly?: boolean;
-  selectedOptions?: Option;
+  selectedOptions?: SelectOption;
   style?: StyleProp<ViewStyle>;
 
-  onSelect?: (option: Option) => void;
+  onSelect?: (option: SelectOption) => void;
   onChange?: (value: string) => void;
 }
 
-export interface Option {
+export interface SelectOption {
   label: string;
   value: string;
 }
@@ -44,10 +44,10 @@ const Select = ({
   style,
 }: SelectProps) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<Option | null>(null);
+  const [selectedValue, setSelectedValue] = useState<SelectOption | null>(null);
   const [searchText, setSearchText] = useState('');
   const [filteredOptions, setFilteredOptions] =
-    useState<Option[]>(initialOptions);
+    useState<SelectOption[]>(initialOptions);
 
   useEffect(() => {
     if (selectedOptions) {
@@ -66,7 +66,7 @@ const Select = ({
     }
   }, [searchText, initialOptions]); // It runs when search text or items changes
 
-  const handleSelect = (option: Option) => {
+  const handleSelect = (option: SelectOption) => {
     setSelectedValue(option);
     if (onSelect) onSelect(option);
     if (onChange) onChange(option.value);

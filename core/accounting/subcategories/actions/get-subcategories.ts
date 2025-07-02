@@ -1,25 +1,13 @@
-import * as SecureStore from 'expo-secure-store';
-import { Subcategory } from '../interfaces';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
+import { GetSubcategoriesResponse } from '../interfaces';
+import { handleApiErrors } from '@/core/auth/utils';
 
-export const getSubcategories = async (): Promise<Subcategory[]> => {
+export const getSubcategories = async (): Promise<GetSubcategoriesResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const token = await SecureStore.getItemAsync('token');
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    const response = await fetch(`${API_URL}/subcategory`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const data: Subcategory[] = await response.json();
-    return data;
+    const res = await httpClient.get<GetSubcategoriesResponse>('subcategory');
+    return res;
   } catch (error) {
     console.error(error);
-    throw new Error('Unable to load subcategories');
+    return handleApiErrors(error, 'getSubcategories');
   }
 };

@@ -7,7 +7,6 @@ import { useQuery } from '@tanstack/react-query';
 import { getExpenses } from '@/core/accounting/expenses/actions';
 import { getLogs } from '@/core/logs/actions';
 import { Expense } from '@/core/accounting/expenses/interfaces';
-import { Log } from '@/core/logs/interfaces';
 import { Metrics } from './Metrics';
 import { QuickActions } from './QuickActions';
 import { RecentActivity } from './RecentActivity';
@@ -15,19 +14,23 @@ import Loader from '@/components/Loader';
 import { useRevenueCat } from '@/providers/RevenueCat';
 import { goPro } from '@/core/accounting/actions';
 import Toast from 'react-native-toast-message';
+import { EmptyList } from '@/core/components';
 
 const ReceiptsDashboard = () => {
   const [totalExpenses, setTotalExpenses] = useState(0);
-  const [recentActivity, setRecentActivity] = useState<Log[]>([]);
   const { isPro } = useRevenueCat();
 
-  const expenseQuery = useQuery({
+  const { data: expenses, isPending: isLoadingExpenses } = useQuery({
     queryKey: ['totalExpenses'],
     queryFn: () => getExpenses(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
 
-  const logsQuery = useQuery({
+  const {
+    data: logs,
+    refetch: refreshLogs,
+    isPending: isLoadingLogs,
+  } = useQuery({
     queryKey: ['logs'],
     queryFn: () => getLogs(),
     staleTime: 1000 * 60 * 60, // 1 hour
@@ -36,43 +39,56 @@ const ReceiptsDashboard = () => {
   useFocusEffect(
     useCallback(() => {
       // ComponentDidMount logic (if any) can go here
-      logsQuery.refetch(); // Refetch logs when the component is focused
+      refreshLogs(); // Refetch logs when the component is focused
     }, [])
   );
 
   useEffect(() => {
-    if (logsQuery.data) {
-      setRecentActivity(logsQuery.data);
-    }
-  }, [logsQuery.data]);
-
-  useEffect(() => {
-    if (expenseQuery.data) {
-      if (expenseQuery.data.length > 0) {
-        const total = expenseQuery.data.reduce(
+    if (expenses && !('error' in expenses)) {
+      if (expenses.length > 0) {
+        const total = expenses.reduce(
           (acc: number, receipt: Expense) => acc + +receipt.total,
           0
         );
         setTotalExpenses(total);
       }
     }
-  }, [expenseQuery.data]);
+  }, [expenses]);
 
-  if (expenseQuery.isLoading) return <Loader />;
+  if (isLoadingExpenses || isLoadingLogs) return <Loader />;
 
-  if (!expenseQuery.data) {
-    setTotalExpenses(0);
-    return;
+  if (!logs) {
+    return (
+      <EmptyList
+        title="Error"
+        subtitle="An unexpected error occurred while fetching the recent activity. Please try again later."
+      />
+    );
+  }
+
+  if (!expenses) {
+    return (
+      <EmptyList
+        title="Error"
+        subtitle="An unexpected error occurred while fetching the expenses."
+      />
+    );
+  }
+
+  if ('error' in expenses) {
+    return <EmptyList title="Error" subtitle={expenses.message} />;
+  }
+
+  if ('error' in logs) {
+    return <EmptyList title="Error" subtitle={logs.message} />;
   }
 
   const getReport = () => {
-    if (expenseQuery.data.length === 0) {
+    if (expenses.length === 0) {
       Toast.show({
         type: 'info',
         text1: 'Info',
-        text1Style: { fontSize: 14 },
         text2: 'No expenses to generate report',
-        text2Style: { fontSize: 12 },
       });
       return;
     }
@@ -93,7 +109,6 @@ const ReceiptsDashboard = () => {
       label: 'Add Expense',
       onPress: () => addExpense(),
     },
-
     {
       label: 'Scan Expense',
       onPress: () => scanExpense(),
@@ -103,7 +118,7 @@ const ReceiptsDashboard = () => {
   ];
 
   const addExpense = () => {
-    if (!isPro && expenseQuery.data.length >= 5) {
+    if (!isPro && expenses.length >= 5) {
       goPro();
     } else {
       router.push('/(tabs)/accounting/receipts/expense/create');
@@ -111,7 +126,7 @@ const ReceiptsDashboard = () => {
   };
 
   const scanExpense = () => {
-    if (!isPro && expenseQuery.data.length >= 5) {
+    if (!isPro && expenses.length >= 5) {
       goPro();
     } else {
       router.push('/scan-receipts');
@@ -134,10 +149,7 @@ const ReceiptsDashboard = () => {
 
       <QuickActions actions={quickActions} />
 
-      <RecentActivity
-        loading={logsQuery.isRefetching}
-        activities={recentActivity}
-      />
+      <RecentActivity loading={isLoadingLogs} activities={logs} />
     </View>
   );
 };

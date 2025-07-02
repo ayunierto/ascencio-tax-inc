@@ -1,35 +1,29 @@
-import * as SecureStore from 'expo-secure-store';
-import { CreateUpdateExpense, Expense } from '../interfaces';
+import { CreateExpenseRequest, CreateExpenseResponse } from '../interfaces';
 import { uploadImage } from '@/core/files/actions/upload-image.action';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
+import { handleApiErrors } from '@/core/auth/utils';
 
 export const createExpense = async (
-  expense: CreateUpdateExpense
-): Promise<Expense> => {
+  expense: CreateExpenseRequest
+): Promise<CreateExpenseResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const token = await SecureStore.getItemAsync('token');
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    if (expense.image) {
+    if (expense.image && !(typeof expense.image === 'string')) {
       const uploadedImage = await uploadImage(expense.image);
-      expense.image = uploadedImage.image;
+      if (uploadedImage && 'image' in uploadedImage) {
+        expense.image = uploadedImage.image;
+      }
     }
 
-    const response = await fetch(`${API_URL}/expense`, {
-      method: 'POST',
+    const response = await httpClient.post<CreateExpenseResponse>('expense', {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(expense),
     });
-    const data: Expense = await response.json();
-    return data;
+
+    return response;
   } catch (error) {
     console.error(error);
-    throw new Error('The receipt could not be created');
+    return handleApiErrors(error, 'createExpense');
   }
 };

@@ -37,7 +37,16 @@ export default function AuthLayout() {
       />
 
       <Stack.Screen
-        name="verify"
+        name="verify-email"
+        options={{
+          title: '',
+          headerShown: true,
+          headerBackVisible: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="reset-password"
         options={{
           title: '',
           headerShown: true,

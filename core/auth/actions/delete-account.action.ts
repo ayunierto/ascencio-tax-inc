@@ -1,32 +1,24 @@
-import * as SecureStore from 'expo-secure-store';
-import { Exception } from '@/core/interfaces/exception.interface';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 import { DeleteAccountRequest, DeleteAccountResponse } from '../interfaces';
+import { handleApiErrors } from '../utils';
 
-export const deleteAccountAction = async ({
-  password,
-}: DeleteAccountRequest): Promise<DeleteAccountResponse | Exception> => {
-  console.warn({ password });
+export const deleteAccount = async (
+  data: DeleteAccountRequest
+): Promise<DeleteAccountResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const token = await SecureStore.getItemAsync('token');
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    const response = await fetch(`${API_URL}/auth/delete-account`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ password }),
-    });
-    const data: DeleteAccountResponse | Exception = await response.json();
-    console.warn({ data });
-    return data;
+    const res = await httpClient.delete<DeleteAccountResponse>(
+      'auth/delete-account',
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    return res;
   } catch (error) {
     console.error(error);
-    throw new Error('Delete Account: Network request failed');
+    console.error('Error caught in deleteAccount:', error);
+    return handleApiErrors(error, 'deleteAccount');
   }
 };

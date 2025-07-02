@@ -15,21 +15,20 @@ import Select from '@/components/ui/Select';
 import ErrorMessage from '@/core/components/ErrorMessage';
 import Button from '@/components/ui/Button';
 import TermsAndPrivacy from '@/components/TermsAndPrivacy';
-import { useSignup } from '@/core/auth/hooks/useSignup';
 import { useCountryCodes } from '@/core/hooks/useCountryCodes';
+import { useSignUp } from '@/core/auth/hooks';
 
-const Signup = () => {
+const SignUp = () => {
+  const { countryCodes } = useCountryCodes();
   const {
-    errors,
+    formErrors,
     control,
     callingCode,
     handleSubmit,
-    onSignup,
+    onSignUp,
     setValue,
-    loading,
-  } = useSignup();
-
-  const { countryCodes } = useCountryCodes();
+    isPending,
+  } = useSignUp();
 
   return (
     <SafeAreaView>
@@ -53,11 +52,11 @@ const Signup = () => {
             />
 
             <View style={{ gap: 10 }}>
-              <ErrorMessage message={errors.root?.message} />
+              <ErrorMessage message={formErrors.root?.message} />
 
               <Controller
                 control={control}
-                name="name"
+                name="firstName"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
                     label="First Name"
@@ -67,8 +66,8 @@ const Signup = () => {
                     placeholder="First Name"
                     autoCapitalize="words"
                     autoComplete="name"
-                    errorMessage={errors.name?.message}
-                    error={!!errors.name}
+                    errorMessage={formErrors.firstName?.message}
+                    error={!!formErrors.firstName}
                   />
                 )}
               />
@@ -85,8 +84,8 @@ const Signup = () => {
                     onChangeText={onChange}
                     autoCapitalize="words"
                     autoComplete="name-family"
-                    errorMessage={errors.lastName?.message}
-                    error={!!errors.lastName}
+                    errorMessage={formErrors.lastName?.message}
+                    error={!!formErrors.lastName}
                   />
                 )}
               />
@@ -104,8 +103,8 @@ const Signup = () => {
                     placeholder="Email"
                     autoCapitalize="none"
                     autoComplete="email"
-                    errorMessage={errors.email?.message}
-                    error={!!errors.email}
+                    errorMessage={formErrors.email?.message}
+                    error={!!formErrors.email}
                   />
                 )}
               />
@@ -117,7 +116,6 @@ const Signup = () => {
                     selectedOptions={countryCodes.find(
                       (item) => item.value === callingCode
                     )}
-                    // onSelect={(item) => setValue('countryCode', item?.value)}
                     onChange={(value) => setValue('countryCode', value)}
                     placeholder="+1"
                     style={{ flex: 3 }}
@@ -136,9 +134,9 @@ const Signup = () => {
                         placeholder="Phone Number"
                         autoCapitalize="none"
                         autoComplete="tel"
-                        style={{ flex: 2 }}
-                        errorMessage={errors.phoneNumber?.message}
-                        error={!!errors.phoneNumber}
+                        rootStyle={{ flex: 2 }}
+                        errorMessage={formErrors.phoneNumber?.message}
+                        error={!!formErrors.phoneNumber}
                       />
                     )}
                   />
@@ -157,8 +155,8 @@ const Signup = () => {
                     autoCapitalize="none"
                     secureTextEntry
                     placeholder="Password"
-                    errorMessage={errors.password?.message}
-                    error={!!errors.password}
+                    errorMessage={formErrors.password?.message}
+                    error={!!formErrors.password}
                   />
                 )}
               />
@@ -176,8 +174,8 @@ const Signup = () => {
                       autoCapitalize="none"
                       secureTextEntry
                       placeholder="Confirm Password"
-                      errorMessage={errors.confirmPassword?.message}
-                      error={!!errors.confirmPassword}
+                      errorMessage={formErrors.confirmPassword?.message}
+                      error={!!formErrors.confirmPassword}
                     />
                   )}
                 />
@@ -185,9 +183,9 @@ const Signup = () => {
             </View>
 
             <Button
-              loading={loading}
-              disabled={loading}
-              onPress={handleSubmit(onSignup)}
+              loading={isPending}
+              disabled={isPending}
+              onPress={handleSubmit(onSignUp)}
             >
               Sign up
             </Button>
@@ -200,4 +198,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignUp;

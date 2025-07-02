@@ -1,25 +1,20 @@
-import * as SecureStore from 'expo-secure-store';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 import { Category } from '../interfaces';
+import { ExceptionResponse } from '@/core/interfaces';
+import { handleApiErrors } from '@/core/auth/utils';
 
-export const getCategories = async (): Promise<Category[]> => {
+export const getCategories = async (): Promise<
+  Category[] | ExceptionResponse
+> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const token = await SecureStore.getItemAsync('token');
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    const response = await fetch(`${API_URL}/categories`, {
-      method: 'GET',
+    const response = await httpClient.get<Category[]>('categories', {
       headers: {
-        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
     });
-    const data: Category[] = await response.json();
-    return data;
+    return response;
   } catch (error) {
     console.error(error);
-    throw new Error('Unable to load categories');
+    return handleApiErrors(error, 'getCategories');
   }
 };

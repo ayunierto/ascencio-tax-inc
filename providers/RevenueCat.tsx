@@ -15,16 +15,16 @@ const APIKeys = {
 
 interface RevenueCatProps {
   isPro: boolean;
-  customerInfo: CustomerInfo | null; // <-- Añadido
+  customerInfo: CustomerInfo | null;
   currentOffering: PurchasesOffering | null;
-  isReady: boolean; // <-- Añadido para controlar la carga fuera del provider
+  isReady: boolean;
 }
 
 const RevenueCatContext = createContext<Partial<RevenueCatProps>>({
   isPro: false,
   customerInfo: null,
   currentOffering: null,
-  isReady: false, // <-- Inicia como false
+  isReady: false,
 });
 
 export const RevenueCatProvider = ({
@@ -33,7 +33,7 @@ export const RevenueCatProvider = ({
   children: React.ReactNode;
 }) => {
   const [isPro, setIsPro] = useState(false);
-  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null); // <-- Estado para CustomerInfo
+  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
   const [currentOffering, setCurrentOffering] =
     useState<PurchasesOffering | null>(null);
   const [isReady, setIsReady] = useState(false);
@@ -41,7 +41,6 @@ export const RevenueCatProvider = ({
   useEffect(() => {
     const setup = async () => {
       try {
-        // Configurar Purchases
         if (Platform.OS === 'android') {
           Purchases.configure({ apiKey: APIKeys.google });
         } else if (Platform.OS === 'ios') {
@@ -49,14 +48,11 @@ export const RevenueCatProvider = ({
         }
         await Purchases.setLogLevel(LOG_LEVEL.DEBUG);
 
-        // --- Listener para actualizaciones ---
         Purchases.addCustomerInfoUpdateListener((customerInfo) => {
-          setCustomerInfo(customerInfo); // Actualiza el estado con la nueva info
-          // Verifica el entitlement 'Pro' (asegúrate que 'Pro' es el identificador correcto)
+          setCustomerInfo(customerInfo);
           setIsPro(customerInfo.entitlements.active['Pro'] !== undefined);
         });
 
-        // --- Obtener estado inicial ---
         const initialCustomerInfo = await Purchases.getCustomerInfo();
 
         setCustomerInfo(initialCustomerInfo);
@@ -66,20 +62,20 @@ export const RevenueCatProvider = ({
 
         setCurrentOffering(offerings.current);
       } catch (error) {
-        console.error(
-          'RC Provider: Error durante la configuración o fetch inicial:',
+        console.log(
+          'RC Provider: Error during setup or fetching initial data: ',
           error
         );
       } finally {
-        // Marcar como listo DESPUÉS de intentar la configuración y el fetch inicial
+        // Mark as ready AFTER attempting setup and initial fetch
         setIsReady(true);
       }
     };
 
-    setup().catch(console.error);
+    setup().catch(console.log);
   }, []);
 
-  // Muestra el Loader mientras RevenueCat no está listo
+  // Show the Loader while RevenueCat is not ready
   if (!isReady) {
     return <Loader />;
   }
@@ -93,13 +89,11 @@ export const RevenueCatProvider = ({
   );
 };
 
-// Hook para consumir el contexto con verificación para asegurar que se use dentro del provider.
+// Hook for accessing RevenueCat context
 export const useRevenueCat = () => {
   const context = useContext(RevenueCatContext);
   if (context === undefined) {
-    throw new Error(
-      'useRevenueCat debe ser usado dentro de un RevenueCatProvider'
-    );
+    throw new Error('useRevenueCat must be used within a RevenueCatProvider');
   }
   return context;
 };

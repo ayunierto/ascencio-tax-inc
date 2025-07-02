@@ -1,31 +1,24 @@
-import * as SecureStore from 'expo-secure-store';
-import { type Account } from '../interfaces/account.interface';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
+import { handleApiErrors } from '@/core/auth/utils';
+import { GetAccountsResponse } from '../interfaces';
 
 export const getAccounts = async (
   limit = 10,
   offset = 0
-): Promise<Account[]> => {
+): Promise<GetAccountsResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const token = await SecureStore.getItemAsync('token');
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    const response = await fetch(
-      `${API_URL}/account?limit=${limit}&offset=${offset}`,
+    const accounts = await httpClient.get<GetAccountsResponse>(
+      `account?limit=${limit}&offset=${offset}`,
       {
-        method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       }
     );
-    const data: Account[] = await response.json();
-    return data;
+
+    return accounts;
   } catch (error) {
     console.error(error);
-    throw new Error('Unable to load accounts');
+    return handleApiErrors(error, 'getAccounts');
   }
 };

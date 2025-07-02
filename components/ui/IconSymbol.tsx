@@ -39,6 +39,7 @@ export function IconSymbol({
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
+  // amazonq-ignore-next-line
   return (
     <MaterialIcons
       color={color}

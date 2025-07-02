@@ -1,31 +1,25 @@
-import * as SecureStore from 'expo-secure-store';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 import { Report } from '../interfaces';
+import { ExceptionResponse } from '@/core/interfaces';
+import { handleApiErrors } from '@/core/auth/utils';
 
 export const getReports = async (
   limit = 100,
   offset = 0
-): Promise<Report[]> => {
+): Promise<Report[] | ExceptionResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const token = await SecureStore.getItemAsync('token');
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    const response = await fetch(
-      `${API_URL}/reports?limit=${limit}&offset=${offset}`,
+    const res = httpClient.get<Report[] | ExceptionResponse>(
+      `reports?limit=${limit}&offset=${offset}`,
       {
-        method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       }
     );
-    const data: Report[] = await response.json();
-    return data;
+
+    return res;
   } catch (error) {
     console.error(error);
-    throw new Error('Unable to load reports');
+    return handleApiErrors(error, 'getReports');
   }
 };

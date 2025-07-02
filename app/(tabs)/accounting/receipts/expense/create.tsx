@@ -1,11 +1,5 @@
-import React, { useEffect } from 'react';
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  ScrollView,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React from 'react';
+import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Controller } from 'react-hook-form';
@@ -21,56 +15,79 @@ import { theme } from '@/components/ui/theme';
 import DateTimePicker from '@/components/ui/DateTimePicker/DateTimePicker';
 import Select from '@/components/ui/Select';
 import Button from '@/components/ui/Button';
+import { EmptyList } from '@/core/components';
 
 const CreateExpenseScreen = () => {
   const {
-    accountQuery,
+    accounts,
+    categories,
     categoryOptions,
+    subcategories,
     subcategoryOptions,
-    onChangeCategory,
-    onCreateExpense,
+    handleChangeCategory,
+    handleCreateExpense,
     control,
     handleSubmit,
     setValue,
     errors,
-    isFetching,
-    selectedImages,
+    isSavingExpense,
+    selectedImage,
     selectedSubcategory,
-    subcategoryQuery,
-    categoryQuery,
-    watch,
-    navigation,
+    isAccountsLoading,
+    isCategoriesLoading,
+    isSubcategoriesLoading,
   } = useCreateExpense();
 
-  useEffect(() => {
-    const merchant = watch('merchant') || '';
-    navigation.setOptions({
-      title: merchant.length === 0 ? 'New' : merchant,
-      headerRight: ({ tintColor }: { tintColor: string }) =>
-        isFetching ? (
-          <ActivityIndicator color={theme.foreground} />
-        ) : (
-          <TouchableOpacity onPress={handleSubmit(onCreateExpense)}>
-            <Ionicons name="save-outline" color={tintColor} size={24} />
-          </TouchableOpacity>
-        ),
-    });
-  }, [watch('merchant'), isFetching]);
-
-  if (
-    accountQuery.isPending ||
-    subcategoryQuery.isPending ||
-    categoryQuery.isPending
-  ) {
+  if (isAccountsLoading || isCategoriesLoading || isSubcategoriesLoading) {
     return <Loader />;
   }
 
-  if (!accountQuery.data || !subcategoryQuery.data || !categoryQuery.data) {
+  if (!accounts || !categories || !subcategories) {
     return (
-      <View>
-        <ThemedText>Error</ThemedText>
-        <ThemedText>Some error occurred while fetching data.</ThemedText>
-      </View>
+      <EmptyList
+        title="Error"
+        subtitle="An unexpected error occurred while fetching data. Please try again later."
+      />
+    );
+  }
+
+  if (
+    'error' in accounts ||
+    'error' in categories ||
+    'error' in subcategories
+  ) {
+    return (
+      <EmptyList
+        title="Error"
+        subtitle="An unexpected error occurred while fetching data. Please try again later."
+      />
+    );
+  }
+
+  if (accounts.length === 0) {
+    return (
+      <EmptyList
+        title="No accounts found"
+        subtitle="Please create an account first."
+      />
+    );
+  }
+
+  if (categories.length === 0) {
+    return (
+      <EmptyList
+        title="No categories found"
+        subtitle="Please create a category first."
+      />
+    );
+  }
+
+  if (subcategories.length === 0) {
+    return (
+      <EmptyList
+        title="No subcategories found"
+        subtitle="Please create a subcategory first."
+      />
     );
   }
 
@@ -81,7 +98,7 @@ const CreateExpenseScreen = () => {
           <ThemedText>Receipt image:</ThemedText>
           <ExpenseImage
             onChange={(image) => setValue('image', image)}
-            image={selectedImages.length > 0 ? selectedImages[0].uri : null}
+            image={selectedImage && selectedImage.uri}
           />
 
           <ThemedText>Merchant:</ThemedText>
@@ -116,10 +133,20 @@ const CreateExpenseScreen = () => {
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 placeholder="Total"
-                value={value}
+                // value={value}
                 onBlur={onBlur}
-                onChangeText={onChange}
+                // onChangeText={onChange}
                 keyboardType="number-pad"
+                onChangeText={(text) => {
+                  // Convert the text to a number.
+                  // If it's empty, set it to undefined. If it's not a number, set it to NaN.
+                  // Zod will validate this as 'number' or throw an 'invalid_type_error'.
+                  const numericValue = text === '' ? undefined : Number(text);
+                  onChange(numericValue);
+                }}
+                // We need to convert the value to a string for the TextInput
+                // because TextInput expects a string value.
+                value={value != null ? String(value) : ''}
               />
             )}
           />
@@ -132,10 +159,16 @@ const CreateExpenseScreen = () => {
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
                 placeholder="Tax"
-                value={value}
+                value={value != null ? String(value) : ''}
                 onBlur={onBlur}
                 keyboardType="number-pad"
-                onChangeText={onChange}
+                onChangeText={(text) => {
+                  // Convert the text to a number.
+                  // If it's empty, set it to undefined. If it's not a number, set it to NaN.
+                  // Zod will validate this as 'number' or throw an 'invalid_type_error'.
+                  const numericValue = text === '' ? undefined : Number(text);
+                  onChange(numericValue);
+                }}
               />
             )}
           />
@@ -149,16 +182,16 @@ const CreateExpenseScreen = () => {
               <Select
                 enableFilter={false}
                 options={
-                  accountQuery.data?.map((account: Account) => ({
+                  accounts.map((account: Account) => ({
                     label: account.name,
-                    value: account.id.toString(),
+                    value: account.id,
                   })) ?? []
                 }
                 placeholder="Account"
                 onChange={onChange}
                 selectedOptions={{
-                  label: accountQuery.data[0].name,
-                  value: accountQuery.data[0].id.toString(),
+                  label: accounts[0].name,
+                  value: accounts[0].id,
                 }}
               />
             )}
@@ -175,7 +208,7 @@ const CreateExpenseScreen = () => {
                 options={categoryOptions}
                 placeholder="Category"
                 onChange={(id) => {
-                  onChangeCategory(id);
+                  handleChangeCategory(id);
                 }}
               />
             )}
@@ -221,9 +254,9 @@ const CreateExpenseScreen = () => {
           <ErrorMessage fieldErrors={errors.notes} />
 
           <Button
-            onPress={handleSubmit(onCreateExpense)}
-            loading={isFetching}
-            disabled={isFetching}
+            onPress={handleSubmit(handleCreateExpense)}
+            loading={isSavingExpense}
+            disabled={isSavingExpense}
             iconRight={
               <Ionicons
                 name="save-outline"

@@ -13,31 +13,31 @@ import Loader from '@/components/Loader';
 import { theme } from '@/components/ui/theme';
 import Button from '@/components/ui/Button';
 import { Service } from '@/core/services/interfaces';
+import { EmptyList } from '@/core/components';
 
 const Services = () => {
+  const { access_token } = useAuthStore();
   const { selectService } = useBookingStore();
-  const { token } = useAuthStore();
 
-  const { data, isPending, isError, error } = useQuery({
+  const {
+    data: services,
+    isPending,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ['services'],
     queryFn: getServices,
     staleTime: 1000 * 60 * 60, // 1 hora
   });
 
-  if (isPending) {
-    return <Loader />;
-  }
-
-  const onSelectService = (service: Service): void => {
+  const handleServiceSelection = (service: Service): void => {
     selectService(service);
-    if (!token) {
+    if (!access_token) {
       router.push('/(tabs)/auth/sign-in');
       Toast.show({
         type: 'info',
         text1: 'Please, sign in',
-        text2: 'You must be authenticated to book a service',
-        text1Style: { fontSize: 14 },
-        text2Style: { fontSize: 12 },
+        text2: 'You must be authenticated to book a service.',
       });
       return;
     }
@@ -45,13 +45,25 @@ const Services = () => {
     return;
   };
 
+  if (isPending) {
+    return <Loader />;
+  }
+
+  if (services && 'error' in services) {
+    return <EmptyList title="Error" subtitle={services.message} />;
+  }
+
+  if (!services || services.length === 0) {
+    return <EmptyList title="No services found." />;
+  }
+
   return (
     <ScrollView>
       <View style={{ padding: 20, flex: 1 }}>
         {isError && <Text>{error.message}</Text>}
         <View style={{ flexDirection: 'column', gap: 20 }}>
-          {data &&
-            data.map((service: Service) => (
+          {services &&
+            services.map((service: Service) => (
               <View
                 style={{
                   flex: 1,
@@ -65,7 +77,7 @@ const Services = () => {
               >
                 <Image
                   style={{ width: 60, height: 60, borderRadius: theme.radius }}
-                  source={{ uri: service.images[0].url }}
+                  source={{ uri: service.image }}
                 />
 
                 <View
@@ -108,15 +120,13 @@ const Services = () => {
                   </View>
                 </View>
 
-                {/* <View style={{ flex: 1 }}> */}
                 <Button
                   style={{ maxWidth: 100 }}
-                  onPress={() => onSelectService(service)}
+                  onPress={() => handleServiceSelection(service)}
                   size="small"
                 >
                   Book
                 </Button>
-                {/* </View> */}
               </View>
             ))}
         </View>

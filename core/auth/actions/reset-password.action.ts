@@ -1,29 +1,25 @@
-import { Exception } from '@/core/interfaces/exception.interface';
-import { ResetPasswordResponse } from '../interfaces/reset-password-response.interface';
-import { ResetPasswordRequest } from '../interfaces';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
+import { ResetPasswordRequest, ResetPasswordResponse } from '../interfaces';
+import { handleApiErrors } from '../utils';
 
-export const resetPasswordAction = async ({
+export const resetPassword = async ({
   code,
   email,
   newPassword,
-}: ResetPasswordRequest): Promise<ResetPasswordResponse | Exception> => {
+}: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-    if (!API_URL) throw new Error('No API_URL found');
-
-    const response = await fetch(`${API_URL}/auth/reset-password`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ code, email, newPassword }),
-    });
-
-    const data: ResetPasswordResponse | Exception = await response.json();
-
-    return data;
+    const res = await httpClient.post<ResetPasswordResponse>(
+      'auth/reset-password',
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code, email, newPassword }),
+      }
+    );
+    return res;
   } catch (error) {
-    console.error(error);
-    throw new Error('Reset Password: Network request failed');
+    console.error('Error caught in resetPassword:', error);
+    return handleApiErrors(error, 'resetPassword');
   }
 };

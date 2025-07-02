@@ -4,6 +4,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { theme } from '@/components/ui/theme';
 
 const _layout = () => {
+  // amazonq-ignore-next-line
   return (
     <Drawer
       screenOptions={{

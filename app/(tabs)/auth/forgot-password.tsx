@@ -1,50 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { router } from 'expo-router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import Toast from 'react-native-toast-message';
 
 import Header from '../../../core/auth/components/Header';
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import { z } from 'zod';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-
-export const forgotPasswordSchema = z.object({
-  email: z.string().email(),
-});
+import {
+  ForgotPasswordInputs,
+  forgotPasswordSchema,
+} from '@/core/auth/schemas';
+import { useForgotPasswordMutation } from '@/core/auth/hooks/useForgotPasswordMutation';
 
 const ForgotPassword = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { forgotPassword } = useAuthStore();
-
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof forgotPasswordSchema>>({
+  } = useForm<ForgotPasswordInputs>({
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onForgotPassword = async (
-    values: z.infer<typeof forgotPasswordSchema>
-  ) => {
-    setIsLoading(true);
-    const response = await forgotPassword(values);
-    setIsLoading(false);
-
-    Toast.show({
-      text1: 'Code sended',
-      text1Style: { fontSize: 14 },
-      text2: response.message,
-      text2Style: { fontSize: 12 },
-    });
-    router.push({
-      pathname: '/auth/verify',
-      params: { action: 'reset-password' },
-    });
+  const { mutate: forgotPassword, isPending } = useForgotPasswordMutation();
+  const handleForgotPassword = async (values: ForgotPasswordInputs) => {
+    forgotPassword(values);
   };
 
   return (
@@ -83,9 +64,9 @@ const ForgotPassword = () => {
         />
 
         <Button
-          disabled={isLoading}
-          loading={isLoading}
-          onPress={handleSubmit(onForgotPassword)}
+          disabled={isPending}
+          loading={isPending}
+          onPress={handleSubmit(handleForgotPassword)}
         >
           Reset Password
         </Button>

@@ -1,31 +1,23 @@
-import * as SecureStore from 'expo-secure-store';
-import { Expense } from '../interfaces';
+import { handleApiErrors } from '@/core/auth/utils';
+import { GetExpensesResponse } from '../interfaces';
+import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 
 export const getExpenses = async (
   limit = 20,
   offset = 0
-): Promise<Expense[]> => {
+): Promise<GetExpensesResponse> => {
   try {
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-    const token = await SecureStore.getItemAsync('token');
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    const response = await fetch(
-      `${API_URL}/expense?limit=${limit}&offset=${offset}`,
+    const res = await httpClient.get<GetExpensesResponse>(
+      `expense?limit=${limit}&offset=${offset}`,
       {
-        method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       }
     );
-    const data: Expense[] = await response.json();
-    return data;
+    return res;
   } catch (error) {
     console.error('Error fetching expenses:', error);
-    throw new Error('Unable to load expenses');
+    return handleApiErrors(error, 'getExpenses');
   }
 };

@@ -176,13 +176,13 @@ export const buttonStyles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   small: {
-    height: 32,
+    height: 46,
   },
   medium: {
-    height: 48,
+    height: 52,
   },
   large: {
-    height: 56,
+    height: 58,
   },
   buttonText: {
     fontSize: 16,

@@ -1,10 +1,10 @@
-import { User } from '@/core/auth/interfaces/user.interface';
+import { BasicUser } from '@/core/auth/interfaces';
 
 export interface Post {
   id: number;
   url: string;
   title: string;
   createdAt: string;
-  updatedAt: null;
-  user: User;
+  updatedAt?: string;
+  user: BasicUser;
 }

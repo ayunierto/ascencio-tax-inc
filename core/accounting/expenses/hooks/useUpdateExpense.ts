@@ -11,12 +11,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateUpdateExpense, Expense } from '../interfaces';
 import { Subcategory } from '../../subcategories/interfaces';
 import { Category } from '../../categories/interfaces/category.interface';
-import { getExpenseById } from '../actions/get-expenses-by-id.action';
+import { getExpenseById } from '../actions/get-expense.action';
 import { getAccounts } from '../../accounts/actions';
 import { removeExpense, updateExpense } from '../actions';
 import { getCategories } from '../../categories/actions';
 import { getSubcategories } from '../../subcategories/actions';
-import { expenseSchema } from '../schemas/expenseSchema';
+import { expenseSchema } from '../schemas/createExpenseSchema';
 import { useCameraStore } from '@/core/camera/store';
 
 interface Option {

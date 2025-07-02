@@ -2,99 +2,108 @@ import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
 
 import {
-  User,
   SignUpRequest,
   SignUpResponse,
-  VerifyCodeResponse,
-  VerifyCodeRequest,
-  SigninRequest,
-  SigninResponse,
+  VerifyEmailCodeResponse,
+  VerifyEmailCodeRequest,
+  SignInResponse,
   ForgotPasswordResponse,
   ForgotPasswordRequest,
   ResetPasswordRequest,
   ResetPasswordResponse,
   DeleteAccountResponse,
+  BasicUser,
+  SignInRequest,
+  CheckStatusResponse,
+  UpdateProfileResponse,
+  UpdateProfileRequest,
+  DeleteAccountRequest,
 } from '../interfaces';
 import {
   checkStatus,
-  deleteAccountAction,
-  forgotPasswordAction,
-  resetPasswordAction,
-  signinAction,
-  signupAction,
-  verifyCodeAction,
+  deleteAccount,
+  forgotPassword,
+  resetPassword,
+  loginUser,
+  registerUser,
+  verifyEmailCode,
 } from '../actions';
-import { Exception } from '@/core/interfaces/exception.interface';
-import { DeleteAccountRequest } from '../interfaces/delete-account-request.interface';
 import { Alert } from 'react-native';
+import { storageAdapter } from '@/core/adapters/StorageAdapter';
+import { updateProfile } from '@/core/user/actions';
 
 export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking';
 
 export interface AuthState {
   status: AuthStatus;
-  token?: string;
-  user?: User;
+  access_token?: string;
+  user?: BasicUser;
 
-  signup: (values: SignUpRequest) => Promise<SignUpResponse | Exception>;
-  verifyCode: (
-    data: VerifyCodeRequest
-  ) => Promise<VerifyCodeResponse | Exception>;
-  signin: (credentials: SigninRequest) => Promise<SigninResponse | Exception>;
-  checkStatus: () => Promise<SigninResponse | Exception>;
-  deleteAccount: (
-    data: DeleteAccountRequest
-  ) => Promise<DeleteAccountResponse | Exception>;
+  signUp: (values: SignUpRequest) => Promise<SignUpResponse>;
+  verifyEmailCode: (
+    data: VerifyEmailCodeRequest
+  ) => Promise<VerifyEmailCodeResponse>;
+  signIn: (credentials: SignInRequest) => Promise<SignInResponse>;
+  checkStatus: () => Promise<CheckStatusResponse>;
+  deleteAccount: (data: DeleteAccountRequest) => Promise<DeleteAccountResponse>;
   logout: () => Promise<void>;
-  setAuthenticated: (token: string, user: User) => void;
+  setAuthenticated: (access_token: string, user: BasicUser) => void;
   setUnauthenticated: () => void;
-  setUser: (user: User) => void;
+  setUser: (user: BasicUser) => void;
   forgotPassword: (
     data: ForgotPasswordRequest
   ) => Promise<ForgotPasswordResponse>;
-  resetPassword: (
-    data: ResetPasswordRequest
-  ) => Promise<ResetPasswordResponse | Exception>;
+  resetPassword: (data: ResetPasswordRequest) => Promise<ResetPasswordResponse>;
+  updateProfile: (data: UpdateProfileRequest) => Promise<UpdateProfileResponse>;
 }
 
 export const useAuthStore = create<AuthState>()((set, get) => ({
   status: 'checking',
-  token: undefined,
+  access_token: undefined,
   user: undefined,
 
-  signup: async (data: SignUpRequest) => {
-    const response = await signupAction(data);
+  signUp: async (data: SignUpRequest) => {
+    const response = await registerUser(data);
     if ('user' in response) {
       set({ user: response.user });
     }
     return response;
   },
 
-  verifyCode: async (data: VerifyCodeRequest) => {
-    const response = await verifyCodeAction(data);
+  verifyEmailCode: async (data: VerifyEmailCodeRequest) => {
+    const response = await verifyEmailCode(data);
     return response;
   },
 
-  signin: async (credentials: SigninRequest) => {
-    const response = await signinAction(credentials);
+  signIn: async (credentials: SignInRequest) => {
+    const response = await loginUser(credentials);
+    console.log({ response });
 
-    if ('token' in response) {
-      await SecureStore.setItemAsync('token', response.token);
-      get().setAuthenticated(response.token, response.user);
+    if ('access_token' in response) {
+      await SecureStore.setItemAsync('access_token', response.access_token);
+      get().setAuthenticated(response.access_token, response.user);
       return response;
     }
 
-    get().setUnauthenticated();
+    return response;
+  },
+
+  updateProfile: async (data: UpdateProfileRequest) => {
+    const response = await updateProfile(data);
+    if ('user' in response) {
+      set({ user: response.user });
+    }
     return response;
   },
 
   deleteAccount: async (data: DeleteAccountRequest) => {
-    const response = await deleteAccountAction(data);
+    const response = await deleteAccount(data);
 
     if ('error' in response) {
       return response;
     }
 
-    await SecureStore.deleteItemAsync('token');
+    await storageAdapter.removeItem('access_token');
     get().setUnauthenticated();
     return response;
   },
@@ -102,39 +111,38 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   checkStatus: async () => {
     const response = await checkStatus();
 
-    if ('token' in response) {
-      await SecureStore.setItemAsync('token', response.token);
-      get().setAuthenticated(response.token, response.user);
+    if ('access_token' in response) {
+      await SecureStore.setItemAsync('access_token', response.access_token);
+      get().setAuthenticated(response.access_token, response.user);
       return response;
     }
 
+    get().setUnauthenticated();
     if (response.error === 'Network Error') {
-      console.error('Network error occurred while checking status.');
       Alert.alert(
         'Network Error',
-        'Please check your internet connection and try again. Close and restart the app.'
+        'Please check your internet connection and try again. Close and restart the app.',
+        [{ text: 'Close', onPress: checkStatus, style: 'default' }]
       );
       set({ status: 'checking' });
-    } else {
-      get().setUnauthenticated();
     }
     return response;
   },
 
   logout: async () => {
-    await SecureStore.deleteItemAsync('token');
+    await SecureStore.deleteItemAsync('access_token');
     get().setUnauthenticated();
   },
 
   forgotPassword: async (data: ForgotPasswordRequest) => {
-    const response = await forgotPasswordAction(data);
+    const response = await forgotPassword(data);
     set({
       user: {
         email: data.email,
-        createdAt: '',
+        createdAt: new Date(),
         id: '',
         lastName: '',
-        name: '',
+        firstName: '',
         roles: [],
       },
     });
@@ -142,28 +150,27 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   resetPassword: async (data: ResetPasswordRequest) => {
-    const response = await resetPasswordAction(data);
+    const response = await resetPassword(data);
     return response;
   },
 
-  setAuthenticated: (token: string, user: User) => {
+  setAuthenticated: (access_token: string, user: BasicUser) => {
     set({
       status: 'authenticated',
-      token: token,
+      access_token: access_token,
       user: user,
     });
-    console.warn('Authenticated');
   },
 
   setUnauthenticated: () => {
     set({
       status: 'unauthenticated',
-      token: undefined,
+      access_token: undefined,
       user: undefined,
     });
   },
 
-  setUser: (user: User) => {
+  setUser: (user: BasicUser) => {
     set({ user: user });
   },
 }));
