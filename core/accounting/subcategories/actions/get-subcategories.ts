@@ -1,6 +1,6 @@
 import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 import { GetSubcategoriesResponse } from '../interfaces';
-import { handleApiErrors } from '@/core/auth/utils';
+import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
 
 export const getSubcategories = async (): Promise<GetSubcategoriesResponse> => {
   try {

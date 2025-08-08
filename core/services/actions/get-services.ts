@@ -1,6 +1,6 @@
 import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 import { GetServicesResponse } from '../interfaces';
-import { handleApiErrors } from '@/core/auth/utils';
+import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
 
 export const getServices = async (): Promise<GetServicesResponse> => {
   try {
@@ -11,7 +11,6 @@ export const getServices = async (): Promise<GetServicesResponse> => {
     });
     return services;
   } catch (error) {
-    console.error(error);
     return handleApiErrors(error, 'getServices');
   }
 };

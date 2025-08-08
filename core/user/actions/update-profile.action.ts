@@ -4,7 +4,7 @@ import {
   UpdateProfileResponse,
 } from '@/core/auth/interfaces';
 
-import { handleApiErrors } from '@/core/auth/utils';
+import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
 
 export const updateProfile = async ({
   lastName,

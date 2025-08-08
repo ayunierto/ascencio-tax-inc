@@ -1,8 +1,8 @@
-import { ExceptionResponse } from '@/core/interfaces';
+import { HttpError } from '@/core/adapters/http/http-client.interface';
 import { Service } from './service.interface';
 
-export type CreateServiceResponse = Service | ExceptionResponse;
-export type GetServiceResponse = Service | ExceptionResponse;
-export type GetServicesResponse = Service[] | ExceptionResponse;
-export type UpdateServiceResponse = Service | ExceptionResponse;
-export type DeleteServiceResponse = Service | ExceptionResponse;
+export type CreateServiceResponse = Service | HttpError;
+export type GetServiceResponse = Service | HttpError;
+export type GetServicesResponse = Service[] | HttpError;
+export type UpdateServiceResponse = Service | HttpError;
+export type DeleteServiceResponse = Service | HttpError;

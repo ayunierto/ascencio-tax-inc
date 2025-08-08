@@ -1,19 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
-import {
-  ResendEmailVerificationCodeRequest,
-  ResendEmailVerificationResponse,
-} from '../interfaces';
-import { resendEmailCode } from '../actions';
+
 import Toast from 'react-native-toast-message';
+import { ResendEmailCodeResponse } from '../interfaces';
+import { authService } from '../services/AuthService';
 
 export const useResendEmailCodeMutation = () => {
-  return useMutation<
-    ResendEmailVerificationResponse,
-    Error,
-    ResendEmailVerificationCodeRequest
-  >({
-    mutationFn: async (data: ResendEmailVerificationCodeRequest) => {
-      return await resendEmailCode(data);
+  return useMutation<ResendEmailCodeResponse, Error, string>({
+    mutationFn: async (email: string) => {
+      return await authService.resendEmailCode({ email });
     },
     onSuccess: (response) => {
       if ('error' in response) {

@@ -4,15 +4,13 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
   ScrollView,
+  Text,
 } from 'react-native';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import {
-  VerifyEmailFormInputs,
-  verifyEmailSchema,
-} from '@/core/auth/schemas/verifyEmailSchema';
+
 import { useTimer } from '@/core/auth/hooks/useTimer';
 import Header from '@/core/auth/components/Header';
 import { Input } from '@/components/ui/Input';
@@ -20,6 +18,12 @@ import { Button } from '@/components/ui/Button';
 import ErrorMessage from '@/core/components/ErrorMessage';
 import { useVerifyEmailMutation } from '@/core/auth/hooks/useVerifyEmailMutation';
 import { useResendEmailCodeMutation } from '@/core/auth/hooks/useResendEmailCodeMutation';
+import {
+  VerifyEmailCodeRequest,
+  verifyEmailCodeSchema,
+} from '@/core/auth/schemas';
+import { Ionicons } from '@expo/vector-icons';
+import { theme } from '@/components/ui/theme';
 
 const VerifyEmail = () => {
   const { user } = useAuthStore();
@@ -37,8 +41,8 @@ const VerifyEmail = () => {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<VerifyEmailFormInputs>({
-    resolver: zodResolver(verifyEmailSchema),
+  } = useForm<VerifyEmailCodeRequest>({
+    resolver: zodResolver(verifyEmailCodeSchema),
     defaultValues: {
       email: user?.email || '',
       code: '',
@@ -47,7 +51,7 @@ const VerifyEmail = () => {
 
   // Handle email verification
   const { mutate: verifyEmail, isPending } = useVerifyEmailMutation();
-  const handleEmailVerification = async (data: VerifyEmailFormInputs) => {
+  const handleEmailVerification = async (data: VerifyEmailCodeRequest) => {
     if (user) {
       verifyEmail(data);
     }
@@ -56,15 +60,26 @@ const VerifyEmail = () => {
 
   const { mutate: resendEmailCode, isPending: isLoadingResend } =
     useResendEmailCodeMutation();
+
   const handleResendVerificationCode = async () => {
     if (user && user.email) {
       if (isRunning) return;
-      resendEmailCode({ email: user.email });
+      resendEmailCode(user.email);
 
       resetTimer();
       startTimer();
     }
   };
+
+  if (!user) {
+    return (
+      <SafeAreaView>
+        <View style={{ padding: 20 }}>
+          <Header title="Error" subtitle="User not found" />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView>
@@ -80,7 +95,7 @@ const VerifyEmail = () => {
             <View
               style={{
                 flex: 1,
-                gap: 10,
+                gap: 30,
                 maxWidth: 320,
                 marginHorizontal: 'auto',
               }}
@@ -102,36 +117,44 @@ const VerifyEmail = () => {
                       value={value}
                       onBlur={onBlur}
                       onChangeText={onChange}
-                      placeholder="123456"
                       keyboardType="numeric"
                       autoCapitalize="none"
                       autoComplete="off"
                       autoCorrect={false}
                       maxLength={6}
+                      error={!!errors.code}
+                      errorMessage={errors.code?.message}
                     />
                   )}
                 />
-                <ErrorMessage fieldErrors={errors.code} />
                 <ErrorMessage fieldErrors={errors.email} />
-              </View>
 
-              <Button
-                disabled={isPending}
-                loading={isPending}
-                onPress={handleSubmit(handleEmailVerification)}
-              >
-                Verify
-              </Button>
-              <Button
-                disabled={isLoadingResend || isRunning}
-                loading={isLoadingResend}
-                onPress={handleResendVerificationCode}
-                variant="outlined"
-              >
-                {timeRemaining === 0
-                  ? 'Resend code'
-                  : `Resend in ${timeRemaining}s`}
-              </Button>
+                <Button
+                  disabled={isPending}
+                  loading={isPending}
+                  onPress={handleSubmit(handleEmailVerification)}
+                >
+                  Verify
+                </Button>
+
+                <Button
+                  disabled={isLoadingResend || isRunning}
+                  loading={isLoadingResend}
+                  onPress={handleResendVerificationCode}
+                  variant="outlined"
+                  iconLeft={
+                    <Ionicons
+                      name="time-outline"
+                      size={24}
+                      color={theme.foreground}
+                    />
+                  }
+                >
+                  {timeRemaining === 0
+                    ? 'Resend code'
+                    : `Resend in ${timeRemaining}s`}
+                </Button>
+              </View>
             </View>
           </View>
         </KeyboardAvoidingView>

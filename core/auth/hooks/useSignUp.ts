@@ -1,9 +1,10 @@
-import useIPGeolocation from '@/core/hooks/useIPGeolocation';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import useIPGeolocation from '@/core/hooks/useIPGeolocation';
 import { useSignUpMutation } from './useSignUpMutation';
-import { SignUpFormInputs, signUpSchema } from '../schemas';
+import { SignUpRequest, signUpSchema } from '../schemas';
 
 export const useSignUp = () => {
   const { location } = useIPGeolocation();
@@ -23,13 +24,13 @@ export const useSignUp = () => {
     handleSubmit,
     formState: { errors: formErrors },
     setValue,
-  } = useForm<SignUpFormInputs>({
+  } = useForm<SignUpRequest>({
     resolver: zodResolver(signUpSchema),
   });
 
   // Handle the sign-up
   const { mutate: signUpUser, isPending, isError, error } = useSignUpMutation();
-  const handleSignUp = async (values: SignUpFormInputs): Promise<void> => {
+  const handleSignUp = async (values: SignUpRequest): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...rest } = values;
     signUpUser(rest);

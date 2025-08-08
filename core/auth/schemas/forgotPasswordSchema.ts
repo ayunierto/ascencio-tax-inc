@@ -1,8 +1,9 @@
-import { z } from 'zod';
-import { ForgotPasswordRequest } from '../interfaces';
+import z from 'zod';
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email(),
-}) satisfies z.ZodType<ForgotPasswordRequest>;
+  email: z.string().email({
+    message: 'Email must be a valid email.',
+  }),
+});
 
-export type ForgotPasswordInputs = z.infer<typeof forgotPasswordSchema>;
+export type ForgotPasswordRequest = z.infer<typeof forgotPasswordSchema>;

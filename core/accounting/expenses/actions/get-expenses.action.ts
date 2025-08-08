@@ -1,4 +1,4 @@
-import { handleApiErrors } from '@/core/auth/utils';
+import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
 import { GetExpensesResponse } from '../interfaces';
 import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 

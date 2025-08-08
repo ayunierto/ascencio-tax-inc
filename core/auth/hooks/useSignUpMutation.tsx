@@ -1,16 +1,16 @@
 import { useMutation } from '@tanstack/react-query';
-import { SignUpRequest, SignUpResponse } from '../interfaces';
+import { SignUpResponse } from '../interfaces';
 import { useAuthStore } from '../store/useAuthStore';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
+import { SignUpApiRequest } from '../schemas';
 
 export const useSignUpMutation = () => {
   const { signUp } = useAuthStore();
 
-  return useMutation<SignUpResponse, Error, SignUpRequest>({
-    mutationFn: async (data: SignUpRequest) => {
-      const response = await signUp(data);
-      return response;
+  return useMutation<SignUpResponse, Error, SignUpApiRequest>({
+    mutationFn: async (data) => {
+      return await signUp(data);
     },
     onSuccess: (response) => {
       if ('user' in response) {

@@ -3,11 +3,12 @@ import Toast from 'react-native-toast-message';
 import { useMutation } from '@tanstack/react-query';
 
 import { useAuthStore } from '../store/useAuthStore';
-import { SignInRequest, SignInResponse } from '../interfaces';
-import { resendEmailCode } from '../actions';
+import { SignInResponse } from '../interfaces';
+import { SignInRequest } from '../schemas';
+import { authService } from '../services/AuthService';
 
 export const useSignInMutation = () => {
-  const { signIn, setUser } = useAuthStore();
+  const { signIn } = useAuthStore();
 
   return useMutation<SignInResponse, Error, SignInRequest>({
     mutationFn: async (values: SignInRequest) => {
@@ -15,6 +16,8 @@ export const useSignInMutation = () => {
       return response;
     },
     onSuccess: (response, variables) => {
+      console.warn('SignInResponse:', response);
+
       if ('access_token' in response) {
         router.push('/(tabs)/(home)');
         Toast.show({
@@ -34,16 +37,7 @@ export const useSignInMutation = () => {
       // If the response indicates that the email is not verified,
       // redirect to the verification page
       if (response.error === 'EmailNotVerified') {
-        const emptyUser = {
-          createdAt: new Date(),
-          email: variables.email,
-          id: '',
-          firstName: '',
-          lastName: '',
-          roles: [],
-        };
-        setUser(emptyUser);
-        resendEmailCode({ email: variables.email });
+        authService.resendEmailCode({ email: variables.email });
         router.replace('/auth/verify-email');
         Toast.show({
           type: 'info',

@@ -59,11 +59,10 @@ const SignUp = () => {
                 name="firstName"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
-                    label="First Name"
+                    label="First name"
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
-                    placeholder="First Name"
                     autoCapitalize="words"
                     autoComplete="name"
                     errorMessage={formErrors.firstName?.message}
@@ -77,8 +76,7 @@ const SignUp = () => {
                 name="lastName"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
-                    label="Last Name"
-                    placeholder="Last Name"
+                    label="Last name"
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -100,7 +98,6 @@ const SignUp = () => {
                     onBlur={onBlur}
                     onChangeText={onChange}
                     keyboardType="email-address"
-                    placeholder="Email"
                     autoCapitalize="none"
                     autoComplete="email"
                     errorMessage={formErrors.email?.message}
@@ -109,7 +106,8 @@ const SignUp = () => {
                 )}
               />
 
-              <View style={{ gap: 10 }}>
+              {/* Phone Number */}
+              <View>
                 <View style={{ flexDirection: 'row', gap: 10, flex: 1 }}>
                   <Select
                     options={countryCodes}

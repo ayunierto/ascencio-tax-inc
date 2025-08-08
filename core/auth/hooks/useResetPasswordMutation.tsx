@@ -1,13 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
-import { ResetPasswordRequest, ResetPasswordResponse } from '../interfaces';
-import { resetPassword } from '../actions';
+import { ResetPasswordResponse } from '../interfaces';
 import Toast from 'react-native-toast-message';
 import { router } from 'expo-router';
+import { ResetPasswordRequest } from '../schemas';
+import { authService } from '../services/AuthService';
 
 export const useResetPasswordMutation = () => {
   return useMutation<ResetPasswordResponse, Error, ResetPasswordRequest>({
     mutationFn: async (data: ResetPasswordRequest) => {
-      return await resetPassword(data);
+      return await authService.resetPassword(data);
     },
     onSuccess: (response) => {
       if ('error' in response) {

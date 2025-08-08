@@ -1,7 +1,7 @@
 import { CreateExpenseRequest, CreateExpenseResponse } from '../interfaces';
 import { uploadImage } from '@/core/files/actions/upload-image.action';
 import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { handleApiErrors } from '@/core/auth/utils';
+import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
 
 export const createExpense = async (
   expense: CreateExpenseRequest

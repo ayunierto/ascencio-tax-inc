@@ -13,7 +13,6 @@ import {
   type TextInputFocusEventData,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-// Assuming 'theme' is correctly imported and defined.
 import { theme } from './theme';
 
 interface InputProps extends TextInputProps {
@@ -54,19 +53,22 @@ export const Input = ({
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const textInputRef = useRef<TextInput>(null);
 
-  // Usamos useRef para el valor animado para que no se reinicie en cada render.
+  // We use UseRef for the animated value so that it does not restart in each render.
   const animatedValue = useRef(new Animated.Value(0)).current;
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState(
+    props.secureTextEntry || false
+  );
 
   const hasValue = value && value.length > 0;
   const shouldFloat = isFocused || hasValue;
 
   // --- Animation Logic ---
   useEffect(() => {
-    // Anima el valor a 1 (flotando) o 0 (placeholder) basado en el estado.
+    // We use UseRef for the animated value so that it does not restart in each render.
     Animated.timing(animatedValue, {
       toValue: shouldFloat ? 1 : 0,
-      duration: 150, // Una duración ligeramente más rápida se siente más responsiva.
-      // ¡La mejora clave! Usamos el driver nativo para una animación fluida.
+      duration: 200, // Duration of the animation
       useNativeDriver: true,
     }).start();
   }, [shouldFloat, animatedValue]);
@@ -76,19 +78,19 @@ export const Input = ({
     event: NativeSyntheticEvent<TextInputFocusEventData>
   ): void => {
     setIsFocused(true);
-    onFocus?.(event); // Llama al onFocus original si existe.
+    onFocus?.(event); // Call the original onFocus if it exists.
   };
 
   const handleBlur = (
     event: NativeSyntheticEvent<TextInputFocusEventData>
   ): void => {
     setIsFocused(false);
-    onBlur?.(event); // Llama al onBlur original si existe.
+    onBlur?.(event); // Call the original onBlur if it exists.
   };
 
   // --- Dynamic Styles using useMemo for performance ---
 
-  // Memorizamos los estilos del contenedor para evitar recalcularlos en cada render.
+  // We memorize the styles of the container to avoid recalculating them on each render.
   const computedContainerStyle = useMemo<StyleProp<ViewStyle>>(() => {
     const borderColor = readOnly
       ? theme.mutedForeground
@@ -98,25 +100,25 @@ export const Input = ({
       ? focusedBorderColor
       : theme.input;
 
-    const borderWidth = isFocused || error ? 2 : 1;
+    const borderWidth = isFocused || error ? 2 : 2;
 
     return [styles.containerBase, { borderColor, borderWidth }, containerStyle];
   }, [isFocused, error, readOnly, focusedBorderColor, containerStyle]);
 
   const animatedLabelStyles = useMemo(() => {
-    // El label se mueve hacia arriba y se hace más pequeño.
+    // The label moves up and becomes smaller.
     const translateY = animatedValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, -26], // Mueve el label 26px hacia arriba.
+      outputRange: [0, -26], // Moves the label 26px up.
     });
 
-    // El label se escala al 85% de su tamaño original.
+    // The label scales to 85% of its original size.
     const scale = animatedValue.interpolate({
       inputRange: [0, 1],
       outputRange: [1, 0.85],
     });
 
-    // El color del label cambia según el foco y el estado de error.
+    // The label color changes based on focus and error state.
     const color = error
       ? theme.destructive
       : animatedValue.interpolate({
@@ -128,12 +130,12 @@ export const Input = ({
       styles.labelBase,
       labelStyle,
       { color },
-      // Es crucial que el `transform` esté al final para que la animación funcione.
+      // It is crucial that the `transform` is at the end for the animation to work.
       { transform: [{ translateY }, { scale }] },
     ];
   }, [animatedValue, labelStyle, error, focusedBorderColor]);
 
-  // Memorizamos los estilos del TextInput.
+  // We memorize the styles of TextInput.
   const computedInputStyle = useMemo<StyleProp<TextStyle>>(() => {
     return [
       styles.inputBase,
@@ -141,6 +143,10 @@ export const Input = ({
       inputStyle,
     ];
   }, [readOnly, inputStyle]);
+
+  const handleTogglePasswordVisibility = () => {
+    setIsPasswordVisible((prev) => !prev);
+  };
 
   return (
     <View style={[styles.root, rootStyle]}>
@@ -179,6 +185,7 @@ export const Input = ({
               placeholderTextColor={theme.muted}
               underlineColorAndroid="transparent"
               {...props}
+              secureTextEntry={isPasswordVisible}
             />
           </View>
 
@@ -188,6 +195,16 @@ export const Input = ({
               size={24}
               color={theme.primaryForeground}
               style={styles.icon}
+            />
+          )}
+
+          {props.secureTextEntry && (
+            <Ionicons
+              name={isPasswordVisible ? 'eye' : 'eye-off'}
+              size={24}
+              color={theme.primaryForeground}
+              style={styles.icon}
+              onPress={handleTogglePasswordVisibility}
             />
           )}
         </View>
@@ -211,11 +228,11 @@ export const Input = ({
 const styles = StyleSheet.create({
   root: {
     width: '100%',
-    marginBottom: 16,
+    // marginBottom: 16,
   },
   containerBase: {
     borderRadius: theme.radius,
-    height: 52, // Aumentamos la altura para dar más espacio al label flotante.
+    height: 52,
     paddingHorizontal: 12,
     backgroundColor: theme.background,
   },
@@ -227,26 +244,19 @@ const styles = StyleSheet.create({
   },
   inputArea: {
     flex: 1,
-    justifyContent: 'center', // Centra el TextInput verticalmente.
+    justifyContent: 'center',
   },
   labelBase: {
     position: 'absolute',
-    // El origen del transform es el centro por defecto.
-    // Lo movemos a la izquierda para que escale desde ahí.
     left: 0,
-    // Los estilos de animación (color, transform) se aplican dinámicamente.
-    backgroundColor: theme.background, // Para que el label cubra el borde al flotar.
+    backgroundColor: theme.background,
     paddingHorizontal: 4,
   },
   inputBase: {
-    // El padding vertical se ajusta para que no se solape con el label.
-    // La posición vertical ya está manejada por el `justifyContent` del contenedor.
     height: '100%',
     fontSize: 16,
   },
-  icon: {
-    // Estilos para los íconos si es necesario.
-  },
+  icon: {},
   helperTextBase: {
     marginTop: 4,
     fontSize: 12,

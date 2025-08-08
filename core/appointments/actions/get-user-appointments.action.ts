@@ -1,7 +1,7 @@
 import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 import * as SecureStore from 'expo-secure-store';
 import { GetCurrentUserAppointmentsResponse } from '../interfaces';
-import { handleApiErrors } from '@/core/auth/utils';
+import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
 
 export const getUserAppointments = async (
   state: 'pending' | 'past' = 'pending'

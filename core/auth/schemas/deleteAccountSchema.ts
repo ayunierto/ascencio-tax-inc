@@ -1,11 +1,9 @@
-import { z } from 'zod';
-import { DeleteAccountRequest } from '../interfaces';
+import z from 'zod';
 
 export const deleteAccountSchema = z.object({
-  email: z
-    .string({ required_error: 'Email is required' })
-    .email({ message: 'Invalid email address' }),
-  password: z.string({ required_error: 'Password is required' }).min(6),
-}) satisfies z.ZodType<DeleteAccountRequest>;
+  password: z.string().min(6, {
+    message: 'Password must be at least 6 characters long.',
+  }),
+});
 
-export type DeleteAccountInputs = z.infer<typeof deleteAccountSchema>;
+export type DeleteAccountRequest = z.infer<typeof deleteAccountSchema>;

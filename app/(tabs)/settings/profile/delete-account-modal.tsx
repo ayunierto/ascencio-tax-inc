@@ -11,12 +11,8 @@ import { theme } from '@/components/ui/theme';
 import { Input } from '@/components/ui/Input';
 import { ThemedText } from '@/components/ui/ThemedText';
 import ErrorMessage from '@/core/components/ErrorMessage';
-import Toast from 'react-native-toast-message';
-import {
-  DeleteAccountInputs,
-  deleteAccountSchema,
-} from '@/core/auth/schemas/deleteAccountSchema';
 import { useDeleteAccountMutation } from '@/core/auth/hooks';
+import { DeleteAccountRequest, deleteAccountSchema } from '@/core/auth/schemas';
 
 const DeleteAccountModal = () => {
   const { user } = useAuthStore();
@@ -25,33 +21,14 @@ const DeleteAccountModal = () => {
     control,
     handleSubmit,
     formState: { errors },
-    setError,
-  } = useForm<DeleteAccountInputs>({
+  } = useForm<DeleteAccountRequest>({
     resolver: zodResolver(deleteAccountSchema),
   });
 
   const { mutate: deleteAccount, isPending } = useDeleteAccountMutation();
 
-  const handleAccountDeletion = async ({
-    email,
-    password,
-  }: DeleteAccountInputs) => {
-    // Verify if email matches the user's email
-    if (user && user.email === email) {
-      deleteAccount({ password });
-
-      return;
-    }
-
-    setError('email', {
-      type: 'validate',
-      message: 'The email entered does not match the registered one.',
-    });
-    Toast.show({
-      type: 'error',
-      text1: 'Email Mismatch',
-      text2: 'The email entered does not match the registered one.',
-    });
+  const handleAccountDeletion = async ({ password }: DeleteAccountRequest) => {
+    deleteAccount({ password });
   };
 
   return (
@@ -80,25 +57,6 @@ const DeleteAccountModal = () => {
       </ThemedText>
 
       {errors.root && <ErrorMessage message={errors.root.message} />}
-
-      <Controller
-        control={control}
-        name="email"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <Input
-            label="Email"
-            value={value}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            keyboardType="email-address"
-            placeholder="Email"
-            autoCapitalize="none"
-            autoComplete="off"
-            error={!!errors.email}
-            errorMessage={errors.email?.message}
-          />
-        )}
-      />
 
       <Controller
         control={control}

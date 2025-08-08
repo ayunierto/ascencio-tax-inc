@@ -1,6 +1,6 @@
 import { UploadImageFile } from '../interfaces/upload-image.interface';
 import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { handleApiErrors } from '@/core/auth/utils';
+import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
 import { ExceptionResponse } from '@/core/interfaces';
 import { ImagePickerAsset } from 'expo-image-picker';
 

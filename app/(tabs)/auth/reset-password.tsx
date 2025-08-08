@@ -18,10 +18,7 @@ import {
   useResetPasswordMutation,
   useTimer,
 } from '@/core/auth/hooks';
-import {
-  ResetPasswordFormInputs,
-  resetPasswordSchema,
-} from '@/core/auth/schemas';
+import { ResetPasswordRequest, resetPasswordSchema } from '@/core/auth/schemas';
 
 const VerifyCode = () => {
   const { user } = useAuthStore();
@@ -41,12 +38,12 @@ const VerifyCode = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-  } = useForm<ResetPasswordFormInputs>({
+  } = useForm<ResetPasswordRequest>({
     resolver: zodResolver(resetPasswordSchema),
   });
 
   const { mutate: verifyEmail, isPending } = useResetPasswordMutation();
-  const handleEmailVerification = async (data: ResetPasswordFormInputs) => {
+  const handleEmailVerification = async (data: ResetPasswordRequest) => {
     verifyEmail(data);
     resetTimer();
     startTimer();
@@ -56,7 +53,7 @@ const VerifyCode = () => {
     useResendResetPasswordMutation();
   const handleResendPasswordCode = async () => {
     if (isRunning) return;
-    resendResetPasswordCode({ email: user?.email || '' });
+    resendResetPasswordCode(user?.email || '');
     startTimer();
   };
 
@@ -86,7 +83,7 @@ const VerifyCode = () => {
                 }
               />
 
-              <View style={{ gap: 10 }}>
+              <View>
                 <Controller
                   control={control}
                   name="code"
@@ -134,6 +131,7 @@ const VerifyCode = () => {
               >
                 Change Password
               </Button>
+
               <Button
                 disabled={isPending || isRunning}
                 loading={isLoadingResend}

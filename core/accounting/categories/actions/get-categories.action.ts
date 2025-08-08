@@ -1,7 +1,7 @@
 import { httpClient } from '@/core/adapters/http/httpClient.adapter';
 import { Category } from '../interfaces';
 import { ExceptionResponse } from '@/core/interfaces';
-import { handleApiErrors } from '@/core/auth/utils';
+import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
 
 export const getCategories = async (): Promise<
   Category[] | ExceptionResponse

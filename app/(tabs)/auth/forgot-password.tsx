@@ -9,7 +9,7 @@ import Header from '../../../core/auth/components/Header';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import {
-  ForgotPasswordInputs,
+  ForgotPasswordRequest,
   forgotPasswordSchema,
 } from '@/core/auth/schemas';
 import { useForgotPasswordMutation } from '@/core/auth/hooks/useForgotPasswordMutation';
@@ -19,12 +19,12 @@ const ForgotPassword = () => {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<ForgotPasswordInputs>({
+  } = useForm<ForgotPasswordRequest>({
     resolver: zodResolver(forgotPasswordSchema),
   });
 
   const { mutate: forgotPassword, isPending } = useForgotPasswordMutation();
-  const handleForgotPassword = async (values: ForgotPasswordInputs) => {
+  const handleForgotPassword = async (values: ForgotPasswordRequest) => {
     forgotPassword(values);
   };
 

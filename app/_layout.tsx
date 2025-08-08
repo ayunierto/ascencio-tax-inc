@@ -13,7 +13,6 @@ import { CustomTheme } from '@/theme/CustomTheme';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-// Create a client
 const queryClient = new QueryClient();
 
 export default function RootLayout() {

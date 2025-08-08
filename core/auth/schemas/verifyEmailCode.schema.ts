@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const resetPasswordSchema = z.object({
+export const verifyEmailCodeSchema = z.object({
   email: z.string().email({
     message: 'Email must be a valid email.',
   }),
@@ -12,9 +12,6 @@ export const resetPasswordSchema = z.object({
     .max(6, {
       message: 'Code must be exactly 6 characters long.',
     }),
-  newPassword: z.string().min(6, {
-    message: 'Password must be at least 6 characters long.',
-  }),
 });
 
-export type ResetPasswordRequest = z.infer<typeof resetPasswordSchema>;
+export type VerifyEmailCodeRequest = z.infer<typeof verifyEmailCodeSchema>;

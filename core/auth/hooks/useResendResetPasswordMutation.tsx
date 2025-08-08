@@ -1,19 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
-import {
-  ResendResetPasswordCodeRequest,
-  ResendResetPasswordCodeResponse,
-} from '../interfaces';
-import { resendResetPasswordCode } from '../actions';
+import { ResendResetPasswordCodeResponse } from '../interfaces';
 import Toast from 'react-native-toast-message';
+import { authService } from '../services/AuthService';
 
 export const useResendResetPasswordMutation = () => {
-  return useMutation<
-    ResendResetPasswordCodeResponse,
-    Error,
-    ResendResetPasswordCodeRequest
-  >({
-    mutationFn: async (data: ResendResetPasswordCodeRequest) => {
-      return await resendResetPasswordCode(data);
+  return useMutation<ResendResetPasswordCodeResponse, Error, string>({
+    mutationFn: async (email) => {
+      return await authService.resendResetPasswordCode({ email });
     },
     onSuccess: (response) => {
       if ('error' in response) {

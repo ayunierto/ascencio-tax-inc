@@ -2,10 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 
 import Toast from 'react-native-toast-message';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import {
-  UpdateProfileRequest,
-  UpdateProfileResponse,
-} from '@/core/auth/interfaces';
+import { UpdateProfileResponse } from '@/core/auth/interfaces';
+import { UpdateProfileRequest } from '@/core/auth/schemas';
 
 export const useUpdateProfileMutation = () => {
   const { updateProfile } = useAuthStore();
@@ -13,13 +11,14 @@ export const useUpdateProfileMutation = () => {
   return useMutation<UpdateProfileResponse, Error, UpdateProfileRequest>({
     mutationFn: async (data: UpdateProfileRequest) => {
       const response = await updateProfile(data);
+      console.log(response);
       return response;
     },
     onSuccess: (response) => {
-      if ('error' in response) {
+      if ('statusCode' in response) {
         Toast.show({
           type: 'error',
-          text1: 'Error',
+          text1: 'Profile update failed',
           text2: response.message,
         });
         return;

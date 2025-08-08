@@ -1,5 +1,5 @@
 import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { handleApiErrors } from '@/core/auth/utils';
+import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
 import { GetAccountsResponse } from '../interfaces';
 
 export const getAccounts = async (

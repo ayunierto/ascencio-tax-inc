@@ -64,7 +64,6 @@ const SignInScreen = () => {
                       onBlur={onBlur}
                       onChangeText={onChange}
                       keyboardType="email-address"
-                      placeholder="user@example.com"
                       autoCapitalize="none"
                       autoComplete="email"
                       error={!!formErrors.email}
@@ -81,13 +80,11 @@ const SignInScreen = () => {
                   render={({ field: { onChange, onBlur, value } }) => (
                     <Input
                       leadingIcon="lock-closed-outline"
-                      // trailingIcon="eye-outline"
                       label="Password"
                       value={value}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       secureTextEntry={true}
-                      placeholder="Password"
                       autoComplete="password"
                       autoCapitalize="none"
                       error={!!formErrors.password}
@@ -97,6 +94,7 @@ const SignInScreen = () => {
                 />
               </View>
             </View>
+
             <ThemedText
               style={{
                 color: theme.primary,
@@ -107,6 +105,7 @@ const SignInScreen = () => {
             >
               Forgot password?
             </ThemedText>
+
             <Button
               loading={isPending}
               disabled={isPending}

@@ -5,6 +5,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   SafeAreaView,
+  StyleSheet,
 } from 'react-native';
 import { Link } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
@@ -15,16 +16,12 @@ import { Input } from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Divider from '@/components/ui/Divider';
 import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import ErrorMessage from '@/core/components/ErrorMessage';
 import { theme } from '@/components/ui/theme';
 import { useCountryCodes } from '@/core/hooks/useCountryCodes';
 import Select from '@/components/ui/Select';
 import useIPGeolocation from '@/core/hooks/useIPGeolocation';
-import {
-  ProfileFormValues,
-  profileSchema,
-} from '@/core/user/schemas/updateProfileSchema';
 import { useUpdateProfileMutation } from '@/core/user/hooks/useUpdateProfileMutation';
+import { UpdateProfileRequest, updateProfileSchema } from '@/core/auth/schemas';
 
 const ProfileScreen = () => {
   const { user } = useAuthStore();
@@ -50,21 +47,19 @@ const ProfileScreen = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-  } = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+  } = useForm<UpdateProfileRequest>({
+    resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
       phoneNumber: user.phoneNumber || '',
       countryCode: user.countryCode || callingCode || '',
-      password: '',
-      confirmPassword: '',
     },
   });
 
   const { mutate: updateProfile, isPending } = useUpdateProfileMutation();
-  const handleUpdateProfile = async (values: ProfileFormValues) => {
+  const handleUpdateProfile = async (values: UpdateProfileRequest) => {
     updateProfile(values);
   };
 
@@ -75,11 +70,11 @@ const ProfileScreen = () => {
           <View
             style={{
               flex: 1,
-              gap: 20,
               padding: 20,
               width: '100%',
               maxWidth: 500,
               marginHorizontal: 'auto',
+              gap: 10,
             }}
           >
             <Controller
@@ -94,10 +89,11 @@ const ProfileScreen = () => {
                   placeholder="First name"
                   autoCapitalize="words"
                   autoComplete="name"
+                  error={!!errors.firstName}
+                  errorMessage={errors.firstName?.message || ''}
                 />
               )}
             />
-            <ErrorMessage fieldErrors={errors.firstName} />
 
             <Controller
               control={control}
@@ -105,16 +101,16 @@ const ProfileScreen = () => {
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
                   label="Last Name"
-                  placeholder="Last name"
                   value={value}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   autoCapitalize="words"
                   autoComplete="name-family"
+                  error={!!errors.lastName}
+                  errorMessage={errors.lastName?.message || ''}
                 />
               )}
             />
-            <ErrorMessage fieldErrors={errors.lastName} />
 
             <Controller
               control={control}
@@ -126,14 +122,14 @@ const ProfileScreen = () => {
                   onBlur={onBlur}
                   onChangeText={onChange}
                   keyboardType="email-address"
-                  placeholder="Email"
                   autoCapitalize="none"
                   autoComplete="email"
                   readOnly={true}
+                  error={!!errors.email}
+                  errorMessage={errors.email?.message || ''}
                 />
               )}
             />
-            <ErrorMessage fieldErrors={errors.email} />
 
             <View style={{ gap: 6 }}>
               <View style={{ flexDirection: 'row', gap: 10, flex: 1 }}>
@@ -159,16 +155,15 @@ const ProfileScreen = () => {
                       onBlur={onBlur}
                       onChangeText={onChange}
                       keyboardType="phone-pad"
-                      placeholder="Phone Number"
                       autoCapitalize="none"
                       autoComplete="tel"
                       rootStyle={{ flex: 2 }}
+                      error={!!errors.phoneNumber}
+                      errorMessage={errors.phoneNumber?.message || ''}
                     />
                   )}
                 />
               </View>
-              <ErrorMessage fieldErrors={errors.countryCode} />
-              <ErrorMessage fieldErrors={errors.phoneNumber} />
             </View>
 
             <Controller
@@ -182,60 +177,48 @@ const ProfileScreen = () => {
                   onChangeText={onChange}
                   autoCapitalize="none"
                   secureTextEntry
-                  placeholder="Password"
                   autoComplete="password-new"
+                  error={!!errors.password}
+                  errorMessage={errors.password?.message || ''}
                 />
               )}
             />
-            <ErrorMessage fieldErrors={errors.password} />
 
-            <Controller
-              control={control}
-              name="confirmPassword"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  label="Confirm Password"
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  autoCapitalize="none"
-                  secureTextEntry
-                  placeholder="Confirm Password"
-                  autoComplete="password-new"
-                />
-              )}
-            />
-            <ErrorMessage fieldErrors={errors.confirmPassword} />
+            <View style={{ marginTop: 10, gap: 10 }}>
+              <Button
+                loading={isPending}
+                disabled={isPending}
+                onPress={handleSubmit(handleUpdateProfile)}
+              >
+                Update
+              </Button>
 
-            <Button
-              loading={isPending}
-              disabled={isPending}
-              onPress={handleSubmit(handleUpdateProfile)}
-            >
-              Update
-            </Button>
+              <Divider />
 
-            <Divider />
-
-            <Link
-              href={'/settings/profile/delete-account-modal'}
-              style={{
-                color: theme.destructive,
-                padding: 13,
-                borderColor: theme.destructive,
-                borderWidth: 1,
-                borderRadius: theme.radius,
-                height: 48,
-                textAlign: 'center',
-              }}
-            >
-              Delete account
-            </Link>
+              <Link
+                href={'/settings/profile/delete-account-modal'}
+                style={styles.deleteButton}
+              >
+                Delete account
+              </Link>
+            </View>
           </View>
         </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  deleteButton: {
+    color: theme.destructive,
+    padding: 13,
+    borderColor: theme.destructive,
+    borderWidth: 1,
+    borderRadius: theme.radius,
+    height: 48,
+    textAlign: 'center',
+  },
+});
 
 export default ProfileScreen;

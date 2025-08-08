@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { SignInFormInputs, signInSchema } from '../schemas';
+import { SignInRequest, signInSchema } from '../schemas';
 import { useSignInMutation } from './useSignInMutation';
 import { useAuthStore } from '../store/useAuthStore';
 
@@ -11,7 +11,7 @@ export const useSignIn = () => {
     control,
     handleSubmit,
     formState: { errors: formErrors },
-  } = useForm<SignInFormInputs>({
+  } = useForm<SignInRequest>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: user?.email || '',
@@ -19,10 +19,10 @@ export const useSignIn = () => {
     },
   });
 
-  const { mutate: signInUser, isPending, isError, error } = useSignInMutation();
+  const { mutate: signIn, isPending, isError, error } = useSignInMutation();
 
-  const handleSignIn = (values: SignInFormInputs) => {
-    signInUser(values);
+  const handleSignIn = (values: SignInRequest) => {
+    signIn(values);
   };
 
   return {
