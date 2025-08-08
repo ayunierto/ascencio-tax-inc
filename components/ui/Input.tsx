@@ -151,7 +151,10 @@ export const Input = ({
               name={leadingIcon}
               size={24}
               color={theme.primaryForeground}
-              style={styles.icon}
+              style={[
+                styles.icon,
+                error ? [styles.errorText, errorTextStyle] : null,
+              ]}
             />
           )}
 
