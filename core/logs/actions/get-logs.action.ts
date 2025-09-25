@@ -1,18 +1,13 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { GetLogsResponse } from '../interfaces';
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
+import { api } from "@/core/api/api";
+import { Log } from "../interfaces";
 
-export const getLogs = async (
-  limit = 6,
-  offset = 0
-): Promise<GetLogsResponse> => {
+export const getLogs = async (limit = 6, offset = 0): Promise<Log[]> => {
   try {
-    const res = await httpClient.get<GetLogsResponse>(
+    const { data } = await api.get<Log[]>(
       `logs?limit=${limit}&offset=${offset}`
     );
-    return res;
+    return data;
   } catch (error) {
-    console.error(error);
-    return handleApiErrors(error, 'getLogs');
+    throw error;
   }
 };

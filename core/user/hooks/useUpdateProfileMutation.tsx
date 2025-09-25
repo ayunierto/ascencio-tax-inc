@@ -1,39 +1,39 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import Toast from 'react-native-toast-message';
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import { UpdateProfileResponse } from '@/core/auth/interfaces';
-import { UpdateProfileRequest } from '@/core/auth/schemas';
+import Toast from "react-native-toast-message";
+import { useAuthStore } from "@/core/auth/store/useAuthStore";
+import { updateProfileAction } from "../actions/update-profile.action";
+import { UpdateProfileRequest } from "../schemas/update-profile.schema";
+import { UpdateProfileResponse } from "../interfaces/update-profile.interface";
+import { AxiosError } from "axios";
+import { ServerException } from "@/core/interfaces/server-exception.response";
 
 export const useUpdateProfileMutation = () => {
-  const { updateProfile } = useAuthStore();
-
-  return useMutation<UpdateProfileResponse, Error, UpdateProfileRequest>({
+  return useMutation<
+    UpdateProfileResponse,
+    AxiosError<ServerException>,
+    UpdateProfileRequest
+  >({
     mutationFn: async (data: UpdateProfileRequest) => {
-      const response = await updateProfile(data);
+      const response = await updateProfileAction(data);
       console.log(response);
       return response;
     },
     onSuccess: (response) => {
-      if ('statusCode' in response) {
-        Toast.show({
-          type: 'error',
-          text1: 'Profile update failed',
-          text2: response.message,
-        });
-        return;
-      }
-
       Toast.show({
-        type: 'success',
-        text1: 'Profile updated successfully',
+        type: "error",
+        text1: "Profile update failed",
+        text2: response.message,
       });
     },
     onError: (error) => {
       Toast.show({
-        type: 'error',
-        text1: 'Profile update failed',
-        text2: error.message || 'An error occurred while updating the profile.',
+        type: "error",
+        text1: "Profile update failed",
+        text2:
+          error.response?.data.message ||
+          error.message ||
+          "An error occurred while updating the profile.",
       });
     },
   });

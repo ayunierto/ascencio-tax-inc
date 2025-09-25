@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import * as SecureStore from 'expo-secure-store';
-import { bookAppointment } from '@/core/appointments/actions/book-appointment.action';
-import { Service } from '../interfaces';
+import { create } from "zustand";
+import * as SecureStore from "expo-secure-store";
+import { bookAppointment } from "@/core/appointments/actions/book-appointment.action";
+import { Service } from "../interfaces";
 
 export interface BookingState {
   selectedService: Service | undefined;
@@ -31,7 +31,7 @@ export const useBookingStore = create<BookingState>()((set, get) => ({
   selectService: async (selectedService: Service) => {
     set({ selectedService });
     await SecureStore.setItemAsync(
-      'selectedService',
+      "selectedService",
       JSON.stringify(selectedService)
     );
   },

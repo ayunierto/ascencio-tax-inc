@@ -1,21 +1,19 @@
-import React from 'react';
-import { Stack } from 'expo-router';
-import { theme } from '@/components/ui/theme';
+import React from "react";
+import { Stack } from "expo-router";
+import { theme } from "@/components/ui/theme";
 
-const MyBookingsLayout = (): JSX.Element => {
+export default function MyBookingsLayout() {
   return (
     <Stack
       screenOptions={{
         headerStyle: {
           backgroundColor: theme.background,
         },
-        headerTitleAlign: 'center',
+        headerTitleAlign: "center",
         headerTintColor: theme.foreground,
-        title: 'Bookings',
+        title: "Bookings",
         headerShadowVisible: false,
       }}
     />
   );
-};
-
-export default MyBookingsLayout;
+}

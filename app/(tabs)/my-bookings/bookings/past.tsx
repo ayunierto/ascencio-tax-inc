@@ -1,58 +1,56 @@
-import { View, Text, Linking, TouchableOpacity } from 'react-native';
-import React from 'react';
-import { getUserAppointments } from '@/core/appointments/actions/get-user-appointments.action';
-import { useQuery } from '@tanstack/react-query';
-import { ScrollView } from 'react-native-gesture-handler';
-import { DateTime } from 'luxon';
-import Loader from '@/components/Loader';
-import { theme } from '@/components/ui/theme';
-import { ThemedText } from '@/components/ui/ThemedText';
-import { SimpleCardHeaderSubTitle } from '@/components/ui/Card/SimpleCardHeaderSubTitle';
-import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from '@/components/ui';
-import { Ionicons } from '@expo/vector-icons';
-import { EmptyList } from '@/core/components';
-import { Appointment } from '@/core/appointments/interfaces/appointmentResponse';
-import { CardContent } from '@/components/ui/Card/CardContent';
+import { View, Text, Linking, TouchableOpacity } from "react-native";
+import React from "react";
+import { getUserAppointments } from "@/core/appointments/actions/get-user-appointments.action";
+import { useQuery } from "@tanstack/react-query";
+import { ScrollView } from "react-native-gesture-handler";
+import { DateTime } from "luxon";
+import Loader from "@/components/Loader";
+import { theme } from "@/components/ui/theme";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { SimpleCardHeaderSubTitle } from "@/components/ui/Card/SimpleCardHeaderSubTitle";
+import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from "@/components/ui";
+import { Ionicons } from "@expo/vector-icons";
+import { EmptyContent } from "@/core/components";
+import { Appointment } from "@/core/appointments/interfaces/appointmentResponse";
+import { CardContent } from "@/components/ui/Card/CardContent";
+import { AxiosError } from "axios";
+import { ServerException } from "@/core/interfaces/server-exception.response";
 
 const PastBookings = (): JSX.Element => {
   const {
     data: historicalBookings,
-    isPending,
+    isLoading,
     isError,
     error,
-  } = useQuery({
-    queryKey: ['PastAppts'],
+  } = useQuery<Appointment[], AxiosError<ServerException>>({
+    queryKey: ["PastAppts"],
     queryFn: async () => {
-      const data = await getUserAppointments('past');
+      const data = await getUserAppointments("past");
       return data;
     },
     staleTime: 1000 * 60, // 1 min
   });
 
-  if (isPending) {
-    return <Loader />;
-  }
-
   if (isError) {
-    return <EmptyList title="Error." subtitle={error.message} />;
-  }
-
-  if ('error' in historicalBookings) {
-    return <EmptyList title="Error." subtitle={historicalBookings.message} />;
-  }
-
-  if (historicalBookings && historicalBookings.length === 0) {
     return (
-      <View
-        style={{
-          flex: 1,
-        }}
-      >
-        <EmptyList
-          title="No appointments found."
-          subtitle="Has no previous appointments."
-        />
-      </View>
+      <EmptyContent
+        title="Error"
+        subtitle={
+          error.response?.data.message || error.message || "An error occurred"
+        }
+      />
+    );
+  }
+  if (isLoading) {
+    return <Loader message="Loading appointments..." />;
+  }
+
+  if (!historicalBookings || historicalBookings.length === 0) {
+    return (
+      <EmptyContent
+        title="No past appointments found"
+        subtitle="You have no past appointments"
+      />
     );
   }
 
@@ -70,7 +68,7 @@ const PastBookings = (): JSX.Element => {
               <CardContent>
                 <SimpleCardHeader>
                   <Ionicons
-                    name={'calendar-outline'}
+                    name={"calendar-outline"}
                     color={theme.foreground}
                     size={24}
                   />
@@ -80,11 +78,11 @@ const PastBookings = (): JSX.Element => {
                     </SimpleCardHeaderTitle>
                     <SimpleCardHeaderSubTitle>
                       {DateTime.fromISO(appt.startDateAndTime).toLocaleString({
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: 'numeric',
-                        minute: '2-digit',
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "numeric",
+                        minute: "2-digit",
                         hour12: true,
                       })}
                     </SimpleCardHeaderSubTitle>
@@ -93,11 +91,11 @@ const PastBookings = (): JSX.Element => {
                 <View>
                   <ThemedText>{`Staff: ${appt.staff.firstName} ${appt.staff.lastName}`}</ThemedText>
                   <ThemedText>
-                    Meeting link:{' '}
+                    Meeting link:{" "}
                     <Text
                       style={{
                         color: theme.primary,
-                        textDecorationLine: 'underline',
+                        textDecorationLine: "underline",
                       }}
                       onPress={() => Linking.openURL(appt.zoomMeetingLink)}
                     >

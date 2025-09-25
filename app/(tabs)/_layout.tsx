@@ -1,26 +1,26 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import React from "react";
+import { Tabs } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
+import { Ionicons } from "@expo/vector-icons";
 
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import Loader from '@/components/Loader';
-import { theme } from '@/components/ui/theme';
-import { RevenueCatProvider } from '@/providers/RevenueCat';
-import { useQuery } from '@tanstack/react-query';
-import { CheckStatusResponse } from '@/core/auth/interfaces';
+import { useAuthStore } from "@/core/auth/store/useAuthStore";
+import Loader from "@/components/Loader";
+import { theme } from "@/components/ui/theme";
+import { RevenueCatProvider } from "@/providers/RevenueCat";
 
 export default function TabLayout() {
-  const { status, checkStatus } = useAuthStore();
+  const { checkAuthStatus, authStatus } = useAuthStore();
 
-  const { isPending } = useQuery<CheckStatusResponse>({
-    queryKey: ['checkStatus'],
-    queryFn: checkStatus,
-    staleTime: 1000 * 5, // 5 seconds
+  const { isLoading } = useQuery({
+    queryKey: ["auth"],
+    queryFn: checkAuthStatus,
+    retry: false,
+    refetchInterval: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true,
   });
 
-  if (status === 'checking' || isPending) {
-    return <Loader />;
+  if (isLoading) {
+    return <Loader message="Loading..." />;
   }
 
   return (
@@ -36,17 +36,17 @@ export default function TabLayout() {
             paddingTop: 4,
             height: 65,
           },
-          animation: 'shift',
+          animation: "fade",
         }}
       >
         <Tabs.Screen
           name="(home)"
           options={{
-            title: 'Home',
+            title: "Home",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 size={28}
-                name={focused ? 'home' : 'home-outline'}
+                name={focused ? "home" : "home-outline"}
                 color={color}
               />
             ),
@@ -57,14 +57,14 @@ export default function TabLayout() {
           name="my-bookings"
           options={{
             href:
-              status === 'authenticated'
-                ? '/(tabs)/my-bookings/bookings'
+              authStatus === "authenticated"
+                ? "/(tabs)/my-bookings/bookings"
                 : null,
-            title: 'My Bookings',
+            title: "My Bookings",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 size={28}
-                name={focused ? 'calendar' : 'calendar-outline'}
+                name={focused ? "calendar" : "calendar-outline"}
                 color={color}
               />
             ),
@@ -75,12 +75,14 @@ export default function TabLayout() {
           name="accounting"
           options={{
             href:
-              status === 'authenticated' ? '/(tabs)/accounting/receipts' : null,
-            title: 'Receipts',
+              authStatus === "authenticated"
+                ? "/(tabs)/accounting/receipts"
+                : null,
+            title: "Receipts",
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 size={28}
-                name={focused ? 'receipt' : 'receipt-outline'}
+                name={focused ? "receipt" : "receipt-outline"}
                 color={color}
               />
             ),
@@ -90,12 +92,12 @@ export default function TabLayout() {
         <Tabs.Screen
           name="settings"
           options={{
-            title: 'Settings',
-            href: status === 'authenticated' ? '/(tabs)/settings' : null,
+            title: "Settings",
+            href: authStatus === "authenticated" ? "/(tabs)/settings" : null,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 size={28}
-                name={focused ? 'settings' : 'settings-outline'}
+                name={focused ? "settings" : "settings-outline"}
                 color={color}
               />
             ),
@@ -113,13 +115,14 @@ export default function TabLayout() {
         <Tabs.Screen
           name="auth"
           options={{
-            title: 'User',
-            href: status === 'authenticated' ? null : '/(tabs)/auth/sign-in',
+            title: "User",
+            href:
+              authStatus === "authenticated" ? null : "/(tabs)/auth/sign-in",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 size={28}
-                name={focused ? 'person' : 'person-outline'}
+                name={focused ? "person" : "person-outline"}
                 color={color}
               />
             ),

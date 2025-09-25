@@ -1,4 +1,4 @@
-export interface BasicUser {
+export interface User {
   id: string;
   firstName: string;
   lastName: string;
@@ -7,7 +7,7 @@ export interface BasicUser {
   phoneNumber?: string;
   locale?: string;
   roles: string[];
-  lastLoginAt?: Date;
-  createdAt: Date;
-  updatedAt?: Date;
+  lastLoginAt: string;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -1,16 +1,11 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { GetServicesResponse } from '../interfaces';
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
+import { api } from "@/core/api/api";
+import { GetServicesResponse } from "../interfaces";
 
 export const getServices = async (): Promise<GetServicesResponse> => {
   try {
-    const services = await httpClient.get<GetServicesResponse>('services', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return services;
+    const { data } = await api.get<GetServicesResponse>("/services");
+    return data;
   } catch (error) {
-    return handleApiErrors(error, 'getServices');
+    throw error;
   }
 };

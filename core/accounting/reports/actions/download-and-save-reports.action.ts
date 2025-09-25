@@ -1,6 +1,6 @@
-import * as FileSystem from 'expo-file-system';
-import { storageAdapter } from '@/core/adapters/StorageAdapter';
-import { DownloadAndSaveReportResponse } from '../interfaces';
+import * as FileSystem from "expo-file-system";
+import { DownloadAndSaveReportResponse } from "../interfaces";
+import { StorageAdapter } from "@/core/adapters/storage.adapter";
 
 export const DownloadAndSaveReport = async (
   startDate: string,
@@ -8,11 +8,11 @@ export const DownloadAndSaveReport = async (
 ): Promise<DownloadAndSaveReportResponse> => {
   const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-  const token = await storageAdapter.getAccessToken();
+  const token = await StorageAdapter.getItem("access_token");
   if (!token) {
     return {
-      message: 'Download and save report failed for token not found.',
-      error: 'Token not found',
+      message: "Download and save report failed for token not found.",
+      error: "Token not found",
     };
   }
 
@@ -29,10 +29,10 @@ export const DownloadAndSaveReport = async (
 
     return uri;
   } catch (error) {
-    console.error('Error when downloading and saving pdf:', error);
+    console.error("Error when downloading and saving pdf:", error);
     return {
-      message: 'Download and save report failed.',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      message: "Download and save report failed.",
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 };

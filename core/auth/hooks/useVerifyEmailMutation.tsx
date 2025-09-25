@@ -1,42 +1,39 @@
-import { useMutation } from '@tanstack/react-query';
-import { VerifyEmailCodeRequest, VerifyEmailCodeResponse } from '../interfaces';
-import { useAuthStore } from '../store/useAuthStore';
-import { router } from 'expo-router';
-import Toast from 'react-native-toast-message';
+import { useMutation } from "@tanstack/react-query";
+import { VerifyCodeResponse } from "../interfaces/verify-code.response";
+import { useAuthStore } from "../store/useAuthStore";
+import { router } from "expo-router";
+import Toast from "react-native-toast-message";
+import { VerifyCodeRequest } from "../schemas/verify-email-code.schema";
+import { ServerException } from "@/core/interfaces/server-exception.response";
+import { AxiosError } from "axios";
 
 export const useVerifyEmailMutation = () => {
-  const { verifyEmailCode } = useAuthStore();
+  const { verifyCode } = useAuthStore();
 
-  return useMutation<VerifyEmailCodeResponse, Error, VerifyEmailCodeRequest>({
-    mutationFn: async (data: VerifyEmailCodeRequest) => {
-      const response = await verifyEmailCode(data);
+  return useMutation<
+    VerifyCodeResponse,
+    AxiosError<ServerException>,
+    VerifyCodeRequest
+  >({
+    mutationFn: async (data: VerifyCodeRequest) => {
+      const response = await verifyCode(data);
       return response;
     },
     onSuccess: (data) => {
-      if ('user' in data) {
-        // TODO: Test replace push for replace
-        // router.replace('/auth/sign-in');
-        router.push('/auth/sign-in');
-        Toast.show({
-          type: 'success',
-          text1: 'Verification successful',
-          text2: 'Please sign in to continue.',
-        });
-        return;
-      }
-
+      // TODO: Test replace push for replace
+      // router.replace('/auth/sign-in');
+      router.push("/auth/sign-in");
       Toast.show({
-        type: 'error',
-        text1: 'Verification failed',
-        text2: data.message || 'An error occurred during sign up.',
-        autoHide: false,
+        type: "success",
+        text1: "Verification successful",
+        text2: "Please sign in to continue.",
       });
     },
     onError: (error) => {
       Toast.show({
-        type: 'error',
-        text1: 'Verification failed',
-        text2: error.message || 'An error occurred during sign up.',
+        type: "error",
+        text1: "Verification failed",
+        text2: error.message || "An error occurred during sign up.",
       });
     },
   });

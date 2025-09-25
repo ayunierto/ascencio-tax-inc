@@ -3,6 +3,4 @@ export interface Staff {
   firstName: string;
   lastName: string;
   isActive: boolean;
-  createdAt?: string;
-  updatedAt?: string;
 }

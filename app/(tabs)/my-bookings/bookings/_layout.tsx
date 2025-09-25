@@ -1,10 +1,10 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
+import React from "react";
+import { Tabs } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
 
-import { theme } from '@/components/ui/theme';
+import { theme } from "@/components/ui/theme";
 
-const MyBookingsLayout = () => {
+export default function MyBookingsLayout() {
   return (
     <Tabs
       screenOptions={{
@@ -18,15 +18,15 @@ const MyBookingsLayout = () => {
           elevation: 0,
           shadowOpacity: 0,
         },
-        animation: 'shift',
-        tabBarPosition: 'top',
-        tabBarLabelPosition: 'beside-icon',
+        animation: "shift",
+        tabBarPosition: "top",
+        tabBarLabelPosition: "beside-icon",
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Scheduled',
+          title: "Scheduled",
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="event-available" size={24} color={color} />
           ),
@@ -35,7 +35,7 @@ const MyBookingsLayout = () => {
       <Tabs.Screen
         name="past"
         options={{
-          title: 'Past',
+          title: "Past",
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="event-busy" size={24} color={color} />
           ),
@@ -43,6 +43,4 @@ const MyBookingsLayout = () => {
       />
     </Tabs>
   );
-};
-
-export default MyBookingsLayout;
+}

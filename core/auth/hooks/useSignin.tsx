@@ -1,9 +1,9 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { SignInRequest, signInSchema } from '../schemas';
-import { useSignInMutation } from './useSignInMutation';
-import { useAuthStore } from '../store/useAuthStore';
+import { SignInRequest, signInSchema } from "../schemas/sign-in.schema";
+import { useSignInMutation } from "./useSignInMutation";
+import { useAuthStore } from "../store/useAuthStore";
 
 export const useSignIn = () => {
   const { user } = useAuthStore();
@@ -14,8 +14,8 @@ export const useSignIn = () => {
   } = useForm<SignInRequest>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: user?.email || '',
-      password: '',
+      email: user?.email || "",
+      password: "",
     },
   });
 

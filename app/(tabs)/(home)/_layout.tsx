@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
-import { Tabs } from 'expo-router';
-import { SafeAreaView } from 'react-native';
-import Logo from '@/components/Logo';
-import { theme } from '@/components/ui/theme';
+import { Tabs } from "expo-router";
+import { SafeAreaView } from "react-native";
+import Logo from "@/components/Logo";
+import { theme } from "@/components/ui/theme";
 
-export default function TabLayout(): JSX.Element {
+export default function TabLayout() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Logo />
@@ -21,8 +21,8 @@ export default function TabLayout(): JSX.Element {
             elevation: 0,
             shadowOpacity: 0,
           },
-          animation: 'shift',
-          tabBarPosition: 'top',
+          animation: "shift",
+          tabBarPosition: "top",
           tabBarIconStyle: { height: 0 },
           tabBarIcon: undefined,
           tabBarLabelStyle: {
@@ -33,13 +33,13 @@ export default function TabLayout(): JSX.Element {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Services',
+            title: "Services",
           }}
         />
         <Tabs.Screen
           name="blog"
           options={{
-            title: 'Blog',
+            title: "Blog",
           }}
         />
       </Tabs>

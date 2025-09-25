@@ -1,223 +1,159 @@
-import React, { useState } from 'react';
+import React from "react";
 import {
-  Pressable,
-  StyleProp,
   Text,
-  TextStyle,
-  View,
-  ViewStyle,
+  Pressable,
   StyleSheet,
+  ViewStyle,
+  TextStyle,
   ActivityIndicator,
-} from 'react-native';
-import { theme } from './theme';
+  View,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
+type ButtonVariant = "primary" | "secondary" | "outline";
+type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps {
-  children?: React.ReactNode;
-  loading?: boolean;
+  title: string;
+  onPress: () => void;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   disabled?: boolean;
-  iconLeft?: React.ReactNode;
-  iconRight?: React.ReactNode;
-  onPress?: () => void;
-  style?: StyleProp<ViewStyle>;
-
-  textStyle?: TextStyle;
-  containerTextAndIconsStyle?: StyleProp<ViewStyle>;
-  variant?: 'primary' | 'secondary' | 'destructive' | 'outlined' | 'ghost';
-  size?: 'small' | 'medium' | 'large';
+  loading?: boolean;
+  iconLeft?: keyof typeof Ionicons.glyphMap;
+  iconRight?: keyof typeof Ionicons.glyphMap;
 }
 
-export const Button = React.forwardRef<
-  React.ElementRef<typeof Pressable>,
-  ButtonProps
->(
-  (
-    {
-      children,
-      disabled,
-      iconLeft,
-      iconRight,
-      loading,
-      onPress,
-      style,
-      textStyle,
-      containerTextAndIconsStyle,
-      variant = 'primary',
-      size = 'medium',
-      ...props
-    },
-    ref
-  ) => {
-    const [pressed, setPressed] = useState(false);
-
-    const variantStyles = {
-      primary: buttonStyles.primary,
-      secondary: buttonStyles.secondary,
-      destructive: buttonStyles.destructive,
-      outlined: buttonStyles.outlined,
-      ghost: buttonStyles.ghost,
-    };
-
-    const sizeStyles = {
-      small: buttonStyles.small,
-      medium: buttonStyles.medium,
-      large: buttonStyles.large,
-    };
-
-    const variantTextStyles = {
-      primary: buttonStyles.textPrimary,
-      secondary: buttonStyles.textSecondary,
-      destructive: buttonStyles.textDestructive,
-      outlined: buttonStyles.textOutlined,
-      ghost: buttonStyles.textGhost,
-    };
-
-    return (
-      <Pressable
-        ref={ref}
-        onPress={disabled || loading ? () => {} : onPress}
-        style={[
-          buttonStyles.button,
-          variantStyles[variant],
-          sizeStyles[size],
-          disabled && buttonStyles.disabled,
-          loading && buttonStyles.disabled,
-          pressed && buttonStyles.disabled,
-          style,
-        ]}
-        onPressIn={() => {
-          setPressed(true);
-        }}
-        onPressOut={() => {
-          setPressed(false);
-        }}
-        {...props}
-      >
-        {loading ? (
-          <View style={buttonStyles.loadingContainer}>
+const Button: React.FC<ButtonProps> = ({
+  title,
+  onPress,
+  variant = "primary",
+  size = "md",
+  disabled = false,
+  loading = false,
+  iconLeft,
+  iconRight,
+}) => {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled || loading}
+      style={({ pressed }) => [
+        styles.base,
+        buttonVariants[variant],
+        buttonSizes[size],
+        pressed && styles.pressed,
+        (disabled || loading) && styles.disabled,
+      ]}
+    >
+      {({ pressed }) => (
+        <View style={styles.content}>
+          {loading ? (
             <ActivityIndicator
+              color={textVariants[variant].color}
               size="small"
-              color={
-                variant === 'outlined'
-                  ? theme.foreground
-                  : theme.primaryForeground
-              }
+              style={{ marginRight: 6 }}
             />
-            <Text
-              style={[
-                buttonStyles.buttonText,
-                variantTextStyles[variant],
-                textStyle,
-              ]}
-            >
-              Please wait ...
-            </Text>
-          </View>
-        ) : (
-          <View
+          ) : (
+            iconLeft && (
+              <Ionicons
+                name={iconLeft}
+                size={iconSizes[size]}
+                color={textVariants[variant].color}
+                style={{ marginRight: 6 }}
+              />
+            )
+          )}
+
+          <Text
             style={[
-              {
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 10,
-                width: '100%',
-                justifyContent: 'center',
-              },
-              containerTextAndIconsStyle,
+              styles.textBase,
+              textVariants[variant],
+              textSizes[size],
+              (disabled || loading) && styles.textDisabled,
             ]}
           >
-            {iconLeft && iconLeft}
-            <Text
-              style={[
-                buttonStyles.buttonText,
-                variantTextStyles[variant],
-                disabled && buttonStyles.disabledText,
+            {loading ? "Please wait..." : title}
+          </Text>
 
-                textStyle,
-              ]}
-            >
-              {children}
-            </Text>
-            {iconRight && iconRight}
-          </View>
-        )}
-      </Pressable>
-    );
-  }
-);
+          {!loading && iconRight && (
+            <Ionicons
+              name={iconRight}
+              size={iconSizes[size]}
+              color={textVariants[variant].color}
+              style={{ marginLeft: 6 }}
+            />
+          )}
+        </View>
+      )}
+    </Pressable>
+  );
+};
 
-Button.displayName = 'Button';
-
-export const buttonStyles = StyleSheet.create({
-  button: {
-    borderRadius: theme.radius,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+// Base styles
+const styles = StyleSheet.create({
+  base: {
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 6,
+  },
+  textBase: {
+    fontWeight: "600",
+  },
+  pressed: {
+    opacity: 0.8,
   },
   disabled: {
-    opacity: 0.6,
+    backgroundColor: "#ccc",
   },
-  primary: {
-    backgroundColor: theme.primary,
+  textDisabled: {
+    color: "#777",
   },
-  secondary: {
-    backgroundColor: theme.secondary,
-  },
-  destructive: {
-    backgroundColor: theme.destructive,
-  },
-  outlined: {
-    borderColor: theme.input,
-    borderWidth: 1,
-    backgroundColor: 'transparent',
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-  },
-  small: {
-    height: 46,
-  },
-  medium: {
-    height: 52,
-  },
-  large: {
-    height: 58,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  textPrimary: {
-    color: theme.primaryForeground,
-  },
-  textSecondary: {
-    color: theme.secondaryForeground,
-  },
-  textDestructive: {
-    color: theme.destructiveForeground,
-  },
-  textOutlined: {
-    color: theme.primaryForeground,
-  },
-  textGhost: {
-    color: theme.primaryForeground,
-  },
-  disabledText: {
-    color: '#888',
-  },
-  loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8, // Adjust spacing as needed
-  },
-  contentContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
+
+// Variants
+const buttonVariants: Record<ButtonVariant, ViewStyle> = {
+  primary: {
+    backgroundColor: "#007bff",
+  },
+  secondary: {
+    backgroundColor: "#6c757d",
+  },
+  outline: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#007bff",
+  },
+};
+
+const textVariants: Record<ButtonVariant, TextStyle> = {
+  primary: { color: "#fff" },
+  secondary: { color: "#fff" },
+  outline: { color: "#007bff" },
+};
+
+// Sizes
+const buttonSizes: Record<ButtonSize, ViewStyle> = {
+  sm: { paddingVertical: 6, paddingHorizontal: 12 },
+  md: { paddingVertical: 10, paddingHorizontal: 16 },
+  lg: { paddingVertical: 14, paddingHorizontal: 20 },
+};
+
+const textSizes: Record<ButtonSize, TextStyle> = {
+  sm: { fontSize: 14 },
+  md: { fontSize: 16 },
+  lg: { fontSize: 18 },
+};
+
+const iconSizes: Record<ButtonSize, number> = {
+  sm: 16,
+  md: 20,
+  lg: 24,
+};
 
 export default Button;

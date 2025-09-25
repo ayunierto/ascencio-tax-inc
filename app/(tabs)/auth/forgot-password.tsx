@@ -1,18 +1,18 @@
-import React from 'react';
-import { View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { router } from 'expo-router';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+import React from "react";
+import { View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { router } from "expo-router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 
-import Header from '../../../core/auth/components/Header';
-import Button from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import Header from "../../../core/auth/components/Header";
+import Button from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import {
   ForgotPasswordRequest,
   forgotPasswordSchema,
-} from '@/core/auth/schemas';
-import { useForgotPasswordMutation } from '@/core/auth/hooks/useForgotPasswordMutation';
+} from "@/core/auth/schemas/forgot-password.schema";
+import { useForgotPasswordMutation } from "@/core/auth/hooks/useForgotPasswordMutation";
 
 const ForgotPassword = () => {
   const {
@@ -35,9 +35,9 @@ const ForgotPassword = () => {
           flex: 1,
           gap: 20,
           padding: 20,
-          width: '100%',
+          width: "100%",
           maxWidth: 360,
-          marginHorizontal: 'auto',
+          marginHorizontal: "auto",
         }}
       >
         <Header
@@ -73,7 +73,7 @@ const ForgotPassword = () => {
 
         <Button
           variant="outlined"
-          onPress={() => router.replace('/auth/sign-in')}
+          onPress={() => router.replace("/auth/sign-in")}
         >
           Back
         </Button>

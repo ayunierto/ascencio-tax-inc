@@ -1,10 +1,9 @@
-import React from 'react';
-import { Drawer } from 'expo-router/drawer';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { theme } from '@/components/ui/theme';
+import React from "react";
+import { Drawer } from "expo-router/drawer";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { theme } from "@/components/ui/theme";
 
-const _layout = () => {
-  // amazonq-ignore-next-line
+export default function AccountingLayout() {
   return (
     <Drawer
       screenOptions={{
@@ -15,8 +14,8 @@ const _layout = () => {
         drawerStyle: {
           backgroundColor: theme.background,
         },
-        drawerType: 'slide',
-        headerTitleAlign: 'center',
+        drawerType: "slide",
+        headerTitleAlign: "center",
       }}
     >
       <Drawer.Screen
@@ -32,13 +31,13 @@ const _layout = () => {
             size: number;
           }) => (
             <MaterialCommunityIcons
-              name={focused ? 'view-dashboard' : 'view-dashboard-outline'}
+              name={focused ? "view-dashboard" : "view-dashboard-outline"}
               size={size}
               color={color}
             />
           ),
-          drawerLabel: 'Dashboard',
-          title: 'Dashboard',
+          drawerLabel: "Dashboard",
+          title: "Dashboard",
         }}
       />
 
@@ -56,12 +55,12 @@ const _layout = () => {
           }) => (
             <Ionicons
               color={color}
-              name={focused ? 'receipt' : 'receipt-outline'}
+              name={focused ? "receipt" : "receipt-outline"}
               size={size}
             />
           ),
-          drawerLabel: 'Expenses',
-          title: 'Expenses',
+          drawerLabel: "Expenses",
+          title: "Expenses",
         }}
       />
 
@@ -79,12 +78,12 @@ const _layout = () => {
           }) => (
             <Ionicons
               color={color}
-              name={focused ? 'receipt' : 'receipt-outline'}
+              name={focused ? "receipt" : "receipt-outline"}
               size={size}
             />
           ),
-          drawerLabel: 'Reports',
-          title: 'Reports',
+          drawerLabel: "Reports",
+          title: "Reports",
         }}
       />
 
@@ -102,16 +101,14 @@ const _layout = () => {
           }) => (
             <Ionicons
               color={color}
-              name={focused ? 'help-circle' : 'help-circle-outline'}
+              name={focused ? "help-circle" : "help-circle-outline"}
               size={size}
             />
           ),
-          drawerLabel: 'Contact Support',
-          title: 'Support',
+          drawerLabel: "Contact Support",
+          title: "Support",
         }}
       />
     </Drawer>
   );
-};
-
-export default _layout;
+}

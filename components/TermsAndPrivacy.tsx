@@ -6,7 +6,7 @@ import { theme } from "./ui/theme";
 const TermsAndPrivacy = () => {
   return (
     <ThemedText>
-      By signing in you accept the{" "}
+      By clicking you accept the{" "}
       <ThemedText
         style={styles.link}
         onPress={() =>

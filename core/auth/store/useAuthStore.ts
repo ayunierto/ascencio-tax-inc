@@ -1,156 +1,158 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
+import { VerifyCodeRequest } from "../schemas/verify-email-code.schema";
+import { User } from "../interfaces/user.interface";
+import { SignUpApiRequest } from "../schemas/sign-up.schema";
+import { SignUpResponse } from "../interfaces/sign-up.response";
+import { VerifyCodeResponse } from "../interfaces/verify-code.response";
+import { SignInRequest } from "../schemas/sign-in.schema";
+import { AuthResponse } from "../interfaces/auth.response";
+import { DeleteAccountRequest } from "../schemas/delete-account.schema";
+import { DeleteAccountResponse } from "../interfaces/delete-account.response";
+import { ForgotPasswordRequest } from "../schemas/forgot-password.schema";
+import { ForgotPasswordResponse } from "../interfaces/forgot-password.response";
+import { ResetPasswordRequest } from "../schemas/reset-password.schema";
+import { ResetPasswordResponse } from "../interfaces/reset-password.response";
 import {
-  SignUpResponse,
-  VerifyEmailCodeResponse,
-  SignInResponse,
-  ForgotPasswordResponse,
-  ResetPasswordResponse,
-  DeleteAccountResponse,
-  BasicUser,
-  CheckStatusResponse,
-  UpdateProfileResponse,
-} from '../interfaces';
-import { authService } from '../services/AuthService';
-import {
-  DeleteAccountRequest,
-  ForgotPasswordRequest,
-  ResetPasswordRequest,
-  SignInRequest,
-  SignUpApiRequest,
-  UpdateProfileRequest,
-  VerifyEmailCodeRequest,
-} from '../schemas';
-import { storageAdapter } from '@/core/adapters/StorageAdapter';
+  checkAuthStatusAction,
+  deleteAccountAction,
+  forgotPasswordAction,
+  resetPasswordAction,
+  signInAction,
+  signUpAction,
+  verifyCodeAction,
+} from "../actions";
+import { StorageAdapter } from "@/core/adapters/storage.adapter";
 
-export type AuthStatus = 'authenticated' | 'unauthenticated' | 'checking';
+type AuthStatus = "authenticated" | "unauthenticated" | "loading";
 
 export interface AuthState {
-  status: AuthStatus;
-  access_token?: string;
-  user?: BasicUser;
+  // Properties
+  authStatus: AuthStatus;
+  access_token: string | null;
+  user: User | null;
+  tempEmail?: string; // For storing email during password reset
 
-  signUp: (values: SignUpApiRequest) => Promise<SignUpResponse>;
-  verifyEmailCode: (
-    data: VerifyEmailCodeRequest
-  ) => Promise<VerifyEmailCodeResponse>;
-  signIn: (credentials: SignInRequest) => Promise<SignInResponse>;
-  checkStatus: () => Promise<CheckStatusResponse>;
+  // Getters
+  isAdmin: () => boolean;
+
+  // Methods
+  signUp: (data: SignUpApiRequest) => Promise<SignUpResponse>;
+  verifyCode: (data: VerifyCodeRequest) => Promise<VerifyCodeResponse>;
+  signIn: (credentials: SignInRequest) => Promise<AuthResponse>;
+  checkAuthStatus: () => Promise<boolean>;
   deleteAccount: (data: DeleteAccountRequest) => Promise<DeleteAccountResponse>;
   logout: () => Promise<void>;
-  setAuthenticated: (access_token: string, user: BasicUser) => void;
-  setUnauthenticated: () => void;
   forgotPassword: (
     data: ForgotPasswordRequest
   ) => Promise<ForgotPasswordResponse>;
   resetPassword: (data: ResetPasswordRequest) => Promise<ResetPasswordResponse>;
-  updateProfile: (data: UpdateProfileRequest) => Promise<UpdateProfileResponse>;
 }
 
 export const useAuthStore = create<AuthState>()((set, get) => ({
-  status: 'checking',
-  access_token: undefined,
-  user: undefined,
+  access_token: null,
+  user: null,
+  authStatus: "loading",
+  tempEmail: undefined,
 
-  signUp: async (data) => {
-    const response = await authService.signUp(data);
-    if ('user' in response) {
-      set({ user: response.user });
-    }
-    return response;
+  isAdmin: () => {
+    const roles = get().user?.roles || [];
+    return roles.includes("admin");
   },
 
-  verifyEmailCode: async (data: VerifyEmailCodeRequest) => {
-    return await authService.verifyEmailCode(data);
+  checkAuthStatus: async () => {
+    const access_token = StorageAdapter.getItem("access_token");
+    if (!access_token) {
+      set({ authStatus: "unauthenticated", user: null, access_token: null });
+      return false;
+    }
+
+    try {
+      const response = await checkAuthStatusAction();
+      StorageAdapter.setItem("access_token", response.access_token);
+      set({
+        user: response.user,
+        access_token: response.access_token,
+        authStatus: "authenticated",
+      });
+      return true;
+    } catch (error) {
+      StorageAdapter.removeItem("access_token");
+      set({
+        user: undefined,
+        access_token: undefined,
+        authStatus: "unauthenticated",
+      });
+      return false;
+    }
+  },
+
+  signUp: async (data: SignUpApiRequest) => {
+    try {
+      const response = await signUpAction(data);
+      set({ tempEmail: data.email });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  verifyCode: async (data: VerifyCodeRequest) => {
+    const response = await verifyCodeAction(data);
+    return response;
   },
 
   signIn: async (credentials: SignInRequest) => {
-    const response = await authService.signIn(credentials);
+    // Store the email temporarily for verification purposes
+    set({ tempEmail: credentials.email });
 
-    if ('access_token' in response) {
-      await storageAdapter.setAccessToken(response.access_token);
-      get().setAuthenticated(response.access_token, response.user);
+    try {
+      const response = await signInAction(credentials);
+      StorageAdapter.setItem("access_token", response.access_token);
+      set({
+        user: response.user,
+        access_token: response.access_token,
+        authStatus: "authenticated",
+      });
       return response;
+    } catch (error) {
+      StorageAdapter.removeItem("access_token");
+      set({ user: null, access_token: null, authStatus: "unauthenticated" });
+      throw error;
     }
-
-    return response;
-  },
-
-  updateProfile: async (data) => {
-    const response = await authService.updateProfile(data);
-    if ('user' in response) {
-      set({ user: response.user });
-    }
-    return response;
   },
 
   deleteAccount: async (data: DeleteAccountRequest) => {
-    const response = await authService.deleteAccount(data);
+    const response = await deleteAccountAction(data);
 
-    if ('statusCode' in response) {
-      return response;
-    }
-
-    await storageAdapter.removeAccessToken();
-    get().setUnauthenticated();
-    return response;
-  },
-
-  checkStatus: async () => {
-    const response = await authService.checkStatus();
-
-    if ('access_token' in response) {
-      await storageAdapter.setAccessToken(response.access_token);
-      get().setAuthenticated(response.access_token, response.user);
-      return response;
-    }
-
-    get().setUnauthenticated();
-    if (response.error === 'Network Error') {
-      set({ status: 'checking' });
-      console.warn('Network Error');
-    }
+    StorageAdapter.removeItem("access_token");
+    set({ user: null, access_token: null, authStatus: "unauthenticated" });
     return response;
   },
 
   logout: async () => {
-    await storageAdapter.removeAccessToken();
-    get().setUnauthenticated();
+    StorageAdapter.removeItem("access_token");
+    set({ user: null, access_token: null, authStatus: "unauthenticated" });
   },
 
   forgotPassword: async (data: ForgotPasswordRequest) => {
-    const response = await authService.forgotPassword(data);
-    set({
-      user: {
-        email: data.email,
-        createdAt: new Date(),
-        id: '',
-        lastName: '',
-        firstName: '',
-        roles: [],
-      },
-    });
-    return response;
+    try {
+      const response = await forgotPasswordAction(data);
+      set({ tempEmail: data.email });
+      return response;
+    } catch (error) {
+      console.error("Error sending forgot password request", error);
+      throw error;
+    }
   },
 
   resetPassword: async (data: ResetPasswordRequest) => {
-    const response = await authService.resetPassword(data);
-    return response;
-  },
-
-  setAuthenticated: (access_token: string, user: BasicUser) => {
-    set({
-      status: 'authenticated',
-      access_token,
-      user,
-    });
-  },
-
-  setUnauthenticated: () => {
-    set({
-      status: 'unauthenticated',
-      access_token: undefined,
-      user: undefined,
-    });
+    try {
+      const response = await resetPasswordAction(data);
+      return response;
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      throw error;
+    }
   },
 }));

@@ -1,23 +1,16 @@
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
-import { GetExpensesResponse } from '../interfaces';
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
+import { api } from "@/core/api/api";
+import { GetExpensesResponse } from "../interfaces";
 
 export const getExpenses = async (
   limit = 20,
   offset = 0
 ): Promise<GetExpensesResponse> => {
   try {
-    const res = await httpClient.get<GetExpensesResponse>(
-      `expense?limit=${limit}&offset=${offset}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+    const res = await api.get<GetExpensesResponse>(
+      `expense?limit=${limit}&offset=${offset}`
     );
     return res;
   } catch (error) {
-    console.error('Error fetching expenses:', error);
-    return handleApiErrors(error, 'getExpenses');
+    throw error;
   }
 };

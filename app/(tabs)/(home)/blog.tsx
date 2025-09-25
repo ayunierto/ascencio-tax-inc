@@ -1,35 +1,33 @@
-import React from 'react';
+import React from "react";
 
-import { FlatList, Linking, TouchableOpacity, View } from 'react-native';
-import { DateTime } from 'luxon';
-import { useQuery } from '@tanstack/react-query';
+import { FlatList, Linking, TouchableOpacity, View } from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
-import { getPosts } from '@/core/posts/actions/get-posts';
-import { EmptyList } from '@/core/components';
-import Loader from '@/components/Loader';
-import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from '@/components/ui';
-import { Ionicons } from '@expo/vector-icons';
-import { theme } from '@/components/ui/theme';
-import { ThemedText } from '@/components/ui/ThemedText';
-import { CardContent } from '@/components/ui/Card/CardContent';
+import { getPosts } from "@/core/posts/actions/get-posts";
+import { EmptyContent } from "@/core/components";
+import Loader from "@/components/Loader";
+import { PostCard } from "@/components/posts/PostCard";
+import { ServerException } from "@/core/interfaces/server-exception.response";
+import { Post } from "@/core/posts/interfaces";
 
 const BlogScreen = (): JSX.Element => {
   const {
     data: posts,
     isLoading,
     isFetching,
-  } = useQuery({
-    queryKey: ['posts'],
-    queryFn: () => getPosts(),
+  } = useQuery<Post[], AxiosError<ServerException>>({
+    queryKey: ["posts"],
+    queryFn: getPosts,
   });
 
   if (isLoading || isFetching) {
     return <Loader />;
   }
 
-  if (!posts || 'error' in posts) {
+  if (!posts || "error" in posts) {
     return (
-      <EmptyList
+      <EmptyContent
         title="Error"
         subtitle="An unexpected error occurred while fetching logs."
       />
@@ -37,50 +35,19 @@ const BlogScreen = (): JSX.Element => {
   }
 
   if (posts.length === 0) {
-    return <EmptyList title="No entries found." />;
+    return <EmptyContent title="No entries found." />;
   }
 
   return (
     <FlatList
-      style={{ padding: 20 }}
-      data={posts ?? []}
+      style={{
+        padding: 10,
+      }}
+      data={posts}
       numColumns={1}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => Linking.openURL(item.url)}>
-          <Card style={{ marginBottom: 10 }}>
-            <CardContent>
-              <SimpleCardHeader>
-                <Ionicons
-                  name={'link-outline'}
-                  size={20}
-                  color={theme.foreground}
-                />
-                <SimpleCardHeaderTitle
-                  style={{ textDecorationLine: 'underline' }}
-                >
-                  {item.title}
-                </SimpleCardHeaderTitle>
-              </SimpleCardHeader>
-              <View>
-                <ThemedText
-                  style={{
-                    color: theme.muted,
-                    textAlign: 'right',
-                    fontSize: 12,
-                  }}
-                >{`By: ${item.user.firstName} ${
-                  item.user.lastName
-                } \n${DateTime.fromISO(
-                  item.createdAt
-                ).toRelative()}`}</ThemedText>
-              </View>
-            </CardContent>
-          </Card>
-        </TouchableOpacity>
-      )}
+      renderItem={({ item }) => <PostCard post={item} />}
       showsVerticalScrollIndicator={false}
-      ListEmptyComponent={<EmptyList title="No entries found." />}
     />
   );
 };

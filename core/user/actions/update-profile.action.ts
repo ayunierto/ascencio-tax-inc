@@ -1,12 +1,8 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import {
-  UpdateProfileRequest,
-  UpdateProfileResponse,
-} from '@/core/auth/interfaces';
+import { UpdateProfileRequest } from "../schemas/update-profile.schema";
+import { UpdateProfileResponse } from "../interfaces/update-profile.interface";
+import { api } from "@/core/api/api";
 
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
-
-export const updateProfile = async ({
+export const updateProfileAction = async ({
   lastName,
   firstName,
   password,
@@ -19,27 +15,13 @@ export const updateProfile = async ({
     phoneNumber,
   };
 
-  if (!password) {
-    delete userUpdate.password;
-  }
-
-  if (!phoneNumber) {
-    delete userUpdate.phoneNumber;
-  }
-
   try {
-    const response = await httpClient.patch<UpdateProfileResponse>(
-      'auth/update-profile',
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userUpdate),
-      }
+    const { data } = await api.patch<UpdateProfileResponse>(
+      "auth/update-profile",
+      userUpdate
     );
-    return response;
+    return data;
   } catch (error) {
-    console.error(error);
-    return handleApiErrors(error, 'updateProfile');
+    throw error;
   }
 };

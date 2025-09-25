@@ -1,24 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import {
   View,
   KeyboardAvoidingView,
   SafeAreaView,
   ScrollView,
-} from 'react-native';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+} from "react-native";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { useAuthStore } from "@/core/auth/store/useAuthStore";
 
-import Header from '@/core/auth/components/Header';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import Header from "@/core/auth/components/Header";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import {
   useResendResetPasswordMutation,
   useResetPasswordMutation,
   useTimer,
-} from '@/core/auth/hooks';
-import { ResetPasswordRequest, resetPasswordSchema } from '@/core/auth/schemas';
+} from "@/core/auth/hooks";
+import {
+  ResetPasswordRequest,
+  resetPasswordSchema,
+} from "@/core/auth/schemas/reset-password.schema";
 
 const VerifyCode = () => {
   const { user } = useAuthStore();
@@ -26,7 +29,7 @@ const VerifyCode = () => {
   const { isRunning, timeRemaining, startTimer, resetTimer } = useTimer(30);
   useEffect(() => {
     startTimer();
-    setValue('email', user?.email || '');
+    setValue("email", user?.email || "");
 
     return () => {
       resetTimer();
@@ -53,7 +56,7 @@ const VerifyCode = () => {
     useResendResetPasswordMutation();
   const handleResendPasswordCode = async () => {
     if (isRunning) return;
-    resendResetPasswordCode(user?.email || '');
+    resendResetPasswordCode(user?.email || "");
     startTimer();
   };
 
@@ -64,8 +67,8 @@ const VerifyCode = () => {
           <View
             style={{
               flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <View
@@ -73,13 +76,13 @@ const VerifyCode = () => {
                 flex: 1,
                 gap: 10,
                 maxWidth: 320,
-                marginHorizontal: 'auto',
+                marginHorizontal: "auto",
               }}
             >
               <Header
-                title={'Change your password'}
+                title={"Change your password"}
                 subtitle={
-                  'Please check your email for a message with your code. Your code is 6 numbers long.'
+                  "Please check your email for a message with your code. Your code is 6 numbers long."
                 }
               />
 
@@ -100,7 +103,7 @@ const VerifyCode = () => {
                       autoCorrect={false}
                       maxLength={6}
                       error={!!errors.code}
-                      errorMessage={errors.code?.message || ''}
+                      errorMessage={errors.code?.message || ""}
                     />
                   )}
                 />
@@ -118,7 +121,7 @@ const VerifyCode = () => {
                       keyboardType="default"
                       autoCapitalize="none"
                       error={!!errors.newPassword}
-                      errorMessage={errors.newPassword?.message || ''}
+                      errorMessage={errors.newPassword?.message || ""}
                     />
                   )}
                 />
@@ -139,7 +142,7 @@ const VerifyCode = () => {
                 variant="outlined"
               >
                 {timeRemaining === 0
-                  ? 'Resend code'
+                  ? "Resend code"
                   : `Resend in ${timeRemaining}s`}
               </Button>
             </View>

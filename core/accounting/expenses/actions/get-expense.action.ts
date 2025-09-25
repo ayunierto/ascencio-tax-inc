@@ -1,20 +1,15 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { GetExpenseRequest, GetExpenseResponse } from '../interfaces';
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
+import { api } from "@/core/api/api";
+import { GetExpenseRequest, GetExpenseResponse } from "../interfaces";
 
 export const getExpense = async ({
   id,
 }: GetExpenseRequest): Promise<GetExpenseResponse> => {
   try {
-    const res = await httpClient.get<GetExpenseResponse>('expense/' + id, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const { data } = await api.get<GetExpenseResponse>(`/expense/${id}`);
 
-    return res;
+    return data;
   } catch (error) {
     console.error(error);
-    return handleApiErrors(error, 'getExpense');
+    throw error;
   }
 };

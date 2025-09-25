@@ -1,24 +1,22 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
-import { GetAccountsResponse } from '../interfaces';
+import { api } from "@/core/api/api";
+import { GetAccountsResponse } from "../interfaces";
 
 export const getAccounts = async (
   limit = 10,
   offset = 0
 ): Promise<GetAccountsResponse> => {
   try {
-    const accounts = await httpClient.get<GetAccountsResponse>(
+    const accounts = await api.get<GetAccountsResponse>(
       `account?limit=${limit}&offset=${offset}`,
       {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
 
     return accounts;
   } catch (error) {
-    console.error(error);
-    return handleApiErrors(error, 'getAccounts');
+    throw error;
   }
 };

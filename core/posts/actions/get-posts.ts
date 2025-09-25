@@ -1,18 +1,12 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
-import { GetPostsResponse } from '../interfaces';
+import { api } from "@/core/api/api";
+import { GetPostsResponse } from "../interfaces";
 
 export const getPosts = async (): Promise<GetPostsResponse> => {
   try {
-    const res = await httpClient.get<GetPostsResponse>(`posts`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const { data } = await api.get<GetPostsResponse>("/posts");
 
-    return res;
+    return data;
   } catch (error) {
-    console.error(error);
-    return handleApiErrors(error, 'getPosts');
+    throw error;
   }
 };

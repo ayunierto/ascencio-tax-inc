@@ -1,4 +1,4 @@
-import { Staff } from '@/core/staff/interfaces';
+import { Staff } from "@/core/staff/interfaces";
 
 export interface Service {
   id: string;
@@ -9,7 +9,7 @@ export interface Service {
   address: string;
   isAvailableOnline: boolean;
   isActive: boolean;
-  image?: string;
+  imageUrl?: string;
   createdAt: Date;
   updatedAt?: Date;
   staff?: Staff[];

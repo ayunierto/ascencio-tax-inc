@@ -1,18 +1,21 @@
-import React from 'react';
-import { View } from 'react-native';
+import React from "react";
+import { View } from "react-native";
 
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import Button from '@/components/ui/Button';
-import { Ionicons } from '@expo/vector-icons';
-import { theme } from '@/components/ui/theme';
-import { Input } from '@/components/ui/Input';
-import { ThemedText } from '@/components/ui/ThemedText';
-import ErrorMessage from '@/core/components/ErrorMessage';
-import { useDeleteAccountMutation } from '@/core/auth/hooks';
-import { DeleteAccountRequest, deleteAccountSchema } from '@/core/auth/schemas';
+import { useAuthStore } from "@/core/auth/store/useAuthStore";
+import Button from "@/components/ui/Button";
+import { Ionicons } from "@expo/vector-icons";
+import { theme } from "@/components/ui/theme";
+import { Input } from "@/components/ui/Input";
+import { ThemedText } from "@/components/ui/ThemedText";
+import ErrorMessage from "@/core/components/ErrorMessage";
+import { useDeleteAccountMutation } from "@/core/auth/hooks";
+import {
+  DeleteAccountRequest,
+  deleteAccountSchema,
+} from "@/core/auth/schemas/delete-account.schema";
 
 const DeleteAccountModal = () => {
   const { user } = useAuthStore();
@@ -33,14 +36,14 @@ const DeleteAccountModal = () => {
 
   return (
     <View style={{ padding: 20, gap: 10, flex: 1 }}>
-      <View style={{ alignItems: 'center', marginBottom: 8 }}>
+      <View style={{ alignItems: "center", marginBottom: 8 }}>
         <Ionicons name="warning-outline" size={32} color={theme.destructive} />
         <ThemedText
           style={{
-            textAlign: 'center',
+            textAlign: "center",
             fontSize: 22,
             color: theme.destructive,
-            fontWeight: 'bold',
+            fontWeight: "bold",
             marginTop: 4,
           }}
         >

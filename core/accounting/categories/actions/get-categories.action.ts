@@ -1,20 +1,12 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { Category } from '../interfaces';
-import { ExceptionResponse } from '@/core/interfaces';
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
+import { api } from "@/core/api/api";
+import { Category } from "../interfaces";
 
-export const getCategories = async (): Promise<
-  Category[] | ExceptionResponse
-> => {
+export const getCategories = async (): Promise<Category[]> => {
   try {
-    const response = await httpClient.get<Category[]>('categories', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return response;
+    const { data } = await api.get<Category[]>("/categories");
+    return data;
   } catch (error) {
     console.error(error);
-    return handleApiErrors(error, 'getCategories');
+    throw error;
   }
 };

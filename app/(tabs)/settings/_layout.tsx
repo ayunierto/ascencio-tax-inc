@@ -1,32 +1,15 @@
-import React, { useEffect } from 'react';
-import { Redirect, Stack } from 'expo-router';
-import { theme } from '@/components/ui/theme';
-import { useAuthStore } from '@/core/auth/store/useAuthStore';
-import Loader from '@/components/Loader';
+import React from "react";
+import { Stack } from "expo-router";
+import { theme } from "@/components/ui/theme";
 
-const MyProfileLayout = () => {
-  const { status, checkStatus } = useAuthStore();
-
-  // Checking auth status
-  useEffect(() => {
-    checkStatus();
-  }, [status]);
-
-  if (status === 'checking') {
-    return <Loader />;
-  }
-
-  if (status === 'unauthenticated') {
-    return <Redirect href={'/auth/sign-in'} />;
-  }
-
+export default function MyProfileLayout() {
   return (
     <Stack
       screenOptions={{
         headerStyle: {
           backgroundColor: theme.background,
         },
-        headerTitleAlign: 'center',
+        headerTitleAlign: "center",
         headerTintColor: theme.foreground,
         headerShadowVisible: false,
       }}
@@ -34,34 +17,32 @@ const MyProfileLayout = () => {
       <Stack.Screen
         name="index"
         options={{
-          title: '',
+          title: "",
         }}
       />
 
       <Stack.Screen
         name="profile/index"
         options={{
-          title: 'Account info',
+          title: "Account info",
         }}
       />
 
       <Stack.Screen
         name="profile/delete-account-modal"
         options={{
-          presentation: 'modal',
-          animation: 'default',
-          title: '',
+          presentation: "modal",
+          animation: "default",
+          title: "",
         }}
       />
 
       <Stack.Screen
         name="subscriptions/index"
         options={{
-          title: 'Subscriptions',
+          title: "Subscriptions",
         }}
       />
     </Stack>
   );
-};
-
-export default MyProfileLayout;
+}

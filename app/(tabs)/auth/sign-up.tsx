@@ -1,22 +1,22 @@
-import React from 'react';
+import React from "react";
 
 import {
   View,
   SafeAreaView,
   ScrollView,
   KeyboardAvoidingView,
-} from 'react-native';
-import { Controller } from 'react-hook-form';
+} from "react-native";
+import { Controller } from "react-hook-form";
 
-import Logo from '@/components/Logo';
-import Header from '@/core/auth/components/Header';
-import { Input } from '@/components/ui/Input';
-import Select from '@/components/ui/Select';
-import ErrorMessage from '@/core/components/ErrorMessage';
-import Button from '@/components/ui/Button';
-import TermsAndPrivacy from '@/components/TermsAndPrivacy';
-import { useCountryCodes } from '@/core/hooks/useCountryCodes';
-import { useSignUp } from '@/core/auth/hooks';
+import Logo from "@/components/Logo";
+import Header from "@/core/auth/components/Header";
+import { Input } from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import ErrorMessage from "@/core/components/ErrorMessage";
+import Button from "@/components/ui/Button";
+import TermsAndPrivacy from "@/components/TermsAndPrivacy";
+import { useCountryCodes } from "@/core/hooks/useCountryCodes";
+import { useSignUp } from "@/core/auth/hooks";
 
 const SignUp = () => {
   const { countryCodes } = useCountryCodes();
@@ -38,14 +38,14 @@ const SignUp = () => {
           <View
             style={{
               gap: 20,
-              width: '100%',
+              width: "100%",
               maxWidth: 380,
-              marginHorizontal: 'auto',
+              marginHorizontal: "auto",
               padding: 20,
             }}
           >
             <Header
-              link={'/auth/sign-in'}
+              link={"/auth/sign-in"}
               linkText="Sign In"
               subtitle="Already have an account? "
               title="Sign Up"
@@ -108,13 +108,13 @@ const SignUp = () => {
 
               {/* Phone Number */}
               <View>
-                <View style={{ flexDirection: 'row', gap: 10, flex: 1 }}>
+                <View style={{ flexDirection: "row", gap: 10, flex: 1 }}>
                   <Select
                     options={countryCodes}
                     selectedOptions={countryCodes.find(
                       (item) => item.value === callingCode
                     )}
-                    onChange={(value) => setValue('countryCode', value)}
+                    onChange={(value) => setValue("countryCode", value)}
                     placeholder="+1"
                     style={{ flex: 3 }}
                   />
@@ -181,12 +181,11 @@ const SignUp = () => {
             </View>
 
             <Button
+              title="Sign Up"
               loading={isPending}
               disabled={isPending}
               onPress={handleSubmit(onSignUp)}
-            >
-              Sign up
-            </Button>
+            />
 
             <TermsAndPrivacy />
           </View>

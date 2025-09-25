@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import useIPGeolocation from '@/core/hooks/useIPGeolocation';
-import { useSignUpMutation } from './useSignUpMutation';
-import { SignUpRequest, signUpSchema } from '../schemas';
+import useIPGeolocation from "@/core/hooks/useIPGeolocation";
+import { useSignUpMutation } from "./useSignUpMutation";
+import { SignUpRequest, signUpSchema } from "../schemas/sign-up.schema";
 
 export const useSignUp = () => {
   const { location } = useIPGeolocation();
@@ -13,9 +13,9 @@ export const useSignUp = () => {
   // Set the initial calling code based on the user's location
   useEffect(() => {
     if (location) {
-      if ('error' in location) return;
+      if ("error" in location) return;
       setCallingCode(`+${location.location.calling_code}`);
-      setValue('countryCode', `+${location.location.calling_code}`);
+      setValue("countryCode", `+${location.location.calling_code}`);
     }
   }, [location]);
 

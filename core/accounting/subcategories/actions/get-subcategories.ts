@@ -1,13 +1,11 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { GetSubcategoriesResponse } from '../interfaces';
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
+import { api } from "@/core/api/api";
+import { Subcategory } from "../interfaces";
 
-export const getSubcategories = async (): Promise<GetSubcategoriesResponse> => {
+export const getSubcategories = async (): Promise<Subcategory[]> => {
   try {
-    const res = await httpClient.get<GetSubcategoriesResponse>('subcategory');
-    return res;
+    const { data } = await api.get<Subcategory[]>("/subcategories");
+    return data;
   } catch (error) {
-    console.error(error);
-    return handleApiErrors(error, 'getSubcategories');
+    throw error;
   }
 };

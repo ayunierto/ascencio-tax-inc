@@ -1,24 +1,21 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import * as SecureStore from 'expo-secure-store';
-import { GetCurrentUserAppointmentsResponse } from '../interfaces';
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
+import { api } from "@/core/api/api";
+import { GetCurrentUserAppointmentsResponse } from "../interfaces";
 
 export const getUserAppointments = async (
-  state: 'pending' | 'past' = 'pending'
+  state: "pending" | "past" = "pending"
 ) => {
   try {
-    const res = httpClient.get<GetCurrentUserAppointmentsResponse>(
-      `appointment/current-user?state=${state}`,
+    const { data } = await api.get<GetCurrentUserAppointmentsResponse>(
+      "/appointments/current-user",
       {
-        headers: {
-          'Content-Type': 'application/json',
+        params: {
+          state,
         },
       }
     );
 
-    return res;
+    return data;
   } catch (error) {
-    console.error(error);
-    return handleApiErrors(error, 'getUserAppointments');
+    throw error;
   }
 };

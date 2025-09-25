@@ -1,11 +1,11 @@
-import React from 'react';
-import { Stack } from 'expo-router/stack';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
-import { theme } from '@/components/ui/theme';
+import React from "react";
+import { Stack } from "expo-router/stack";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { TouchableOpacity } from "react-native";
+import { theme } from "@/components/ui/theme";
 
-const ExpenseLayout = () => {
+export default function ExpenseLayout() {
   return (
     <Stack
       screenOptions={{
@@ -13,13 +13,13 @@ const ExpenseLayout = () => {
 
         headerStyle: { backgroundColor: theme.background },
         headerTintColor: theme.foreground,
-        headerTitleAlign: 'center',
+        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          title: 'List of expenses',
+          title: "List of expenses",
           headerShown: false,
         }}
       />
@@ -27,19 +27,19 @@ const ExpenseLayout = () => {
       <Stack.Screen
         name="[id]"
         options={{
-          title: 'Expense',
+          title: "Expense",
         }}
       />
 
       <Stack.Screen
         name="create"
         options={{
-          title: 'New',
+          title: "New",
 
           headerLeft: ({ tintColor }) => {
             return (
               <TouchableOpacity
-                onPress={() => router.replace('/accounting/receipts/expense')}
+                onPress={() => router.replace("/accounting/receipts/expense")}
               >
                 <Ionicons
                   name="arrow-back-outline"
@@ -53,6 +53,4 @@ const ExpenseLayout = () => {
       />
     </Stack>
   );
-};
-
-export default ExpenseLayout;
+}

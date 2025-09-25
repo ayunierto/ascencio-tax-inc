@@ -1,25 +1,17 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { Report } from '../interfaces';
-import { ExceptionResponse } from '@/core/interfaces';
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
+import { api } from "@/core/api/api";
+import { Report } from "../interfaces";
 
 export const getReports = async (
   limit = 100,
   offset = 0
-): Promise<Report[] | ExceptionResponse> => {
+): Promise<Report[]> => {
   try {
-    const res = httpClient.get<Report[] | ExceptionResponse>(
-      `reports?limit=${limit}&offset=${offset}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+    const { data } = await api.get<Report[]>(
+      `reports?limit=${limit}&offset=${offset}`
     );
 
-    return res;
+    return data;
   } catch (error) {
-    console.error(error);
-    return handleApiErrors(error, 'getReports');
+    throw error;
   }
 };
