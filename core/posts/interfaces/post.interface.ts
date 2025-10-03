@@ -1,10 +1,9 @@
 import { User } from "@/core/auth/interfaces";
 
 export interface Post {
-  id: number;
+  id: string;
   url: string;
   title: string;
-  createdAt: string;
-  updatedAt?: string;
-  user: User;
+  createdAt: Date;
+  updatedAt: Date;
 }

@@ -22,6 +22,12 @@ import Loader from "@/components/Loader";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { Subcategory } from "@/core/accounting/subcategories/interfaces";
 import ErrorMessage from "@/core/components/ErrorMessage";
+import { useMutation } from "@tanstack/react-query";
+import { api } from "@/core/api/api";
+import { AxiosError } from "axios";
+import { ServerException } from "@/core/interfaces/server-exception.response";
+import { router } from "expo-router";
+import Toast from "react-native-toast-message";
 
 interface ExpenseFormProps {
   expense: ExpenseResponse;
@@ -34,6 +40,7 @@ export default function ExpenseForm({ expense }: ExpenseFormProps) {
     control,
     formState: { errors },
     setValue,
+    reset,
   } = useForm<ExpenseFormFields>({
     resolver: zodResolver(expenseSchema),
     defaultValues: expense,
@@ -41,8 +48,49 @@ export default function ExpenseForm({ expense }: ExpenseFormProps) {
 
   const { data: categories, isError, error, isLoading } = useCategories();
 
-  const onSubmit = (values: ExpenseFormFields) => {
+  const createUpdateExpense = async (expense: ExpenseFormFields) => {
+    const { id, imageFile, ...rest } = expense;
+    try {
+      const { data } = await api.post("/expenses", rest);
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const mutation = useMutation<
+    ExpenseResponse,
+    AxiosError<ServerException>,
+    ExpenseFormFields
+  >({
+    mutationFn: createUpdateExpense,
+    onSuccess: (data) => {
+      console.log("Success", data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  const onSubmit = async (values: ExpenseFormFields) => {
     console.log(values);
+    await mutation.mutateAsync(values, {
+      onSuccess: () => {
+        Toast.show({
+          type: "success",
+          text1: "Expense created successfully",
+        });
+        reset();
+        router.replace("/(tabs)/accounting/receipts/expense");
+      },
+      onError: (error) => {
+        console.log(error);
+        Toast.show({
+          type: "error",
+          text1: "Error creating expense",
+        });
+      },
+    });
   };
 
   if (isError) {
@@ -68,7 +116,7 @@ export default function ExpenseForm({ expense }: ExpenseFormProps) {
   }
 
   return (
-    <View style={{ margin: 20, gap: 10 }}>
+    <View style={{ margin: 20, gap: 20 }}>
       {/* <ThemedText>Receipt image:</ThemedText>
           <ExpenseImage
             onChange={(image) => {
@@ -101,12 +149,15 @@ export default function ExpenseForm({ expense }: ExpenseFormProps) {
         name="date"
         render={({ field: { onChange, value } }) => (
           <DateTimePicker
-            value={new Date(value).toString()}
+            labelText="Date"
+            error={!!errors.date}
+            errorMessage={errors.date?.message}
+            value={value ?? null}
+            mode="date"
             onChange={onChange}
           />
         )}
       />
-      <ErrorMessage fieldErrors={errors.date} />
 
       <Controller
         control={control}
@@ -157,7 +208,6 @@ export default function ExpenseForm({ expense }: ExpenseFormProps) {
             }}
             error={!!errors.categoryId}
             errorMessage={errors.categoryId?.message}
-            helperText="Select a category"
           >
             <SelectTrigger
               placeholder="Select a category"
@@ -177,7 +227,7 @@ export default function ExpenseForm({ expense }: ExpenseFormProps) {
       />
       {error}
 
-      {subcategories && subcategories.length > 0 ? (
+      {subcategories && subcategories.length > 0 && (
         <Controller
           control={control}
           name={"subcategoryId"}
@@ -199,8 +249,6 @@ export default function ExpenseForm({ expense }: ExpenseFormProps) {
             </Select>
           )}
         />
-      ) : (
-        <ThemedText>Hola no</ThemedText>
       )}
 
       <Controller

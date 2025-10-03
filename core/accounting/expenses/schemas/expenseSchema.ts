@@ -18,7 +18,9 @@ export const imageFileSchema = z
 
 export const expenseSchema = z.object({
   id: z.string(),
-  date: z.string().nonempty("The date is required"),
+  date: z
+    .string({ required_error: "The date is required" })
+    .nonempty("The date is required"),
   merchant: z
     .string({ required_error: "The merchant is required" })
     .min(1, "Merchant is required"),

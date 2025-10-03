@@ -1,25 +1,25 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, FlatList, Linking, Modal, View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import * as Sharing from 'expo-sharing';
+import React, { useCallback, useEffect, useState } from "react";
+import { Alert, FlatList, Linking, Modal, View } from "react-native";
+import { useFocusEffect } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import * as Sharing from "expo-sharing";
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import Button from '@/components/ui/Button';
-import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from '@/components/ui';
-import { ThemedText } from '@/components/ui/ThemedText';
-import { theme } from '@/components/ui/theme';
-import Divider from '@/components/ui/Divider';
-import DateTimeInput from '@/components/ui/DateTimePicker/DateTimePicker';
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/Button";
+import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from "@/components/ui";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { theme } from "@/components/ui/theme";
+import Divider from "@/components/ui/Divider";
+import DateTimeInput from "@/components/ui/DateTimePicker/DateTimePicker";
 import {
   DownloadAndSaveReport,
   getReports,
-} from '@/core/accounting/reports/actions';
-import { Report } from '@/core/accounting/reports/interfaces';
-import { useRevenueCat } from '@/providers/RevenueCat';
-import { CardContent } from '@/components/ui/Card/CardContent';
-import { goPro } from '@/core/accounting/actions/go-pro.action';
+} from "@/core/accounting/reports/actions";
+import { Report } from "@/core/accounting/reports/interfaces";
+import { useRevenueCat } from "@/providers/RevenueCat";
+import { CardContent } from "@/components/ui/Card/CardContent";
+import { goPro } from "@/core/accounting/actions/go-pro.action";
 
 const ReportsScreen = () => {
   const [recentReports, setRecentReports] = useState<Report[]>([]);
@@ -29,7 +29,7 @@ const ReportsScreen = () => {
   const { isPro } = useRevenueCat();
 
   const reportsQuery = useQuery({
-    queryKey: ['reports'],
+    queryKey: ["reports"],
     queryFn: () => getReports(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
@@ -48,7 +48,7 @@ const ReportsScreen = () => {
 
   const downloadAndOpenPDFReport = async () => {
     if (!startDate || !endDate) {
-      Alert.alert('Error', 'Please select a start and end date');
+      Alert.alert("Error", "Please select a start and end date");
       return;
     }
 
@@ -58,11 +58,11 @@ const ReportsScreen = () => {
     }
 
     if (new Date(startDate) > new Date(endDate)) {
-      Alert.alert('Error', 'Start date must be before end date');
+      Alert.alert("Error", "Start date must be before end date");
       return;
     }
     if (startDate === endDate) {
-      Alert.alert('Error', 'Start date and end date must be different');
+      Alert.alert("Error", "Start date and end date must be different");
       return;
     }
 
@@ -80,20 +80,22 @@ const ReportsScreen = () => {
         await Linking.openURL(uri);
       }
     } catch (error) {
-      console.error('Error opening the PDF:', error);
+      console.error("Error opening the PDF:", error);
       try {
-        await Sharing.shareAsync(uri, { mimeType: 'application/pdf' });
+        await Sharing.shareAsync(uri, { mimeType: "application/pdf" });
       } catch (error) {
-        console.error('Error opening the PDF:', error);
+        console.error("Error opening the PDF:", error);
       }
     }
   };
 
   return (
     <View
-      style={{ padding: 20, gap: 10, flex: 1, justifyContent: 'space-between' }}
+      style={{ padding: 20, gap: 10, flex: 1, justifyContent: "space-between" }}
     >
-      <Button onPress={() => setModalVisible(true)}>Generate new report</Button>
+      <Button onPress={() => setModalVisible(true)}>
+        <ButtonText>Create Report</ButtonText>
+      </Button>
 
       <Modal
         animationType="fade"
@@ -104,9 +106,9 @@ const ReportsScreen = () => {
         <View
           style={{
             flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: '#0009',
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#0009",
           }}
         >
           <View
@@ -114,24 +116,35 @@ const ReportsScreen = () => {
               backgroundColor: theme.background,
               borderRadius: 20,
               padding: 20,
-              width: '90%',
+              width: "90%",
               maxWidth: 360,
-              maxHeight: '80%',
+              maxHeight: "80%",
             }}
           >
-            <View style={{ gap: 10 }}>
-              <ThemedText>Start date</ThemedText>
+            <View style={{ gap: 20 }}>
+              <ThemedText
+                style={{
+                  textAlign: "center",
+                  marginBottom: 10,
+                  fontWeight: "bold",
+                  fontSize: 18,
+                }}
+              >
+                Select a date range
+              </ThemedText>
               <DateTimeInput
-                onChange={(date) => setStartDate(date)}
+                labelText="Start date"
+                onChange={(date) => setStartDate(date || undefined)}
                 value={new Date(
                   new Date().getFullYear(),
                   new Date().getMonth(),
                   1
                 ).toISOString()}
               />
-              <ThemedText>End date</ThemedText>
+
               <DateTimeInput
-                onChange={(date) => setEndDate(date)}
+                labelText="End date"
+                onChange={(date) => setEndDate(date || undefined)}
                 value={new Date(
                   new Date().getFullYear(),
                   new Date().getMonth() + 1,
@@ -142,21 +155,27 @@ const ReportsScreen = () => {
 
             <Divider style={{ marginVertical: 20 }} />
 
-            <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View style={{ gap: 10 }}>
               <Button
-                variant="outlined"
-                style={{ flex: 1 }}
+                fullWidth
+                variant="default"
+                onPress={() => {
+                  downloadAndOpenPDFReport();
+                  setModalVisible(false);
+                }}
+              >
+                <ButtonIcon name="download-outline" />
+                <ButtonText>Download</ButtonText>
+              </Button>
+
+              <Button
+                variant="outline"
+                fullWidth
                 onPress={() => {
                   setModalVisible(false);
                 }}
               >
-                Close
-              </Button>
-              <Button
-                style={{ flex: 1 }}
-                onPress={() => downloadAndOpenPDFReport()}
-              >
-                Generate
+                <ButtonText>Cancel</ButtonText>
               </Button>
             </View>
           </View>
@@ -167,7 +186,7 @@ const ReportsScreen = () => {
         <CardContent>
           <SimpleCardHeader>
             <Ionicons
-              name={'flash-outline'}
+              name={"flash-outline"}
               size={20}
               color={theme.foreground}
             />
@@ -181,7 +200,7 @@ const ReportsScreen = () => {
             renderItem={({ item }) => (
               <View style={{}}>
                 <ThemedText>
-                  Report created at:{' '}
+                  Report created at:{" "}
                   <ThemedText style={{ color: theme.muted }}>
                     {new Date(item.createdAt).toLocaleString()}
                   </ThemedText>

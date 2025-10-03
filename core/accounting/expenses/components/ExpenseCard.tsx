@@ -4,7 +4,7 @@ import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
-import { Expense } from "@/core/accounting/expenses/interfaces";
+import { ExpenseResponse } from "@/core/accounting/expenses/interfaces";
 import { useExpenseCard } from "@/core/accounting/expenses/hooks/useExpenseCard";
 import { Card } from "@/components/ui/Card/Card";
 import { theme } from "@/components/ui/theme";
@@ -13,7 +13,7 @@ import { SimpleCardHeaderTitle } from "@/components/ui/Card/SimpleCardHeaderTitl
 import { CardContent } from "@/components/ui/Card/CardContent";
 
 interface ExpenseCardProps {
-  expense: Expense;
+  expense: ExpenseResponse;
 }
 
 const ExpenseCard = ({ expense }: ExpenseCardProps) => {

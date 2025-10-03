@@ -1,10 +1,9 @@
 import { api } from "@/core/api/api";
-import { GetPostsResponse } from "../interfaces";
+import { Post } from "../interfaces";
 
-export const getPosts = async (): Promise<GetPostsResponse> => {
+export const getPostsAction = async (): Promise<Post[]> => {
   try {
-    const { data } = await api.get<GetPostsResponse>("/posts");
-
+    const { data } = await api.get<Post[]>("/posts");
     return data;
   } catch (error) {
     throw error;

@@ -139,6 +139,12 @@ export const ButtonIcon: React.FC<{
   variant?: ButtonVariant;
   size?: ButtonSize;
   name: keyof typeof Ionicons.glyphMap;
-}> = ({ variant = "default", size = "default", name }) => {
-  return <Ionicons name={name} style={buttonTextVariants({ variant, size })} />;
+}> = ({ variant = "default", size = "lg", name }) => {
+  return (
+    <Ionicons
+      name={name}
+      // size={24}
+      style={buttonTextVariants({ variant, size })}
+    />
+  );
 };
