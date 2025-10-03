@@ -1,124 +1,105 @@
-import React, { useState, useRef } from 'react';
-import { View, Animated, Easing } from 'react-native';
-import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import Button from '@/components/ui/Button';
-import { ThemedText } from '@/components/ui/ThemedText';
-import { theme } from '@/components/ui/theme';
-import { useRevenueCat } from '@/providers/RevenueCat';
-import { goPro } from '../actions';
+// components/ui/fab.tsx
+import { Ionicons } from "@expo/vector-icons";
+import React, { useRef, useState } from "react";
+import { Pressable, StyleSheet, Animated, View } from "react-native";
 
-export const FAB = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const { isPro } = useRevenueCat();
+type Action = {
+  icon: React.ReactNode;
+  onPress: () => void;
+};
+
+type FabProps = {
+  actions: Action[];
+};
+
+export const Fab = ({ actions }: FabProps) => {
+  const [open, setOpen] = useState(false);
   const animation = useRef(new Animated.Value(0)).current;
 
-  const toggleButtons = () => {
-    setIsExpanded(!isExpanded);
-
-    Animated.timing(animation, {
-      toValue: isExpanded ? 0 : 1,
-      duration: 300,
-      easing: Easing.out(Easing.quad), // Use a more natural easing
-      useNativeDriver: true, // Important for performance
+  const toggleMenu = () => {
+    const toValue = open ? 0 : 1;
+    Animated.spring(animation, {
+      toValue,
+      useNativeDriver: true,
     }).start();
+    setOpen(!open);
   };
 
-  const translateY = animation.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0, 1], // Adjust distance as needed
+  const rotation = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "45deg"],
   });
-
-  const opacity = animation.interpolate({
-    inputRange: [0, 0.5, 1], // Fade in slightly later
-    outputRange: [0, 0, 1],
-  });
-
-  // const rotate = animation.interpolate({
-  //   inputRange: [0, 1],
-  //   outputRange: ['0deg', '45deg'],
-  // });
 
   return (
-    <View
-      style={{
-        position: 'absolute',
-        right: 20,
-        bottom: 20,
-        gap: 10,
-        alignItems: 'center',
-      }}
-    >
-      <Animated.View
-        style={[
-          { gap: 10 },
-          {
-            transform: [{ translateY }],
-            opacity,
-          },
-        ]}
-      >
-        <Button
-          style={{
-            width: 52,
-            height: 52,
-          }}
-          onPress={() => {
-            if (!isPro) {
-              goPro();
-            } else {
-              router.push('/(tabs)/accounting/receipts/expense/create');
-            }
-            toggleButtons();
-          }}
-        >
-          <ThemedText>
-            <Ionicons
-              name="receipt-outline"
-              size={20}
-              color={theme.foreground}
-            />
-          </ThemedText>
-        </Button>
+    <View style={styles.container}>
+      {/* Actions */}
+      {actions.map((action, index) => {
+        const translateY = animation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -(index + 1) * 70],
+        });
+        return (
+          <Animated.View
+            key={index}
+            style={[
+              styles.action,
+              {
+                transform: [{ translateY }],
+                opacity: animation,
+              },
+            ]}
+          >
+            <Pressable style={styles.fabSmall} onPress={action.onPress}>
+              {action.icon}
+            </Pressable>
+          </Animated.View>
+        );
+      })}
 
-        <Button
-          style={{
-            width: 52,
-            height: 52,
-          }}
-          onPress={() => {
-            if (!isPro) {
-              goPro();
-            } else {
-              router.push('/scan-receipts');
-            }
-            toggleButtons();
-          }}
-        >
-          <ThemedText>
-            <Ionicons
-              name="camera-outline"
-              size={20}
-              color={theme.foreground}
-            />
-          </ThemedText>
-        </Button>
-      </Animated.View>
-
-      <Button
-        style={[
-          {
-            width: 56,
-            height: 56,
-          },
-          // { transform: [{ rotate: '45deg' }] },
-        ]}
-        onPress={toggleButtons}
-      >
-        <ThemedText>
-          <Ionicons name="add" size={24} color="white" />
-        </ThemedText>
-      </Button>
+      {/* Main FAB */}
+      <Pressable style={styles.fab} onPress={toggleMenu}>
+        <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+          <Ionicons name="add" size={28} color="white" />
+        </Animated.View>
+      </Pressable>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    bottom: 30,
+    right: 30,
+    alignItems: "center",
+  },
+  fab: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "#2563eb",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  fabSmall: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#2563eb",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  action: {
+    position: "absolute",
+  },
+});

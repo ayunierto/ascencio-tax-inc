@@ -28,7 +28,7 @@ export const useSignInMutation = () => {
     onError: (error, variables) => {
       // If the response indicates that the email is not verified,
       // redirect to the verification page
-      if (error.response?.data.error === "EmailNotVerified") {
+      if (error.response?.data.error === "Email Not Verified") {
         resendCode(variables.email);
         router.replace("/auth/verify-email");
         Toast.show({

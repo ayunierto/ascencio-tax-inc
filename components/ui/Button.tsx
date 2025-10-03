@@ -1,159 +1,144 @@
 import React from "react";
 import {
-  Text,
   Pressable,
-  StyleSheet,
-  ViewStyle,
+  Text,
   TextStyle,
-  ActivityIndicator,
-  View,
+  ViewStyle,
+  StyleSheet,
 } from "react-native";
+import { theme } from "@/components/ui/theme";
 import { Ionicons } from "@expo/vector-icons";
 
-type ButtonVariant = "primary" | "secondary" | "outline";
-type ButtonSize = "sm" | "md" | "lg";
+// === Variantes ===
+type ButtonVariant =
+  | "default"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "destructive"
+  | "link";
+type ButtonSize = "default" | "sm" | "lg" | "icon";
 
 interface ButtonProps {
-  title: string;
-  onPress: () => void;
   variant?: ButtonVariant;
   size?: ButtonSize;
   disabled?: boolean;
-  loading?: boolean;
-  iconLeft?: keyof typeof Ionicons.glyphMap;
-  iconRight?: keyof typeof Ionicons.glyphMap;
+  fullWidth?: boolean;
+  children: React.ReactNode;
+  onPress?: () => void;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  title,
-  onPress,
-  variant = "primary",
-  size = "md",
+// === Contenedor estilo cva ===
+const buttonVariants = ({
+  variant,
+  size,
+}: {
+  variant: ButtonVariant;
+  size: ButtonSize;
+}): ViewStyle[] => {
+  const base: ViewStyle = {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: theme.radius,
+    marginVertical: 6,
+  };
+
+  const variants: Record<ButtonVariant, ViewStyle> = {
+    default: { backgroundColor: theme.primary },
+    destructive: { backgroundColor: theme.destructive },
+    outline: {
+      borderWidth: 1,
+      borderColor: theme.border,
+      backgroundColor: "transparent",
+    },
+    secondary: { backgroundColor: theme.secondary },
+    ghost: { backgroundColor: "transparent" },
+    link: { backgroundColor: "transparent" },
+  };
+
+  const sizes: Record<ButtonSize, ViewStyle> = {
+    default: { paddingVertical: 10, paddingHorizontal: 16 },
+    sm: { paddingVertical: 6, paddingHorizontal: 12 },
+    lg: { paddingVertical: 14, paddingHorizontal: 20 },
+    icon: { padding: 10 },
+  };
+
+  return [base, variants[variant], sizes[size]];
+};
+
+// === Texto estilo cva ===
+const buttonTextVariants = ({
+  variant,
+  size,
+}: {
+  variant: ButtonVariant;
+  size: ButtonSize;
+}): TextStyle[] => {
+  const base: TextStyle = {
+    fontWeight: "600",
+    textAlign: "center",
+  };
+
+  const variants: Record<ButtonVariant, TextStyle> = {
+    default: { color: theme.primaryForeground },
+    destructive: { color: theme.destructiveForeground },
+    outline: { color: theme.foreground },
+    secondary: { color: theme.secondaryForeground },
+    ghost: { color: theme.foreground },
+    link: { color: theme.primary, textDecorationLine: "underline" },
+  };
+
+  const sizes: Record<ButtonSize, TextStyle> = {
+    default: { fontSize: 16 },
+    sm: { fontSize: 14 },
+    lg: { fontSize: 18 },
+    icon: { fontSize: 0 }, // sin texto
+  };
+
+  return [base, variants[variant], sizes[size]];
+};
+
+// === Button ===
+export const Button: React.FC<ButtonProps> = ({
+  variant = "default",
+  size = "default",
   disabled = false,
-  loading = false,
-  iconLeft,
-  iconRight,
+  fullWidth = false,
+  children,
+  onPress,
 }) => {
   return (
     <Pressable
       onPress={onPress}
-      disabled={disabled || loading}
+      disabled={disabled}
       style={({ pressed }) => [
-        styles.base,
-        buttonVariants[variant],
-        buttonSizes[size],
-        pressed && styles.pressed,
-        (disabled || loading) && styles.disabled,
+        ...buttonVariants({ variant, size }),
+        fullWidth && { alignSelf: "stretch" },
+        disabled && { opacity: 0.6 },
+        pressed && !disabled && { opacity: 0.9 },
+        { gap: 10 },
       ]}
     >
-      {({ pressed }) => (
-        <View style={styles.content}>
-          {loading ? (
-            <ActivityIndicator
-              color={textVariants[variant].color}
-              size="small"
-              style={{ marginRight: 6 }}
-            />
-          ) : (
-            iconLeft && (
-              <Ionicons
-                name={iconLeft}
-                size={iconSizes[size]}
-                color={textVariants[variant].color}
-                style={{ marginRight: 6 }}
-              />
-            )
-          )}
-
-          <Text
-            style={[
-              styles.textBase,
-              textVariants[variant],
-              textSizes[size],
-              (disabled || loading) && styles.textDisabled,
-            ]}
-          >
-            {loading ? "Please wait..." : title}
-          </Text>
-
-          {!loading && iconRight && (
-            <Ionicons
-              name={iconRight}
-              size={iconSizes[size]}
-              color={textVariants[variant].color}
-              style={{ marginLeft: 6 }}
-            />
-          )}
-        </View>
-      )}
+      {children}
     </Pressable>
   );
 };
 
-// Base styles
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 6,
-  },
-  textBase: {
-    fontWeight: "600",
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-  disabled: {
-    backgroundColor: "#ccc",
-  },
-  textDisabled: {
-    color: "#777",
-  },
-  content: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-});
-
-// Variants
-const buttonVariants: Record<ButtonVariant, ViewStyle> = {
-  primary: {
-    backgroundColor: "#007bff",
-  },
-  secondary: {
-    backgroundColor: "#6c757d",
-  },
-  outline: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "#007bff",
-  },
+// === Helper para texto ===
+export const ButtonText: React.FC<{
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  children: React.ReactNode;
+}> = ({ variant = "default", size = "default", children }) => {
+  return <Text style={buttonTextVariants({ variant, size })}>{children}</Text>;
 };
 
-const textVariants: Record<ButtonVariant, TextStyle> = {
-  primary: { color: "#fff" },
-  secondary: { color: "#fff" },
-  outline: { color: "#007bff" },
+// === Helper para Icono ===
+export const ButtonIcon: React.FC<{
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  name: keyof typeof Ionicons.glyphMap;
+}> = ({ variant = "default", size = "default", name }) => {
+  return <Ionicons name={name} style={buttonTextVariants({ variant, size })} />;
 };
-
-// Sizes
-const buttonSizes: Record<ButtonSize, ViewStyle> = {
-  sm: { paddingVertical: 6, paddingHorizontal: 12 },
-  md: { paddingVertical: 10, paddingHorizontal: 16 },
-  lg: { paddingVertical: 14, paddingHorizontal: 20 },
-};
-
-const textSizes: Record<ButtonSize, TextStyle> = {
-  sm: { fontSize: 14 },
-  md: { fontSize: 16 },
-  lg: { fontSize: 18 },
-};
-
-const iconSizes: Record<ButtonSize, number> = {
-  sm: 16,
-  md: 20,
-  lg: 24,
-};
-
-export default Button;

@@ -1,12 +1,12 @@
-import Loader from '@/components/Loader';
-import React from 'react';
-import { createContext, useContext, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import Loader from "@/components/Loader";
+import React from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { Platform } from "react-native";
 import Purchases, {
   LOG_LEVEL,
   PurchasesOffering,
   CustomerInfo,
-} from 'react-native-purchases';
+} from "react-native-purchases";
 
 const APIKeys = {
   apple: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY as string,
@@ -41,34 +41,36 @@ export const RevenueCatProvider = ({
   useEffect(() => {
     const setup = async () => {
       try {
-        if (Platform.OS === 'android') {
+        if (Platform.OS === "android") {
           Purchases.configure({ apiKey: APIKeys.google });
-        } else if (Platform.OS === 'ios') {
+        } else if (Platform.OS === "ios") {
           Purchases.configure({ apiKey: APIKeys.apple });
         }
         await Purchases.setLogLevel(LOG_LEVEL.DEBUG);
 
         Purchases.addCustomerInfoUpdateListener((customerInfo) => {
           setCustomerInfo(customerInfo);
-          setIsPro(customerInfo.entitlements.active['Pro'] !== undefined);
+          setIsPro(customerInfo.entitlements.active["Pro"] !== undefined);
         });
 
         const initialCustomerInfo = await Purchases.getCustomerInfo();
 
         setCustomerInfo(initialCustomerInfo);
-        setIsPro(initialCustomerInfo.entitlements.active['Pro'] !== undefined);
+        setIsPro(initialCustomerInfo.entitlements.active["Pro"] !== undefined);
 
         const offerings = await Purchases.getOfferings();
 
         setCurrentOffering(offerings.current);
       } catch (error) {
-        console.log(
-          'RC Provider: Error during setup or fetching initial data: ',
+        console.error(
+          "RC Provider: Error during setup or fetching initial data: ",
           error
         );
       } finally {
         // Mark as ready AFTER attempting setup and initial fetch
         setIsReady(true);
+        // TODO: remove this in production
+        setIsPro(true);
       }
     };
 
@@ -93,7 +95,7 @@ export const RevenueCatProvider = ({
 export const useRevenueCat = () => {
   const context = useContext(RevenueCatContext);
   if (context === undefined) {
-    throw new Error('useRevenueCat must be used within a RevenueCatProvider');
+    throw new Error("useRevenueCat must be used within a RevenueCatProvider");
   }
   return context;
 };

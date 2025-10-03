@@ -1,8 +1,8 @@
 import { Service } from "./service.interface";
 
 export type CreateServiceResponse = Service;
-export type GetServiceResponse = Service;
-export type GetServicesResponse = {
+export type ServiceResponse = Service;
+export type ServicesResponse = {
   count: number;
   pages: number;
   services: Service[];

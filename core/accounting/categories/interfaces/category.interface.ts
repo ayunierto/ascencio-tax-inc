@@ -1,8 +1,10 @@
+import { Subcategory } from "../../subcategories/interfaces/subcategory.interface";
+
 export interface Category {
-  createdAt: string;
-  description: string;
   id: string;
-  isSystem: boolean;
   name: string;
-  updatedAt: string | null;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+  subcategories: Subcategory[];
 }

@@ -33,7 +33,10 @@ export const useVerifyEmailMutation = () => {
       Toast.show({
         type: "error",
         text1: "Verification failed",
-        text2: error.message || "An error occurred during sign up.",
+        text2:
+          error.response?.data.message ||
+          error.message ||
+          "An error occurred during sign up.",
       });
     },
   });

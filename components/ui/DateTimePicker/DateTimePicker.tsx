@@ -1,20 +1,27 @@
-import { View, Text, Platform, Modal, StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Button from '../Button';
+import {
+  View,
+  Text,
+  Platform,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Button, ButtonText } from "../Button";
 import RNDateTimePicker, {
   DateTimePickerAndroid,
   DateTimePickerEvent,
-} from '@react-native-community/datetimepicker';
-import { theme } from '../theme';
+} from "@react-native-community/datetimepicker";
+import { theme } from "../theme";
 
 interface DateTimePickerProps {
-  mode?: 'date' | 'time';
+  mode?: "date" | "time";
   is24Hour?: boolean;
   onChange?: (date: string) => void;
   value?: string;
 }
 const DateTimeInput = ({
-  mode = 'date',
+  mode = "date",
   is24Hour = false,
   value,
   onChange,
@@ -44,7 +51,7 @@ const DateTimeInput = ({
   };
 
   const showDatepicker = () => {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       DateTimePickerAndroid.open({
         value: date || new Date(),
         onChange: handleOnChange,
@@ -52,27 +59,28 @@ const DateTimeInput = ({
         is24Hour,
       });
     }
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       setModalVisible(true);
     }
   };
 
   return (
     <View>
-      <Button
-        style={{ paddingHorizontal: 20 }}
+      <TouchableOpacity
+        style={styles.trigger}
         onPress={() => showDatepicker()}
-        variant="outlined"
-        containerTextAndIconsStyle={{ justifyContent: 'space-between' }}
-        textStyle={{ fontWeight: 'normal' }}
+        activeOpacity={0.7}
       >
-        {date ? (
-          date.toLocaleDateString()
-        ) : (
-          <Text style={{ color: theme.muted }}>1/1/2025</Text>
-        )}
-      </Button>
-      {Platform.OS === 'ios' && (
+        <Text style={styles.triggerText}>
+          {date ? date.toLocaleDateString() : "1 / 1 / 2025"}
+        </Text>
+      </TouchableOpacity>
+      {/* <Button onPress={() => showDatepicker()} variant="outline">
+        <ButtonText>
+          {date ? date.toLocaleDateString() : "1 / 1 / 2025"}
+        </ButtonText>
+      </Button> */}
+      {Platform.OS === "ios" && (
         <Modal
           animationType="slide"
           transparent={true}
@@ -91,10 +99,9 @@ const DateTimeInput = ({
               />
               <Button
                 variant="destructive"
-                containerTextAndIconsStyle={{ justifyContent: 'flex-start' }}
                 onPress={() => setModalVisible(false)}
               >
-                Close
+                <ButtonText>Close</ButtonText>
               </Button>
             </View>
           </View>
@@ -107,16 +114,16 @@ const DateTimeInput = ({
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -124,6 +131,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  trigger: {
+    height: 52,
+    paddingHorizontal: 12,
+    borderWidth: 2,
+    borderColor: theme.foreground,
+    borderRadius: theme.radius,
+    backgroundColor: theme.background,
+    justifyContent: "center",
+  },
+  triggerText: {
+    fontSize: 16,
+    color: theme.foreground,
   },
 });
 

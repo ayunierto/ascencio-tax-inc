@@ -6,7 +6,6 @@ export const getCategories = async (): Promise<Category[]> => {
     const { data } = await api.get<Category[]>("/categories");
     return data;
   } catch (error) {
-    console.error(error);
     throw error;
   }
 };

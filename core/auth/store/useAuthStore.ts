@@ -61,7 +61,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   checkAuthStatus: async () => {
-    const access_token = StorageAdapter.getItem("access_token");
+    const access_token = await StorageAdapter.getItem("access_token");
     if (!access_token) {
       set({ authStatus: "unauthenticated", user: null, access_token: null });
       return false;
@@ -69,7 +69,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
     try {
       const response = await checkAuthStatusAction();
-      StorageAdapter.setItem("access_token", response.access_token);
+      await StorageAdapter.setItem("access_token", response.access_token);
       set({
         user: response.user,
         access_token: response.access_token,
@@ -77,7 +77,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       });
       return true;
     } catch (error) {
-      StorageAdapter.removeItem("access_token");
+      await StorageAdapter.removeItem("access_token");
       set({
         user: undefined,
         access_token: undefined,
@@ -108,7 +108,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
     try {
       const response = await signInAction(credentials);
-      StorageAdapter.setItem("access_token", response.access_token);
+      await StorageAdapter.setItem("access_token", response.access_token);
       set({
         user: response.user,
         access_token: response.access_token,
@@ -116,7 +116,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       });
       return response;
     } catch (error) {
-      StorageAdapter.removeItem("access_token");
+      await StorageAdapter.removeItem("access_token");
       set({ user: null, access_token: null, authStatus: "unauthenticated" });
       throw error;
     }
@@ -125,13 +125,13 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   deleteAccount: async (data: DeleteAccountRequest) => {
     const response = await deleteAccountAction(data);
 
-    StorageAdapter.removeItem("access_token");
+    await StorageAdapter.removeItem("access_token");
     set({ user: null, access_token: null, authStatus: "unauthenticated" });
     return response;
   },
 
   logout: async () => {
-    StorageAdapter.removeItem("access_token");
+    await StorageAdapter.removeItem("access_token");
     set({ user: null, access_token: null, authStatus: "unauthenticated" });
   },
 

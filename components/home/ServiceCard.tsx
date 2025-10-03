@@ -3,7 +3,7 @@ import { theme } from "../ui/theme";
 import { Service } from "@/core/services/interfaces/service.interface";
 import { ThemedText } from "../ui/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
-import Button from "../ui/Button";
+import { Button, ButtonText } from "../ui/Button";
 
 interface ServiceCardProps {
   service: Service;
@@ -30,7 +30,6 @@ export const ServiceCard = ({
         style={{ width: 60, height: 60, borderRadius: theme.radius }}
         source={{ uri: service.imageUrl }}
       />
-
       <View
         style={{
           flexDirection: "column",
@@ -68,12 +67,9 @@ export const ServiceCard = ({
           />
         </View>
       </View>
-
-      <Button
-        onPress={() => handleServiceSelection(service)}
-        size="sm"
-        title="Book now"
-      />
+      <Button onPress={() => handleServiceSelection(service)}>
+        <ButtonText>Book</ButtonText>
+      </Button>
     </View>
   );
 };

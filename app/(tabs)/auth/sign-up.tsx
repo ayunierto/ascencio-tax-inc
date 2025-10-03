@@ -5,36 +5,81 @@ import {
   SafeAreaView,
   ScrollView,
   KeyboardAvoidingView,
+  FlatList,
 } from "react-native";
 import { Controller } from "react-hook-form";
+import { AxiosError } from "axios";
+import Toast from "react-native-toast-message";
+import { router } from "expo-router";
 
-import Logo from "@/components/Logo";
 import Header from "@/core/auth/components/Header";
 import { Input } from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/Select";
 import ErrorMessage from "@/core/components/ErrorMessage";
-import Button from "@/components/ui/Button";
+import { Button, ButtonText } from "@/components/ui/Button";
 import TermsAndPrivacy from "@/components/TermsAndPrivacy";
 import { useCountryCodes } from "@/core/hooks/useCountryCodes";
 import { useSignUp } from "@/core/auth/hooks";
+import { ServerException } from "@/core/interfaces/server-exception.response";
+import { SignUpResponse } from "@/core/auth/interfaces";
+import {
+  SignUpApiRequest,
+  SignUpRequest,
+} from "@/core/auth/schemas/sign-up.schema";
+import { useMutation } from "@tanstack/react-query";
+import { useAuthStore } from "@/core/auth/store/useAuthStore";
+import SimpleLogo from "@/components/SimpleLogo";
 
 const SignUp = () => {
   const { countryCodes } = useCountryCodes();
-  const {
-    formErrors,
-    control,
-    callingCode,
-    handleSubmit,
-    onSignUp,
-    setValue,
-    isPending,
-  } = useSignUp();
+  const { signUp } = useAuthStore();
+  const { errors, control, callingCode, handleSubmit, setValue } = useSignUp();
+
+  const mutation = useMutation<
+    SignUpResponse,
+    AxiosError<ServerException>,
+    SignUpApiRequest
+  >({
+    mutationFn: async (data) => {
+      return await signUp(data);
+    },
+    onSuccess: (response) => {
+      router.push("/auth/verify-email");
+      Toast.show({
+        type: "success",
+        text1: "Sign up successful",
+        text2: "Please verify your email to continue.",
+      });
+    },
+    onError: (error) => {
+      Toast.show({
+        type: "error",
+        text1: "Sign up failed",
+        text1Style: { fontSize: 13 },
+        text2:
+          error.response?.data.message ||
+          error.message ||
+          "An error occurred during sign up.",
+      });
+    },
+  });
+
+  // Handle the sign-up
+  const onSignUp = async (values: SignUpRequest): Promise<void> => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { confirmPassword, ...rest } = values;
+    await mutation.mutateAsync(rest);
+  };
 
   return (
     <SafeAreaView>
       <KeyboardAvoidingView behavior="padding">
         <ScrollView>
-          <Logo />
           <View
             style={{
               gap: 20,
@@ -44,15 +89,18 @@ const SignUp = () => {
               padding: 20,
             }}
           >
+            <View style={{ alignItems: "center", marginTop: 20 }}>
+              {/* <SimpleLogo /> */}
+            </View>
             <Header
+              title="Sign up for Ascencio Tax"
               link={"/auth/sign-in"}
-              linkText="Sign In"
+              linkText="Sign in"
               subtitle="Already have an account? "
-              title="Sign Up"
             />
 
             <View style={{ gap: 10 }}>
-              <ErrorMessage message={formErrors.root?.message} />
+              <ErrorMessage message={errors.root?.message} />
 
               <Controller
                 control={control}
@@ -65,8 +113,8 @@ const SignUp = () => {
                     onChangeText={onChange}
                     autoCapitalize="words"
                     autoComplete="name"
-                    errorMessage={formErrors.firstName?.message}
-                    error={!!formErrors.firstName}
+                    errorMessage={errors.firstName?.message}
+                    error={!!errors.firstName}
                   />
                 )}
               />
@@ -82,8 +130,8 @@ const SignUp = () => {
                     onChangeText={onChange}
                     autoCapitalize="words"
                     autoComplete="name-family"
-                    errorMessage={formErrors.lastName?.message}
-                    error={!!formErrors.lastName}
+                    errorMessage={errors.lastName?.message}
+                    error={!!errors.lastName}
                   />
                 )}
               />
@@ -100,8 +148,8 @@ const SignUp = () => {
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoComplete="email"
-                    errorMessage={formErrors.email?.message}
-                    error={!!formErrors.email}
+                    errorMessage={errors.email?.message}
+                    error={!!errors.email}
                   />
                 )}
               />
@@ -109,14 +157,27 @@ const SignUp = () => {
               {/* Phone Number */}
               <View>
                 <View style={{ flexDirection: "row", gap: 10, flex: 1 }}>
-                  <Select
-                    options={countryCodes}
-                    selectedOptions={countryCodes.find(
-                      (item) => item.value === callingCode
+                  <Controller
+                    control={control}
+                    name={"countryCode"}
+                    render={({ field: { onChange, value } }) => (
+                      <Select value={value} onValueChange={onChange}>
+                        <SelectTrigger placeholder="Select your country" />
+                        <SelectContent>
+                          <FlatList
+                            data={countryCodes}
+                            keyExtractor={(item) => item.value + item.label}
+                            renderItem={({ item: opt }) => (
+                              <SelectItem
+                                key={opt.value + opt.label}
+                                label={opt.label}
+                                value={opt.value}
+                              />
+                            )}
+                          />
+                        </SelectContent>
+                      </Select>
                     )}
-                    onChange={(value) => setValue("countryCode", value)}
-                    placeholder="+1"
-                    style={{ flex: 3 }}
                   />
 
                   <Controller
@@ -133,8 +194,8 @@ const SignUp = () => {
                         autoCapitalize="none"
                         autoComplete="tel"
                         rootStyle={{ flex: 2 }}
-                        errorMessage={formErrors.phoneNumber?.message}
-                        error={!!formErrors.phoneNumber}
+                        errorMessage={errors.phoneNumber?.message}
+                        error={!!errors.phoneNumber}
                       />
                     )}
                   />
@@ -153,8 +214,8 @@ const SignUp = () => {
                     autoCapitalize="none"
                     secureTextEntry
                     placeholder="Password"
-                    errorMessage={formErrors.password?.message}
-                    error={!!formErrors.password}
+                    errorMessage={errors.password?.message}
+                    error={!!errors.password}
                   />
                 )}
               />
@@ -172,8 +233,8 @@ const SignUp = () => {
                       autoCapitalize="none"
                       secureTextEntry
                       placeholder="Confirm Password"
-                      errorMessage={formErrors.confirmPassword?.message}
-                      error={!!formErrors.confirmPassword}
+                      errorMessage={errors.confirmPassword?.message}
+                      error={!!errors.confirmPassword}
                     />
                   )}
                 />
@@ -181,11 +242,13 @@ const SignUp = () => {
             </View>
 
             <Button
-              title="Sign Up"
-              loading={isPending}
-              disabled={isPending}
+              disabled={mutation.isPending}
               onPress={handleSubmit(onSignUp)}
-            />
+            >
+              <ButtonText>
+                {mutation.isPending ? "Creating..." : "Create account"}
+              </ButtonText>
+            </Button>
 
             <TermsAndPrivacy />
           </View>

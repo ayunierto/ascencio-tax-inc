@@ -1,6 +1,5 @@
 export * from "./useDeleteAccountMutation";
 export * from "./useSignUp";
-export * from "./useSignUpMutation";
 export * from "./useTimer";
 export * from "./useVerifyEmail";
 export * from "./useVerifyEmailMutation";

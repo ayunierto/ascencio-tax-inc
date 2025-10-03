@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const verifyCodeSchema = z.object({
-  email: z.string().email({
+  email: z.string({ required_error: "Email is required." }).email({
     message: "Email must be a valid email.",
   }),
   code: z

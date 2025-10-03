@@ -5,12 +5,16 @@ import { theme } from "@/components/ui/theme";
 import { ThemedText } from "@/components/ui/ThemedText";
 
 interface EmptyContentProps {
-  // icon?:
+  icon?: keyof typeof Ionicons.glyphMap;
   title: string;
   subtitle?: string;
 }
 
-export const EmptyContent = ({ title, subtitle = "" }: EmptyContentProps) => {
+export const EmptyContent = ({
+  title,
+  subtitle = "",
+  icon,
+}: EmptyContentProps) => {
   return (
     <View
       style={{
@@ -22,7 +26,7 @@ export const EmptyContent = ({ title, subtitle = "" }: EmptyContentProps) => {
       }}
     >
       <Ionicons
-        name="information-circle-outline"
+        name={icon ? icon : "information-circle-outline"}
         size={48}
         color={theme.foreground}
       />

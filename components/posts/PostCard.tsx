@@ -1,4 +1,10 @@
-import { Linking, TouchableOpacity, View } from "react-native";
+import {
+  Linking,
+  StyleProp,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { DateTime } from "luxon";
 
@@ -10,14 +16,12 @@ import { Post } from "@/core/posts/interfaces";
 
 interface PostCardProps {
   post: Post;
+  style?: StyleProp<ViewStyle>;
 }
 
-export const PostCard = ({ post }: PostCardProps) => {
+export const PostCard = ({ post, style }: PostCardProps) => {
   return (
-    <TouchableOpacity
-      onPress={() => Linking.openURL(post.url)}
-      style={{ marginBottom: 10 }}
-    >
+    <TouchableOpacity onPress={() => Linking.openURL(post.url)} style={[style]}>
       <Card>
         <CardContent>
           <SimpleCardHeader>

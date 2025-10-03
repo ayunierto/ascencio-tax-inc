@@ -10,15 +10,15 @@ import { router } from "expo-router";
 
 import { Controller } from "react-hook-form";
 
-import Button from "@/components/ui/Button";
+import { Button, ButtonText } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import Header from "@/core/auth/components/Header";
-import Logo from "@/components/Logo";
 import ErrorMessage from "@/core/components/ErrorMessage";
 import { theme } from "@/components/ui/theme";
 import TermsAndPrivacy from "@/components/TermsAndPrivacy";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { useSignIn } from "@/core/auth/hooks";
+import SimpleLogo from "@/components/SimpleLogo";
 
 const SignInScreen = () => {
   const { control, handleSubmit, formErrors, isPending, handleSignIn } =
@@ -31,7 +31,6 @@ const SignInScreen = () => {
         style={{ flex: 1 }}
       >
         <ScrollView>
-          <Logo />
           <View
             style={{
               flex: 1,
@@ -43,9 +42,19 @@ const SignInScreen = () => {
               padding: 20,
             }}
           >
+            <View
+              style={{
+                marginTop: 100,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <SimpleLogo />
+            </View>
+
             <Header
+              title={"Sign in to Ascencio Tax"}
               subtitle=" Don’t have an account?"
-              title={"Sign In"}
               link="/auth/sign-up"
               linkText="Sign Up"
             />
@@ -106,12 +115,9 @@ const SignInScreen = () => {
               Forgot password?
             </ThemedText>
 
-            <Button
-              title="Sign In"
-              loading={isPending}
-              disabled={isPending}
-              onPress={handleSubmit(handleSignIn)}
-            />
+            <Button disabled={isPending} onPress={handleSubmit(handleSignIn)}>
+              <ButtonText>{isPending ? "Signing in..." : "Sign in"}</ButtonText>
+            </Button>
 
             <TermsAndPrivacy />
           </View>

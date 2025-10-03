@@ -1,23 +1,23 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   StyleSheet,
   type ViewProps,
   ViewStyle,
   StyleProp,
-} from 'react-native';
-import { theme } from './theme';
+} from "react-native";
+import { theme } from "./theme";
 
 interface DividerProps extends ViewProps {
-  direction?: 'horizontal' | 'vertical';
+  direction?: "horizontal" | "vertical";
   style?: StyleProp<ViewStyle>;
 }
 
-const Divider = ({ style, direction = 'horizontal' }: DividerProps) => {
+export const Divider = ({ style, direction = "horizontal" }: DividerProps) => {
   return (
     <View
       style={[
-        direction === 'horizontal' ? styles.horizontal : styles.vertical,
+        direction === "horizontal" ? styles.horizontal : styles.vertical,
         style,
       ]}
     />
@@ -26,13 +26,13 @@ const Divider = ({ style, direction = 'horizontal' }: DividerProps) => {
 
 const styles = StyleSheet.create({
   horizontal: {
-    width: '100%',
+    width: "100%",
     height: 1,
 
     backgroundColor: theme.mutedForeground,
   },
   vertical: {
-    height: '100%',
+    height: "100%",
     width: 1,
 
     backgroundColor: theme.mutedForeground,

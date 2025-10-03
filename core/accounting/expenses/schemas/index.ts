@@ -1,1 +1,1 @@
-export * from './createExpenseSchema';
+export * from "./expenseSchema";

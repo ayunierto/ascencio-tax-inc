@@ -1,15 +1,15 @@
 import { api } from "@/core/api/api";
-import { GetExpensesResponse } from "../interfaces";
+import { ExpenseResponse } from "../interfaces";
 
 export const getExpenses = async (
   limit = 20,
   offset = 0
-): Promise<GetExpensesResponse> => {
+): Promise<ExpenseResponse[]> => {
   try {
-    const res = await api.get<GetExpensesResponse>(
-      `expense?limit=${limit}&offset=${offset}`
+    const { data } = await api.get<ExpenseResponse[]>(
+      `expenses?limit=${limit}&offset=${offset}`
     );
-    return res;
+    return data;
   } catch (error) {
     throw error;
   }

@@ -10,7 +10,6 @@ export default function ExpenseLayout() {
     <Stack
       screenOptions={{
         headerShadowVisible: false,
-
         headerStyle: { backgroundColor: theme.background },
         headerTintColor: theme.foreground,
         headerTitleAlign: "center",
@@ -27,28 +26,7 @@ export default function ExpenseLayout() {
       <Stack.Screen
         name="[id]"
         options={{
-          title: "Expense",
-        }}
-      />
-
-      <Stack.Screen
-        name="create"
-        options={{
-          title: "New",
-
-          headerLeft: ({ tintColor }) => {
-            return (
-              <TouchableOpacity
-                onPress={() => router.replace("/accounting/receipts/expense")}
-              >
-                <Ionicons
-                  name="arrow-back-outline"
-                  color={tintColor}
-                  size={24}
-                />
-              </TouchableOpacity>
-            );
-          },
+          title: "Add expense",
         }}
       />
     </Stack>

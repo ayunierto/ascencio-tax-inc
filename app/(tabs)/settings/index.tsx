@@ -1,145 +1,135 @@
 import React from "react";
-import { Linking, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Ionicons, Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { Linking } from "react-native";
 
 import { ThemedText } from "@/components/ui/ThemedText";
 import { Card } from "@/components/ui";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import { theme } from "@/components/ui/theme";
-import { router } from "expo-router";
-import Divider from "@/components/ui/Divider";
 import { CardContent } from "@/components/ui/Card/CardContent";
+import { Button, ButtonText } from "@/components/ui/Button";
 import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import Button from "@/components/ui/Button";
+import { theme } from "@/components/ui/theme";
 
-const SettingsScreen = () => {
+const ListItem = ({
+  icon,
+  label,
+  onPress,
+  external = false,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+  external?: boolean;
+}) => (
+  <Card>
+    <CardContent>
+      <View style={styles.itemRow}>
+        <View style={styles.itemLeft}>
+          <Ionicons name={icon} size={22} color={theme.foreground} />
+          <ThemedText style={styles.itemLabel}>{label}</ThemedText>
+        </View>
+        {external ? (
+          <Feather name="external-link" size={20} color={theme.foreground} />
+        ) : (
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={theme.mutedForeground}
+          />
+        )}
+      </View>
+    </CardContent>
+  </Card>
+);
+
+export default function SettingsScreen() {
   const { logout } = useAuthStore();
 
   return (
     <View style={styles.container}>
-      <View style={styles.firstColumn}>
-        <ThemedText style={styles.title}>Settings</ThemedText>
+      {/* Main content */}
+      <View style={styles.content}>
+        {/* Account */}
+        <View style={styles.section}>
+          <ThemedText style={styles.sectionTitle}>Account</ThemedText>
+          <ListItem
+            icon="person-outline"
+            label="My account"
+            onPress={() => router.push("/settings/profile")}
+          />
+          <ListItem
+            icon="diamond-outline"
+            label="Subscriptions"
+            onPress={() => router.push("/settings/subscriptions")}
+          />
+        </View>
 
-        <TouchableOpacity onPress={() => router.push("/settings/profile")}>
-          <Card>
-            <CardContent>
-              <View style={styles.cardContent}>
-                <View style={styles.cardContentLeft}>
-                  <Ionicons
-                    name="person-outline"
-                    size={24}
-                    color={theme.foreground}
-                  />
-                  <ThemedText style={styles.cardText}>My account</ThemedText>
-                </View>
-                <Ionicons
-                  name="arrow-forward"
-                  size={24}
-                  color={theme.foreground}
-                />
-              </View>
-            </CardContent>
-          </Card>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => router.push("/settings/subscriptions")}
-        >
-          <Card>
-            <CardContent>
-              <View style={styles.cardContent}>
-                <View style={styles.cardContentLeft}>
-                  <Ionicons
-                    name="diamond-outline"
-                    size={24}
-                    color={theme.foreground}
-                  />
-                  <ThemedText style={styles.cardText}>Subscriptions</ThemedText>
-                </View>
-                <Ionicons
-                  name="arrow-forward"
-                  size={24}
-                  color={theme.foreground}
-                />
-              </View>
-            </CardContent>
-          </Card>
-        </TouchableOpacity>
-
-        <Card>
-          <TouchableOpacity
-            onPress={() =>
-              Linking.openURL("https://www.ascenciotax.com/privacy")
-            }
-          >
-            <CardContent>
-              <View style={styles.cardContent}>
-                <View style={styles.cardContentLeft}>
-                  <Ionicons
-                    name="book-outline"
-                    size={24}
-                    color={theme.foreground}
-                  />
-                  <ThemedText style={styles.cardText}>Terms of use</ThemedText>
-                </View>
-                <Feather
-                  color={theme.foreground}
-                  name="external-link"
-                  size={24}
-                />
-              </View>
-            </CardContent>
-          </TouchableOpacity>
-
-          <Divider />
-
-          <TouchableOpacity
+        {/* Legal */}
+        <View style={styles.section}>
+          <ThemedText style={styles.sectionTitle}>Legal</ThemedText>
+          <ListItem
+            icon="book-outline"
+            label="Terms of use"
+            external
             onPress={() =>
               Linking.openURL("https://www.ascenciotax.com/termsofuse")
             }
-          >
-            <CardContent>
-              <View style={styles.cardContent}>
-                <View style={styles.cardContentLeft}>
-                  <Ionicons
-                    name="book-outline"
-                    size={24}
-                    color={theme.foreground}
-                  />
-                  <ThemedText style={styles.cardText}>
-                    Privacy policy
-                  </ThemedText>
-                </View>
-                <Feather
-                  color={theme.foreground}
-                  name="external-link"
-                  size={24}
-                />
-              </View>
-            </CardContent>
-          </TouchableOpacity>
-        </Card>
+          />
+          <ListItem
+            icon="shield-checkmark-outline"
+            label="Privacy policy"
+            external
+            onPress={() =>
+              Linking.openURL("https://www.ascenciotax.com/privacy")
+            }
+          />
+        </View>
       </View>
 
-      <Button
-        title="Log out"
-        iconRight="log-out-outline"
-        variant="outline"
-        onPress={logout}
-      />
+      {/* Footer */}
+      <View style={styles.footer}>
+        <Button variant="destructive" fullWidth onPress={logout}>
+          <ButtonText>Log out</ButtonText>
+        </Button>
+      </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: { padding: 20, flex: 1, justifyContent: "space-between" },
-  title: { fontSize: 28, marginBottom: 10, fontWeight: "bold" },
-  firstColumn: { gap: 10 },
-  cardContent: {
+  container: {
+    flex: 1,
+    padding: 20,
     justifyContent: "space-between",
-    flexDirection: "row",
   },
-  cardContentLeft: { flexDirection: "row", alignItems: "center" },
-  cardText: { fontSize: 16, marginLeft: 10 },
+  content: {
+    gap: 32, // espacio entre secciones
+  },
+  footer: {
+    marginTop: 24, // separación del contenido
+  },
+  section: {
+    gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: theme.mutedForeground,
+    marginBottom: 4,
+  },
+  itemRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  itemLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  itemLabel: {
+    fontSize: 16,
+    marginLeft: 10,
+    color: theme.foreground,
+  },
 });
-
-export default SettingsScreen;

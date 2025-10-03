@@ -12,7 +12,7 @@ import { useAuthStore } from "@/core/auth/store/useAuthStore";
 
 import Header from "@/core/auth/components/Header";
 import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonText } from "@/components/ui/Button";
 import {
   useResendResetPasswordMutation,
   useResetPasswordMutation,
@@ -129,21 +129,21 @@ const VerifyCode = () => {
 
               <Button
                 disabled={isPending}
-                loading={isPending}
                 onPress={handleSubmit(handleEmailVerification)}
               >
-                Change Password
+                <ButtonText>Change Password</ButtonText>
               </Button>
 
               <Button
                 disabled={isPending || isRunning}
-                loading={isLoadingResend}
                 onPress={handleResendPasswordCode}
-                variant="outlined"
+                variant="outline"
               >
-                {timeRemaining === 0
-                  ? "Resend code"
-                  : `Resend in ${timeRemaining}s`}
+                <ButtonText>
+                  {timeRemaining === 0
+                    ? "Resend code"
+                    : `Resend in ${timeRemaining}s`}
+                </ButtonText>
               </Button>
             </View>
           </View>

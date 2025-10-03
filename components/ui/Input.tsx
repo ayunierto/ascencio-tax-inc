@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -11,9 +11,9 @@ import {
   type TextInputProps,
   type NativeSyntheticEvent,
   type TextInputFocusEventData,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { theme } from './theme';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { theme } from "./theme";
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -32,7 +32,7 @@ interface InputProps extends TextInputProps {
 
 export const Input = ({
   label,
-  value = '',
+  value = "",
   placeholder,
   leadingIcon,
   trailingIcon,
@@ -95,10 +95,10 @@ export const Input = ({
     const borderColor = readOnly
       ? theme.mutedForeground
       : error
-      ? theme.destructive
-      : isFocused
-      ? focusedBorderColor
-      : theme.input;
+        ? theme.destructive
+        : isFocused
+          ? focusedBorderColor
+          : theme.input;
 
     const borderWidth = isFocused || error ? 2 : 2;
 
@@ -181,7 +181,7 @@ export const Input = ({
               onFocus={handleFocus}
               onBlur={handleBlur}
               readOnly={readOnly}
-              placeholder={!label ? placeholder : ''}
+              placeholder={!label ? placeholder : ""}
               placeholderTextColor={theme.muted}
               underlineColorAndroid="transparent"
               {...props}
@@ -200,7 +200,7 @@ export const Input = ({
 
           {props.secureTextEntry && (
             <Ionicons
-              name={isPasswordVisible ? 'eye' : 'eye-off'}
+              name={isPasswordVisible ? "eye" : "eye-off"}
               size={24}
               color={theme.primaryForeground}
               style={styles.icon}
@@ -227,7 +227,7 @@ export const Input = ({
 
 const styles = StyleSheet.create({
   root: {
-    width: '100%',
+    width: "100%",
     // marginBottom: 16,
   },
   containerBase: {
@@ -238,22 +238,22 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   inputArea: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   labelBase: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     backgroundColor: theme.background,
     paddingHorizontal: 4,
   },
   inputBase: {
-    height: '100%',
+    height: "100%",
     fontSize: 16,
   },
   icon: {},

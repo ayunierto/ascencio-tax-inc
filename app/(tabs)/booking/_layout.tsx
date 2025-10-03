@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import { Stack } from 'expo-router';
-import { theme } from '@/components/ui/theme';
+import { Stack } from "expo-router";
+import { theme } from "@/components/ui/theme";
 
 export default function BookingLayout() {
   return (
@@ -9,19 +9,19 @@ export default function BookingLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: theme.background },
         headerTintColor: theme.foreground,
-        headerTitleAlign: 'center',
+        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          title: 'Booking',
+          title: "Booking",
         }}
       />
       <Stack.Screen
         name="resume"
         options={{
-          title: 'Resume',
+          title: "Resume",
         }}
       />
     </Stack>

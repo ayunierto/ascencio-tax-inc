@@ -14,7 +14,7 @@ import { useAuthStore } from "@/core/auth/store/useAuthStore";
 import { useTimer } from "@/core/auth/hooks/useTimer";
 import Header from "@/core/auth/components/Header";
 import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonText } from "@/components/ui/Button";
 import ErrorMessage from "@/core/components/ErrorMessage";
 import { useVerifyEmailMutation } from "@/core/auth/hooks/useVerifyEmailMutation";
 import { useResendEmailCodeMutation } from "@/core/auth/hooks/useResendEmailCodeMutation";
@@ -22,11 +22,10 @@ import {
   VerifyCodeRequest,
   verifyCodeSchema,
 } from "@/core/auth/schemas/verify-email-code.schema";
-import { Ionicons } from "@expo/vector-icons";
-import { theme } from "@/components/ui/theme";
+import { EmptyContent } from "@/core/components";
 
 const VerifyEmail = () => {
-  const { user } = useAuthStore();
+  const { tempEmail } = useAuthStore();
   const { timeRemaining, isRunning, startTimer, resetTimer } = useTimer(30); // 60 seconds countdown
 
   useEffect(() => {
@@ -41,42 +40,50 @@ const VerifyEmail = () => {
     control,
     handleSubmit,
     formState: { errors },
+    resetField,
   } = useForm<VerifyCodeRequest>({
     resolver: zodResolver(verifyCodeSchema),
     defaultValues: {
-      email: user?.email || "",
+      email: tempEmail || "",
       code: "",
     },
   });
 
   // Handle email verification
-  const { mutate: verifyEmail, isPending } = useVerifyEmailMutation();
+  const { mutateAsync: verifyEmail, isPending } = useVerifyEmailMutation();
   const handleEmailVerification = async (data: VerifyCodeRequest) => {
-    if (user) {
-      verifyEmail(data);
-    }
-    return;
+    await verifyEmail(data, {
+      onSuccess: () => {
+        resetTimer();
+      },
+      onError: () => {
+        resetTimer();
+        startTimer();
+        resetField("code");
+      },
+    });
   };
 
   const { mutate: resendEmailCode, isPending: isLoadingResend } =
     useResendEmailCodeMutation();
 
   const handleResendVerificationCode = async () => {
-    if (user && user.email) {
+    if (tempEmail) {
       if (isRunning) return;
-      resendEmailCode(user.email);
+      resendEmailCode(tempEmail);
 
       resetTimer();
       startTimer();
     }
   };
 
-  if (!user) {
+  if (!tempEmail) {
     return (
       <SafeAreaView>
-        <View style={{ padding: 20 }}>
-          <Header title="Error" subtitle="User not found" />
-        </View>
+        <EmptyContent
+          title="Email not found"
+          subtitle="Temporary email not found"
+        />
       </SafeAreaView>
     );
   }
@@ -131,28 +138,23 @@ const VerifyEmail = () => {
 
                 <Button
                   disabled={isPending}
-                  loading={isPending}
                   onPress={handleSubmit(handleEmailVerification)}
                 >
-                  Verify
+                  <ButtonText>
+                    {isPending ? "Verifying...  " : "Verify"}
+                  </ButtonText>
                 </Button>
 
                 <Button
                   disabled={isLoadingResend || isRunning}
-                  loading={isLoadingResend}
                   onPress={handleResendVerificationCode}
-                  variant="outlined"
-                  iconLeft={
-                    <Ionicons
-                      name="time-outline"
-                      size={24}
-                      color={theme.foreground}
-                    />
-                  }
+                  variant="outline"
                 >
-                  {timeRemaining === 0
-                    ? "Resend code"
-                    : `Resend in ${timeRemaining}s`}
+                  <ButtonText>
+                    {timeRemaining === 0
+                      ? "Resend code"
+                      : `Resend in ${timeRemaining}s`}
+                  </ButtonText>
                 </Button>
               </View>
             </View>

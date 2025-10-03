@@ -1,23 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import { Alert } from 'react-native';
-import { router, useNavigation } from 'expo-router';
-import Toast from 'react-native-toast-message';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Alert } from "react-native";
+import { router, useNavigation } from "expo-router";
+import Toast from "react-native-toast-message";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { CreateUpdateExpense, Expense } from '../interfaces';
-import { Subcategory } from '../../subcategories/interfaces';
-import { Category } from '../../categories/interfaces/category.interface';
-import { getExpenseById } from '../actions/get-expense.action';
-import { getAccounts } from '../../accounts/actions';
-import { removeExpense, updateExpense } from '../actions';
-import { getCategories } from '../../categories/actions';
-import { getSubcategories } from '../../subcategories/actions';
-import { expenseSchema } from '../schemas/createExpenseSchema';
-import { useCameraStore } from '@/core/camera/store';
+import { CreateUpdateExpense, Expense } from "../interfaces";
+import { Subcategory } from "../../subcategories/interfaces";
+import { Category } from "../../categories/interfaces/category.interface";
+import { getExpenseById } from "../actions/get-expense.action";
+import { getAccounts } from "../../accounts/actions";
+import { removeExpense, updateExpense } from "../actions";
+import { getCategories } from "../../categories/actions";
+import { getSubcategories } from "../../subcategories/actions";
+import { expenseSchema } from "../schemas/createExpenseSchema";
+import { useCameraStore } from "@/core/camera/store";
 
 interface Option {
   label: string;
@@ -39,22 +39,22 @@ export const useUpdateExpense = (expenseId: string) => {
   const queryClient = useQueryClient();
 
   const expenseQuery = useQuery({
-    queryKey: ['expense', expenseId],
+    queryKey: ["expense", expenseId],
     queryFn: () => getExpenseById(expenseId),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
   const accountQuery = useQuery({
-    queryKey: ['accounts'],
+    queryKey: ["accounts"],
     queryFn: () => getAccounts(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
   const categoryQuery = useQuery({
-    queryKey: ['categories'],
+    queryKey: ["categories"],
     queryFn: () => getCategories(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
   const subcategoryQuery = useQuery({
-    queryKey: ['subcategories'],
+    queryKey: ["subcategories"],
     queryFn: () => getSubcategories(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
@@ -72,18 +72,18 @@ export const useUpdateExpense = (expenseId: string) => {
         tax,
         total,
       } = expenseQuery.data;
-      setValue('merchant', merchant);
-      setValue('date', date);
-      setValue('total', total.toString());
-      setValue('tax', tax.toString());
-      setValue('image', image ? image : undefined);
-      setValue('accountId', account.id);
-      setValue('categoryId', category.id);
+      setValue("merchant", merchant);
+      setValue("date", date);
+      setValue("total", total.toString());
+      setValue("tax", tax.toString());
+      setValue("image", image ? image : undefined);
+      setValue("accountId", account.id);
+      setValue("categoryId", category.id);
       if (subcategory) {
-        setValue('subcategoryId', subcategory.id);
+        setValue("subcategoryId", subcategory.id);
       }
       if (notes) {
-        setValue('notes', notes);
+        setValue("notes", notes);
       }
       setSelectedCategory(
         category && {
@@ -133,16 +133,16 @@ export const useUpdateExpense = (expenseId: string) => {
       }));
       setSubcategoryOptions(options);
       setSelectedSubcategory(options[0]);
-      setValue('subcategoryId', options[0].value);
+      setValue("subcategoryId", options[0].value);
     }
   };
 
   const updateExpenseMutation = useMutation({
     mutationFn: async (values: CreateUpdateExpense): Promise<Expense> => {
-      const image = getValues('image');
+      const image = getValues("image");
       const data = await updateExpense({
         id: expenseId,
-        image: image && image.includes('file') ? image : undefined,
+        image: image && image.includes("file") ? image : undefined,
         ...values,
       });
       return data;
@@ -150,26 +150,26 @@ export const useUpdateExpense = (expenseId: string) => {
 
     onSuccess: async (data: Expense) => {
       await queryClient.invalidateQueries({
-        queryKey: ['expenses', 'infinite'],
+        queryKey: ["expenses", "infinite"],
       });
       await queryClient.invalidateQueries({
-        queryKey: ['expense', expenseId],
+        queryKey: ["expense", expenseId],
       });
       await queryClient.invalidateQueries({
-        queryKey: ['totalExpenses'],
+        queryKey: ["totalExpenses"],
       });
       await queryClient.invalidateQueries({
-        queryKey: ['logs'],
+        queryKey: ["logs"],
       });
       Toast.show({
-        type: 'success',
+        type: "success",
         text1: `Receipt ${data.merchant} updated`,
-        text2: 'Receipt was updated correctly',
+        text2: "Receipt was updated correctly",
         text1Style: { fontSize: 14 },
         text2Style: { fontSize: 12 },
       });
       clearImages();
-      router.replace('/accounting/receipts/expense');
+      router.replace("/accounting/receipts/expense");
     },
   });
 
@@ -181,26 +181,26 @@ export const useUpdateExpense = (expenseId: string) => {
 
     onSuccess: async (data: Expense) => {
       await queryClient.invalidateQueries({
-        queryKey: ['expenses', 'infinite'],
+        queryKey: ["expenses", "infinite"],
       });
       // await queryClient.invalidateQueries({
       //   queryKey: ['expense', expenseId],
       // });
       await queryClient.invalidateQueries({
-        queryKey: ['totalExpenses'],
+        queryKey: ["totalExpenses"],
       });
       await queryClient.invalidateQueries({
-        queryKey: ['logs'],
+        queryKey: ["logs"],
       });
       Toast.show({
-        type: 'success',
+        type: "success",
         text1: `Receipt ${data.merchant} deleted`,
-        text2: 'Receipt was deleted correctly',
+        text2: "Receipt was deleted correctly",
         text1Style: { fontSize: 14 },
         text2Style: { fontSize: 12 },
       });
       clearImages();
-      router.replace('/accounting/receipts/expense');
+      router.replace("/accounting/receipts/expense");
     },
   });
 
@@ -217,25 +217,25 @@ export const useUpdateExpense = (expenseId: string) => {
   const onDelete = async () => {
     setIsDeleting(true);
     Alert.alert(
-      'Delete Receipt',
-      'Are you sure you want to delete this receipt?',
+      "Delete Receipt",
+      "Are you sure you want to delete this receipt?",
       [
         {
-          text: 'Cancel',
-          style: 'cancel',
+          text: "Cancel",
+          style: "cancel",
         },
         {
-          text: 'Delete',
-          style: 'destructive',
+          text: "Delete",
+          style: "destructive",
           onPress: async () => {
             try {
               await deleteExpenseMutation.mutateAsync(expenseId);
             } catch (error) {
               console.error(error);
               Toast.show({
-                type: 'error',
-                text1: 'Error deleting receipt',
-                text2: 'There was an error deleting the receipt',
+                type: "error",
+                text1: "Error deleting receipt",
+                text2: "There was an error deleting the receipt",
                 text1Style: { fontSize: 14 },
                 text2Style: { fontSize: 12 },
               });

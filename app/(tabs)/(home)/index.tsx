@@ -1,15 +1,12 @@
 import React from "react";
 
 import { View, Text, Image, ScrollView } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 
 import { useBookingStore } from "@/core/services/store/useBookingStore";
 import { useAuthStore } from "@/core/auth/store/useAuthStore";
 import Loader from "@/components/Loader";
-import { theme } from "@/components/ui/theme";
-import Button from "@/components/ui/Button";
 import { Service } from "@/core/services/interfaces";
 import { EmptyContent } from "@/core/components";
 import { LoadingError } from "@/components/LoadingError";

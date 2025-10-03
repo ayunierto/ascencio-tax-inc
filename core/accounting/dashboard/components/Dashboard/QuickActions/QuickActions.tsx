@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/Card/Card";
 import { SimpleCardHeader } from "@/components/ui/Card/SimpleCardHeader";
 import { SimpleCardHeaderTitle } from "@/components/ui/Card/SimpleCardHeaderTitle";
 import { theme } from "@/components/ui/theme";
-import Button from "@/components/ui/Button";
+import { Button, ButtonText } from "@/components/ui/Button";
 import { CardContent } from "@/components/ui/Card/CardContent";
 
 interface QuickActionsProps {
@@ -24,10 +24,10 @@ export const QuickActions = ({ actions }: QuickActionsProps) => {
           <Ionicons name={"flash-outline"} size={20} color={theme.foreground} />
           <SimpleCardHeaderTitle>Quick Actions</SimpleCardHeaderTitle>
         </SimpleCardHeader>
-        <View style={{ gap: 10 }}>
+        <View>
           {actions.map((action, index) => (
             <Button key={index} onPress={action.onPress}>
-              {action.label}
+              <ButtonText>{action.label}</ButtonText>
             </Button>
           ))}
         </View>

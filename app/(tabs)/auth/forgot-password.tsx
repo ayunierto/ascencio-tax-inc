@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
 import Header from "../../../core/auth/components/Header";
-import Button from "@/components/ui/Button";
+import { Button, ButtonText } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import {
   ForgotPasswordRequest,
@@ -65,17 +65,16 @@ const ForgotPassword = () => {
 
         <Button
           disabled={isPending}
-          loading={isPending}
           onPress={handleSubmit(handleForgotPassword)}
         >
-          Reset Password
+          <ButtonText>Reset Password</ButtonText>
         </Button>
 
         <Button
-          variant="outlined"
+          variant="outline"
           onPress={() => router.replace("/auth/sign-in")}
         >
-          Back
+          <ButtonText>Back</ButtonText>
         </Button>
       </View>
     </ScrollView>

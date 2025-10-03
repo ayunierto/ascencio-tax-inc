@@ -1,19 +1,24 @@
-import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { GetServicesResponse, Service } from "../interfaces";
-import { ServerException } from "@/core/interfaces/server-exception.response";
 import { AxiosError } from "axios";
-import { getServices } from "../actions";
 
-export const useServices = () => {
+import { getServicesAction } from "../actions/get-services.action";
+import { ServicesResponse } from "../interfaces";
+import { ServerException } from "@/core/interfaces/server-exception.response";
+
+export const useServices = (limit: number = 100, offset = 0) => {
   return useQuery<
-    GetServicesResponse,
+    ServicesResponse,
     AxiosError<ServerException>,
-    GetServicesResponse
+    ServicesResponse
   >({
-    queryKey: ["services"],
-    queryFn: getServices,
-    staleTime: 1000 * 60 * 5, // 5 min
+    queryKey: ["services", { offset, limit }],
+    queryFn: () =>
+      getServicesAction({
+        limit: isNaN(limit) ? 9 : limit,
+        offset: isNaN(offset) ? 0 : offset,
+      }),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
     retry: false,
   });
 };

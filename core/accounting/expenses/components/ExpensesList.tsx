@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { FlatList, RefreshControl } from 'react-native';
-import { useQueryClient } from '@tanstack/react-query';
+import { FlatList, RefreshControl } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { Expense } from '@/core/accounting/expenses/interfaces';
-import ExpenseCard from './ExpenseCard';
-import { EmptyList } from '@/core/components';
+import { ExpenseResponse } from "@/core/accounting/expenses/interfaces";
+import ExpenseCard from "./ExpenseCard";
+import { EmptyContent } from "@/core/components";
 
 interface ExpenseListProps {
-  expenses: Expense[];
+  expenses: ExpenseResponse[];
   loadNextPage: () => void;
 }
 
@@ -21,7 +21,7 @@ const ExpensesList = ({ expenses, loadNextPage }: ExpenseListProps) => {
     await new Promise((resolve) => setTimeout(resolve, 200));
 
     queryClient.invalidateQueries({
-      queryKey: ['expenses', 'infinite'],
+      queryKey: ["expenses", "infinite"],
     });
     setIsRefreshing(false);
   };
@@ -45,8 +45,9 @@ const ExpensesList = ({ expenses, loadNextPage }: ExpenseListProps) => {
           titleColor="#fff"
         />
       }
+      contentContainerStyle={{ flexGrow: 1 }}
       ListEmptyComponent={
-        <EmptyList
+        <EmptyContent
           title="No expenses found."
           subtitle="Add a new expense to get started"
         />

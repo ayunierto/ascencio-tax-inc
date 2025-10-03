@@ -10,6 +10,7 @@ import Loader from "@/components/Loader";
 import { PostCard } from "@/components/posts/PostCard";
 import { ServerException } from "@/core/interfaces/server-exception.response";
 import { Post } from "@/core/posts/interfaces";
+import { ScrollView } from "react-native-gesture-handler";
 
 const BlogScreen = (): JSX.Element => {
   const {
@@ -39,16 +40,17 @@ const BlogScreen = (): JSX.Element => {
   }
 
   return (
-    <FlatList
-      style={{
-        padding: 10,
-      }}
-      data={posts}
-      numColumns={1}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <PostCard post={item} />}
-      showsVerticalScrollIndicator={false}
-    />
+    <View style={{ flex: 1, padding: 10 }}>
+      <FlatList
+        data={posts}
+        numColumns={1}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <PostCard post={item} style={{ marginBottom: 10 }} />
+        )}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 };
 
