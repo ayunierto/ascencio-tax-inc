@@ -10,16 +10,12 @@ export const getServicesAction = async (
   options: Options
 ): Promise<ServicesResponse> => {
   const { limit, offset } = options;
-  try {
-    const { data } = await api.get<ServicesResponse>("/services", {
-      params: {
-        limit,
-        offset,
-      },
-    });
+  const { data } = await api.get<ServicesResponse>("/services", {
+    params: {
+      limit,
+      offset,
+    },
+  });
 
-    return data;
-  } catch (error) {
-    throw error;
-  }
+  return data;
 };

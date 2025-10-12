@@ -1,3 +1,4 @@
+import React from "react";
 import { View, Image } from "react-native";
 import { theme } from "../ui/theme";
 import { Service } from "@/core/services/interfaces/service.interface";

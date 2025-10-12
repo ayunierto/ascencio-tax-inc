@@ -1,62 +1,60 @@
 import { create } from "zustand";
-import * as SecureStore from "expo-secure-store";
 import { bookAppointment } from "@/core/appointments/actions/book-appointment.action";
 import { Service } from "../interfaces";
+import { Staff } from "@/core/staff/interfaces";
+import { Appointment } from "@/core/appointments/interfaces";
 
 export interface BookingState {
-  selectedService: Service | undefined;
-  startDateAndTime: string | undefined;
-  endDateAndTime: string | undefined;
-  staffId: string | undefined;
-  staffName: string | undefined;
+  service: Service | undefined;
+  staff: Staff | undefined;
+  utcDateTime: string | undefined;
+  timeZone: string | undefined;
+  comments: string | undefined;
 
-  selectService: (service: Service) => void;
-  bookingDetails: (
-    staffId: string,
-    staffName: string,
-    startDateAndTime: string,
-    endDateAndTime: string
+  setService: (service: Service) => void;
+  setBookingDetails: (
+    service: Service,
+    staff: Staff,
+    utcDateTime: string,
+    timeZone: string,
+    comments?: string
   ) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  bookNow: () => Promise<any>;
+  bookNow: () => Promise<Appointment>;
 }
 
 export const useBookingStore = create<BookingState>()((set, get) => ({
-  selectedService: undefined,
-  startDateAndTime: undefined,
-  endDateAndTime: undefined,
-  staffId: undefined,
-  staffName: undefined,
+  service: undefined,
+  staff: undefined,
+  utcDateTime: undefined,
+  timeZone: undefined,
+  comments: undefined,
 
-  selectService: async (selectedService: Service) => {
-    set({ selectedService });
-    await SecureStore.setItemAsync(
-      "selectedService",
-      JSON.stringify(selectedService)
-    );
+  setService: async (service: Service) => {
+    set({ service });
   },
 
-  bookingDetails: (
-    staffId: string,
-    staffName: string,
-    startDateAndTime: string,
-    endDateAndTime: string
+  setBookingDetails: (
+    service: Service,
+    staff: Staff,
+    utcDateTime: string,
+    timeZone: string,
+    comments?: string
   ) => {
-    set({ staffId, staffName, startDateAndTime, endDateAndTime });
+    set({ service, staff, utcDateTime, timeZone, comments });
   },
 
   bookNow: async () => {
-    const { endDateAndTime, selectedService, staffId, startDateAndTime } =
-      get();
-    if (endDateAndTime && selectedService && staffId && startDateAndTime) {
-      const response = bookAppointment({
-        startDateAndTime,
-        endDateAndTime,
-        service: selectedService.id,
-        staff: staffId,
-      });
-      return response;
-    }
-    return null;
+    const { service, staff, utcDateTime, timeZone, comments } = get();
+    if (!service || !staff || !utcDateTime || !timeZone || !comments)
+      throw new Error("Missing required fields");
+
+    return await bookAppointment({
+      serviceId: service.id,
+      staffId: staff.id,
+      utcDateTime,
+      timeZone,
+      comments,
+    });
   },
 }));

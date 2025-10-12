@@ -8,20 +8,14 @@ export const updateProfileAction = async ({
   password,
   phoneNumber,
 }: UpdateProfileRequest): Promise<UpdateProfileResponse> => {
-  const userUpdate = {
-    lastName,
-    firstName,
-    password,
-    phoneNumber,
-  };
-
-  try {
-    const { data } = await api.patch<UpdateProfileResponse>(
-      "auth/update-profile",
-      userUpdate
-    );
-    return data;
-  } catch (error) {
-    throw error;
-  }
+  const { data } = await api.patch<UpdateProfileResponse>(
+    "auth/update-profile",
+    {
+      lastName,
+      firstName,
+      password,
+      phoneNumber,
+    }
+  );
+  return data;
 };

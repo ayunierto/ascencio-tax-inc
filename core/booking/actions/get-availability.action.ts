@@ -1,16 +1,13 @@
 import { api } from "@/core/api/api";
+import { AvailabilitySlot } from "../interfaces/availability.response";
 
 export const getAvailabilityAction = async (
   staffId: string,
   date: string
-): Promise<AvailabilityResponse[]> => {
-  try {
-    const { data } = await api.post("/appointments/availability", {
-      staffId,
-      date,
-    });
-    return data;
-  } catch (error) {
-    throw error;
-  }
+): Promise<AvailabilitySlot[]> => {
+  const { data } = await api.post("/appointments/availability", {
+    staffId,
+    date,
+  });
+  return data;
 };

@@ -1,29 +1,26 @@
 import { api } from "@/core/api/api";
-import { UpdateExpenseRequest, UpdateExpenseResponse } from "../interfaces";
+import { UpdateExpenseResponse } from "../interfaces";
 import { uploadImage } from "@/core/files/actions/upload-image.action";
+import { ExpenseFormFields } from "../schemas";
 
 export const updateExpense = async (
   id: string,
-  expense: Partial<UpdateExpenseRequest>
+  expense: Partial<ExpenseFormFields>
 ): Promise<UpdateExpenseResponse> => {
-  try {
-    // Try to upload the image if it exists and is not a string
-    if (expense.image && typeof expense.image !== "string") {
-      const uploadedImage = await uploadImage(expense.image);
-      if ("error" in uploadedImage) {
-        console.error(uploadedImage);
-        return uploadedImage;
-      }
-      expense.image = uploadedImage.image;
+  // Try to upload the image if it exists and is not a string
+  if (expense.imageFile) {
+    const uploadedImage = await uploadImage(expense.imageFile);
+    if ("error" in uploadedImage) {
+      console.error(uploadedImage);
+      return uploadedImage;
     }
-
-    const { data } = await api.patch<UpdateExpenseResponse>(
-      `expense/${id}`,
-      expense
-    );
-
-    return data;
-  } catch (error) {
-    throw error;
+    expense.imageUrl = uploadedImage.image;
   }
+
+  const { data } = await api.patch<UpdateExpenseResponse>(
+    `expenses/${id}`,
+    expense
+  );
+
+  return data;
 };

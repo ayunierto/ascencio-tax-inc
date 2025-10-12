@@ -77,6 +77,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       });
       return true;
     } catch (error) {
+      console.error(error);
       await StorageAdapter.removeItem("access_token");
       set({
         user: undefined,
@@ -88,13 +89,9 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   signUp: async (data: SignUpApiRequest) => {
-    try {
-      const response = await signUpAction(data);
-      set({ tempEmail: data.email });
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    const response = await signUpAction(data);
+    set({ tempEmail: data.email });
+    return response;
   },
 
   verifyCode: async (data: VerifyCodeRequest) => {

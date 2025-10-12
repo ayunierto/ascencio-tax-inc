@@ -5,6 +5,7 @@ export interface User {
   email: string;
   countryCode?: string;
   phoneNumber?: string;
+  timeZone: string;
   locale?: string;
   roles: string[];
   lastLoginAt: string;

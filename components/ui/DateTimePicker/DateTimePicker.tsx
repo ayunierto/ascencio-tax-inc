@@ -9,7 +9,7 @@ import {
   ViewStyle,
   TextStyle,
 } from "react-native";
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Button, ButtonText } from "../Button";
 import RNDateTimePicker, {
   DateTimePickerAndroid,
@@ -153,6 +153,7 @@ const DateTimeInput = ({
 
   // Optimización: Memoizar handler de limpieza
   const handleClear = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (e: any) => {
       e.stopPropagation();
       if (onChange && !disabled) {
@@ -479,6 +480,7 @@ export function DateTimeField<
       control={control}
       name={name}
       rules={rules}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       defaultValue={defaultValue as any}
       render={({ field: { value, onChange }, fieldState }) => (
         <DateTimeInput

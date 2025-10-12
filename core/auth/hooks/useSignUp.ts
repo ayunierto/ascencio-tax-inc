@@ -25,6 +25,9 @@ export const useSignUp = () => {
     setValue,
   } = useForm<SignUpRequest>({
     resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
   });
 
   return {

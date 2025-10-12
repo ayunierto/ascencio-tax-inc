@@ -1,10 +1,11 @@
 import React from "react";
-import { Image, View } from "react-native";
+import { Image } from "react-native";
 import { theme } from "./ui/theme";
 
 const SimpleLogo = () => {
   return (
     <Image
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       source={require("../assets/images/splash-icon.png")}
       style={{
         // maxWidth: 300,

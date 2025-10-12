@@ -36,7 +36,11 @@ const BlogScreen = () => {
   }
   if (!posts || posts.length === 0) {
     return (
-      <EmptyContent title="No posts found." icon="information-circle-outline" />
+      <EmptyContent
+        title="No posts available."
+        subtitle="Please check back later."
+        icon="information-circle-outline"
+      />
     );
   }
 

@@ -13,6 +13,7 @@ export const signUpSchema = z
       .email("Invalid email address"),
     countryCode: z.string().optional(),
     phoneNumber: z.string().optional(),
+    timeZone: z.string(),
     locale: z.string().optional(),
     password: z
       .string({ message: "The password is required" })

@@ -38,7 +38,7 @@ import SimpleLogo from "@/components/SimpleLogo";
 const SignUp = () => {
   const { countryCodes } = useCountryCodes();
   const { signUp } = useAuthStore();
-  const { errors, control, callingCode, handleSubmit, setValue } = useSignUp();
+  const { errors, control, handleSubmit } = useSignUp();
 
   const mutation = useMutation<
     SignUpResponse,
@@ -48,7 +48,7 @@ const SignUp = () => {
     mutationFn: async (data) => {
       return await signUp(data);
     },
-    onSuccess: (response) => {
+    onSuccess: () => {
       router.push("/auth/verify-email");
       Toast.show({
         type: "success",
@@ -90,7 +90,7 @@ const SignUp = () => {
             }}
           >
             <View style={{ alignItems: "center", marginTop: 20 }}>
-              {/* <SimpleLogo /> */}
+              <SimpleLogo />
             </View>
             <Header
               title="Sign up for Ascencio Tax"

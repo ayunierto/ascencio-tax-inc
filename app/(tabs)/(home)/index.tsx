@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { SafeAreaView, ScrollView, View } from "react-native";
+import { SafeAreaView, ScrollView } from "react-native";
 import Logo from "@/components/Logo";
 import {
   Tabs,

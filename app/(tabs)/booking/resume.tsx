@@ -1,58 +1,48 @@
-import React from 'react';
-import { View, ScrollView } from 'react-native';
-import { useBookingStore } from '@/core/services/store/useBookingStore';
-import { router } from 'expo-router';
-import Toast from 'react-native-toast-message';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from '@/components/ui';
-import { Ionicons } from '@expo/vector-icons';
-import { theme } from '@/components/ui/theme';
-import { ThemedText } from '@/components/ui/ThemedText';
-import Button from '@/components/ui/Button';
-import { DateTime } from 'luxon';
-import { CardContent } from '@/components/ui/Card/CardContent';
+import React from "react";
+import { View, ScrollView } from "react-native";
+import { useBookingStore } from "@/core/services/store/useBookingStore";
+import { router } from "expo-router";
+import Toast from "react-native-toast-message";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from "@/components/ui";
+import { Ionicons } from "@expo/vector-icons";
+import { theme } from "@/components/ui/theme";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { Button, ButtonText } from "@/components/ui/Button";
+import { CardContent } from "@/components/ui/Card/CardContent";
+import { DateTime } from "luxon";
 
 const ResumeScreen = () => {
-  const { selectedService, staffName, startDateAndTime, bookNow } =
-    useBookingStore();
+  const { service, staff, bookNow, utcDateTime, comments } = useBookingStore();
 
   const queryClient = useQueryClient();
   const { mutateAsync: mutate, isPending } = useMutation({
     mutationFn: async () => {
-      const data = await bookNow();
-      return data;
+      return await bookNow();
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['pendingAppts'] });
+      await queryClient.invalidateQueries({ queryKey: ["pendingAppts"] });
+      Toast.show({
+        type: "success",
+        text1: "Appointment booked",
+        text2: "Your appointment has been booked successfully",
+        text1Style: { fontSize: 14 },
+        text2Style: { fontSize: 12 },
+      });
+
+      router.replace("/(tabs)/my-bookings/bookings");
+    },
+    onError: async () => {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Something went wrong",
+      });
     },
   });
 
   const handleConfirm = async () => {
-    await mutate()
-      .then((data) => {
-        if (data.id) {
-          Toast.show({
-            type: 'success',
-            text1: 'Appointment booked',
-            text2: 'Your appointment has been booked successfully',
-            text1Style: { fontSize: 14 },
-            text2Style: { fontSize: 12 },
-          });
-          router.replace('/(tabs)/my-bookings/bookings');
-        } else {
-          Toast.show({
-            type: 'error',
-            text1: 'Something went wrong',
-            text2: `${data.message}`,
-            text1Style: { fontSize: 14 },
-            text2Style: { fontSize: 12 },
-          });
-        }
-      })
-      .catch((error) => {
-        // amazonq-ignore-next-line
-        console.error(error);
-      });
+    await mutate();
   };
 
   // TODO: Accept terms and conditions of the appointment where you will explain about your cancellation
@@ -65,14 +55,16 @@ const ResumeScreen = () => {
             <CardContent>
               <SimpleCardHeader>
                 <Ionicons
-                  name={'receipt-outline'}
+                  name={"receipt-outline"}
                   size={20}
                   color={theme.foreground}
                 />
                 <SimpleCardHeaderTitle>Service</SimpleCardHeaderTitle>
               </SimpleCardHeader>
               <View>
-                <ThemedText>{selectedService?.name}</ThemedText>
+                <ThemedText style={{ color: theme.muted }}>
+                  {service?.name}
+                </ThemedText>
               </View>
             </CardContent>
           </Card>
@@ -81,14 +73,16 @@ const ResumeScreen = () => {
             <CardContent>
               <SimpleCardHeader>
                 <Ionicons
-                  name={'map-outline'}
+                  name={"map-outline"}
                   size={20}
                   color={theme.foreground}
                 />
                 <SimpleCardHeaderTitle>Address</SimpleCardHeaderTitle>
               </SimpleCardHeader>
               <View>
-                <ThemedText>{selectedService?.address}</ThemedText>
+                <ThemedText style={{ color: theme.muted }}>
+                  {service?.address}
+                </ThemedText>
               </View>
             </CardContent>
           </Card>
@@ -97,14 +91,16 @@ const ResumeScreen = () => {
             <CardContent>
               <SimpleCardHeader>
                 <Ionicons
-                  name={'person-outline'}
+                  name={"person-outline"}
                   size={20}
                   color={theme.foreground}
                 />
                 <SimpleCardHeaderTitle>Staff</SimpleCardHeaderTitle>
               </SimpleCardHeader>
               <View>
-                <ThemedText>{staffName}</ThemedText>
+                <ThemedText style={{ color: theme.muted }}>
+                  {staff?.firstName + " " + staff?.lastName}
+                </ThemedText>
               </View>
             </CardContent>
           </Card>
@@ -113,19 +109,15 @@ const ResumeScreen = () => {
             <CardContent>
               <SimpleCardHeader>
                 <Ionicons
-                  name={'calendar-outline'}
+                  name={"calendar-outline"}
                   size={20}
                   color={theme.foreground}
                 />
                 <SimpleCardHeaderTitle>Date</SimpleCardHeaderTitle>
               </SimpleCardHeader>
               <View>
-                <ThemedText>
-                  {DateTime.fromISO(startDateAndTime!, {
-                    zone: 'America/Toronto',
-                  })
-                    .toJSDate()
-                    .toDateString()}
+                <ThemedText style={{ color: theme.muted }}>
+                  {DateTime.fromISO(utcDateTime!).toFormat("yyyy LLL dd")}
                 </ThemedText>
               </View>
             </CardContent>
@@ -135,29 +127,41 @@ const ResumeScreen = () => {
             <CardContent>
               <SimpleCardHeader>
                 <Ionicons
-                  name={'time-outline'}
+                  name={"time-outline"}
                   size={20}
                   color={theme.foreground}
                 />
                 <SimpleCardHeaderTitle>Time</SimpleCardHeaderTitle>
               </SimpleCardHeader>
               <View>
-                <ThemedText>
-                  {DateTime.fromISO(startDateAndTime!, {
-                    zone: 'America/Toronto',
-                  }).toFormat('hh:mm a')}
+                <ThemedText style={{ color: theme.muted }}>
+                  {DateTime.fromISO(utcDateTime!).toFormat("h:mm a")}
+                </ThemedText>
+              </View>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <SimpleCardHeader>
+                <Ionicons
+                  name={"chatbubble-outline"}
+                  size={20}
+                  color={theme.foreground}
+                />
+                <SimpleCardHeaderTitle>Comments</SimpleCardHeaderTitle>
+              </SimpleCardHeader>
+              <View>
+                <ThemedText style={{ color: theme.muted }}>
+                  {comments ? comments : "No comments"}
                 </ThemedText>
               </View>
             </CardContent>
           </Card>
         </View>
 
-        <Button
-          loading={isPending}
-          disabled={isPending}
-          onPress={() => handleConfirm()}
-        >
-          Confirm Appointment
+        <Button disabled={isPending} onPress={() => handleConfirm()}>
+          <ButtonText>Confirm</ButtonText>
         </Button>
       </View>
     </ScrollView>

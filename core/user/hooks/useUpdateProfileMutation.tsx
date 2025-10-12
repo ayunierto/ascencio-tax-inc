@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
 import Toast from "react-native-toast-message";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
 import { updateProfileAction } from "../actions/update-profile.action";
 import { UpdateProfileRequest } from "../schemas/update-profile.schema";
 import { UpdateProfileResponse } from "../interfaces/update-profile.interface";

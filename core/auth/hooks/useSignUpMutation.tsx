@@ -18,7 +18,7 @@ export const useSignUpMutation = () => {
     mutationFn: async (data) => {
       return await signUp(data);
     },
-    onSuccess: (response) => {
+    onSuccess: () => {
       router.push("/auth/verify-email");
       Toast.show({
         type: "success",

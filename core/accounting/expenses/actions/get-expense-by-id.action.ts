@@ -5,23 +5,19 @@ import { DateTime } from "luxon";
 export const getExpenseByIdAction = async (
   id: string
 ): Promise<ExpenseResponse> => {
-  try {
-    if (id === "new") {
-      return {
-        id: "new",
-        merchant: "",
-        date: DateTime.now().toISO(),
-        total: 0,
-        tax: 0,
-        createdAt: "",
-        updatedAt: "",
-      };
-    }
-
-    const { data } = await api.get<ExpenseResponse>(`/expenses/${id}`);
-
-    return data;
-  } catch (error) {
-    throw error;
+  if (id === "new") {
+    return {
+      id: "new",
+      merchant: "",
+      date: DateTime.now().toISO(),
+      total: 0,
+      tax: 0,
+      createdAt: "",
+      updatedAt: "",
+    };
   }
+
+  const { data } = await api.get<ExpenseResponse>(`/expenses/${id}`);
+
+  return data;
 };

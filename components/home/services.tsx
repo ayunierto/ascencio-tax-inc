@@ -1,6 +1,6 @@
 import React from "react";
 
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 
@@ -9,18 +9,17 @@ import { useAuthStore } from "@/core/auth/store/useAuthStore";
 import Loader from "@/components/Loader";
 import { Service } from "@/core/services/interfaces";
 import { EmptyContent } from "@/core/components";
-import { LoadingError } from "@/components/LoadingError";
 import { useServices } from "@/core/services/hooks/useServices";
 import { ServiceCard } from "@/components/home/ServiceCard";
 
 const ServicesScreen = () => {
   const { authStatus } = useAuthStore();
-  const { selectService } = useBookingStore();
+  const { setService } = useBookingStore();
 
   const { data: servicesData, isLoading, isError, error } = useServices();
 
   const handleServiceSelection = (service: Service): void => {
-    selectService(service);
+    setService(service);
     if (authStatus !== "authenticated") {
       router.push("/(tabs)/auth/sign-in");
       Toast.show({
@@ -38,19 +37,20 @@ const ServicesScreen = () => {
     return (
       <EmptyContent
         title="Something went wrong."
-        subtitle="Please, try again later."
+        subtitle={error.response?.data.message || error.message}
       />
     );
 
   if (isLoading) return <Loader message="Loading services..." />;
 
-  if (!servicesData || servicesData.services.length === 0)
+  if (!servicesData || servicesData.services.length === 0) {
     return (
       <EmptyContent
         title="No services available."
         subtitle="Please check back later."
       />
     );
+  }
 
   return (
     <ScrollView>

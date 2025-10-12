@@ -1,24 +1,22 @@
-import { BasicUser } from '@/core/auth/interfaces';
-import { Service } from '@/core/services/interfaces';
-import { Staff } from '@/core/staff/interfaces';
+import { User } from "@/core/auth/interfaces";
+import { Service } from "@/core/services/interfaces";
+import { Staff } from "@/core/staff/interfaces";
 
 export interface Appointment {
+  id: string;
   startDateAndTime: string;
   endDateAndTime: string;
+  state: string;
   comments: string;
   calendarEventId: string;
-  zoomMeetingId: number;
-  zoomMeetingLink: string;
+  zoomMeetingId: string;
+  zoomMeetingLink?: string;
+  source?: string;
+  cancellationReason?: string;
   service: Service;
-  user: BasicUser;
+  user: User;
   staff: Staff;
-  updatedAt: null;
-  id: string;
-  state: string;
   createdAt: string;
-}
-
-export interface Image {
-  id: number;
-  url: string;
+  updatedAt: string;
+  deletedAt: string;
 }

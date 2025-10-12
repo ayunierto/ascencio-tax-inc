@@ -5,13 +5,9 @@ export const getReports = async (
   limit = 100,
   offset = 0
 ): Promise<Report[]> => {
-  try {
-    const { data } = await api.get<Report[]>(
-      `reports?limit=${limit}&offset=${offset}`
-    );
+  const { data } = await api.get<Report[]>(
+    `reports?limit=${limit}&offset=${offset}`
+  );
 
-    return data;
-  } catch (error) {
-    throw error;
-  }
+  return data;
 };

@@ -52,8 +52,7 @@ const VerifyCode = () => {
     startTimer();
   };
 
-  const { mutate: resendResetPasswordCode, isPending: isLoadingResend } =
-    useResendResetPasswordMutation();
+  const { mutate: resendResetPasswordCode } = useResendResetPasswordMutation();
   const handleResendPasswordCode = async () => {
     if (isRunning) return;
     resendResetPasswordCode(user?.email || "");

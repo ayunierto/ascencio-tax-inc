@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Linking,
   StyleProp,
@@ -8,7 +9,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { DateTime } from "luxon";
 
-import { Card, SimpleCardHeader, SimpleCardHeaderTitle } from "../ui/Card";
+import { Card, SimpleCardHeader } from "../ui/Card";
 import { CardContent } from "../ui/Card/CardContent";
 import { theme } from "../ui/theme";
 import { ThemedText } from "../ui/ThemedText";

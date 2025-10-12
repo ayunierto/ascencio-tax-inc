@@ -6,17 +6,13 @@ export const verifyCodeAction = async ({
   code,
   email,
 }: VerifyCodeRequest): Promise<VerifyCodeResponse> => {
-  try {
-    const { data } = await api.post<VerifyCodeResponse>(
-      "/auth/verify-email-code",
-      {
-        code,
-        email,
-      }
-    );
+  const { data } = await api.post<VerifyCodeResponse>(
+    "/auth/verify-email-code",
+    {
+      code,
+      email,
+    }
+  );
 
-    return data;
-  } catch (error) {
-    throw error;
-  }
+  return data;
 };

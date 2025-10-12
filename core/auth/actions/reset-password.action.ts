@@ -7,14 +7,10 @@ export const resetPasswordAction = async ({
   email,
   newPassword,
 }: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
-  try {
-    const { data } = await api.post<ResetPasswordResponse>(
-      "auth/reset-password",
-      { code, email, newPassword }
-    );
+  const { data } = await api.post<ResetPasswordResponse>(
+    "/auth/reset-password",
+    { code, email, newPassword }
+  );
 
-    return data;
-  } catch (error) {
-    throw error;
-  }
+  return data;
 };

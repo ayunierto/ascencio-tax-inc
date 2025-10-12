@@ -1,11 +1,11 @@
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 import { useAuthStore } from "../store/useAuthStore";
 import { SignInRequest } from "../schemas/sign-in.schema";
 import { AuthResponse } from "../interfaces";
-import { AxiosError } from "axios";
 import { ServerException } from "@/core/interfaces/server-exception.response";
 import { resendCode } from "../actions/resend-code.action";
 
@@ -17,7 +17,7 @@ export const useSignInMutation = () => {
       const response = await signIn(values);
       return response;
     },
-    onSuccess: (response, variables) => {
+    onSuccess: () => {
       router.push("/(tabs)/(home)");
       Toast.show({
         type: "success",
@@ -41,7 +41,10 @@ export const useSignInMutation = () => {
       Toast.show({
         type: "error",
         text1: "Sign in failed",
-        text2: error.message || "An unexpected error occurred.",
+        text2:
+          error.response?.data.message ||
+          error.message ||
+          "An unexpected error occurred.",
       });
     },
   });

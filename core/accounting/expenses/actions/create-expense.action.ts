@@ -1,22 +1,19 @@
 import { api } from "@/core/api/api";
-import { CreateExpenseRequest, CreateExpenseResponse } from "../interfaces";
+import { CreateExpenseResponse } from "../interfaces";
 import { uploadImage } from "@/core/files/actions/upload-image.action";
+import { ExpenseFormFields } from "../schemas";
 
 export const createExpense = async (
-  expense: CreateExpenseRequest
+  expense: ExpenseFormFields
 ): Promise<CreateExpenseResponse> => {
-  try {
-    if (expense.image && !(typeof expense.image === "string")) {
-      const uploadedImage = await uploadImage(expense.image);
-      if (uploadedImage && "image" in uploadedImage) {
-        expense.image = uploadedImage.image;
-      }
+  if (expense.imageFile) {
+    const uploadedImage = await uploadImage(expense.imageFile);
+    if (uploadedImage && "image" in uploadedImage) {
+      expense.imageUrl = uploadedImage.image;
     }
-
-    const { data } = await api.post<CreateExpenseResponse>("expense", expense);
-
-    return data;
-  } catch (error) {
-    throw error;
   }
+
+  const { data } = await api.post<CreateExpenseResponse>("/expenses", expense);
+
+  return data;
 };

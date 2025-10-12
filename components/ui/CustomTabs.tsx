@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Pressable, Text, StyleSheet } from "react-native";
 import { theme } from "@/components/ui/theme";
 

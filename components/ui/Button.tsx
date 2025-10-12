@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Pressable,
-  Text,
-  TextStyle,
-  ViewStyle,
-  StyleSheet,
-} from "react-native";
+import { Pressable, Text, TextStyle, ViewStyle } from "react-native";
 import { theme } from "@/components/ui/theme";
 import { Ionicons } from "@expo/vector-icons";
 

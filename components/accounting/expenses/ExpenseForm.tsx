@@ -1,4 +1,4 @@
-import { View, StyleSheet, FlatList } from "react-native";
+import { View, FlatList } from "react-native";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,9 +19,7 @@ import {
 import { useCategories } from "@/core/accounting/categories/hooks/useCategories";
 import { EmptyContent } from "@/core/components";
 import Loader from "@/components/Loader";
-import { ThemedText } from "@/components/ui/ThemedText";
 import { Subcategory } from "@/core/accounting/subcategories/interfaces";
-import ErrorMessage from "@/core/components/ErrorMessage";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/core/api/api";
 import { AxiosError } from "axios";
@@ -49,13 +47,10 @@ export default function ExpenseForm({ expense }: ExpenseFormProps) {
   const { data: categories, isError, error, isLoading } = useCategories();
 
   const createUpdateExpense = async (expense: ExpenseFormFields) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, imageFile, ...rest } = expense;
-    try {
-      const { data } = await api.post("/expenses", rest);
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const { data } = await api.post("/expenses", rest);
+    return data;
   };
 
   const mutation = useMutation<

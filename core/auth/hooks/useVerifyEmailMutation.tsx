@@ -19,10 +19,8 @@ export const useVerifyEmailMutation = () => {
       const response = await verifyCode(data);
       return response;
     },
-    onSuccess: (data) => {
-      // TODO: Test replace push for replace
-      // router.replace('/auth/sign-in');
-      router.push("/auth/sign-in");
+    onSuccess: () => {
+      router.replace("/auth/sign-in");
       Toast.show({
         type: "success",
         text1: "Verification successful",

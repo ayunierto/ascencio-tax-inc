@@ -29,6 +29,10 @@ export const useResendResetPasswordMutation = () => {
     },
   });
 };
-function resendResetPasswordCode(arg0: { email: string }): any {
+
+// TODO: Implement
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function resendResetPasswordCode(data: { email: string }): any {
+  console.log(data);
   throw new Error("Function not implemented.");
 }

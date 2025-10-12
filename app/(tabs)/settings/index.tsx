@@ -14,7 +14,6 @@ import { theme } from "@/components/ui/theme";
 const ListItem = ({
   icon,
   label,
-  onPress,
   external = false,
 }: {
   icon: keyof typeof Ionicons.glyphMap;

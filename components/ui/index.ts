@@ -1,2 +1,1 @@
-export * from './Card';
-export * from './CustomSelect';
+export * from "./Card";

@@ -4,7 +4,6 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
   ScrollView,
-  Text,
 } from "react-native";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";

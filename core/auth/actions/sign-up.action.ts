@@ -7,10 +7,6 @@ export const signUpAction = async (
 ): Promise<SignUpResponse> => {
   newUser.email = newUser.email.toLocaleLowerCase().trim();
 
-  try {
-    const { data } = await api.post<SignUpResponse>("/auth/signup", newUser);
-    return data;
-  } catch (error) {
-    throw error;
-  }
+  const { data } = await api.post<SignUpResponse>("/auth/signup", newUser);
+  return data;
 };

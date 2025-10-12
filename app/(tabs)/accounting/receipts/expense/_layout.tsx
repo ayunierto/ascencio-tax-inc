@@ -1,8 +1,5 @@
 import React from "react";
 import { Stack } from "expo-router/stack";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { TouchableOpacity } from "react-native";
 import { theme } from "@/components/ui/theme";
 
 export default function ExpenseLayout() {

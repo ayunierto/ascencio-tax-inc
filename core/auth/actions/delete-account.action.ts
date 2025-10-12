@@ -5,14 +5,10 @@ import { DeleteAccountRequest } from "../schemas/delete-account.schema";
 export const deleteAccountAction = async ({
   password,
 }: DeleteAccountRequest): Promise<DeleteAccountResponse> => {
-  try {
-    const { data } = await api.post<DeleteAccountResponse>(
-      "/auth/delete-account",
-      { password }
-    );
+  const { data } = await api.post<DeleteAccountResponse>(
+    "/auth/delete-account",
+    { password }
+  );
 
-    return data;
-  } catch (error) {
-    throw error;
-  }
+  return data;
 };

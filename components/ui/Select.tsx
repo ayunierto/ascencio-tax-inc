@@ -4,6 +4,7 @@ import React, {
   useState,
   useMemo,
   useCallback,
+  useEffect,
 } from "react";
 import {
   View,
@@ -52,14 +53,57 @@ export function Select({
   errorMessage,
   helperText,
   disabled,
-  placeholder,
   errorTextStyle,
   containerStyle,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [label, setLabel] = useState<string | undefined>(undefined);
 
-  // Optimización: Memorizar setValue para evitar recreaciones
+  // Busca en los children (recursivamente) opciones que tengan props.value y props.label
+  const collectItemsFromChildren = useCallback(
+    (nodes: React.ReactNode): Array<{ val: string; lbl: string }> => {
+      const out: Array<{ val: string; lbl: string }> = [];
+      React.Children.forEach(nodes, (child) => {
+        if (!React.isValidElement(child)) return;
+        const props: any = child.props;
+        // Si es un item con value+label lo agrego
+        if (
+          props &&
+          typeof props.value === "string" &&
+          typeof props.label === "string"
+        ) {
+          out.push({ val: props.value, lbl: props.label });
+        }
+        // Si tiene children, recorro dentro
+        if (props && props.children) {
+          out.push(...collectItemsFromChildren(props.children));
+        }
+      });
+      return out;
+    },
+    []
+  );
+
+  // Si cambia el value (o los children), intento resolver el label desde las opciones
+  useEffect(() => {
+    if (!value) {
+      setLabel(undefined);
+      return;
+    }
+    const items = collectItemsFromChildren(children);
+    const found = items.find((i) => i.val === value);
+    if (found && found.lbl !== label) {
+      setLabel(found.lbl);
+    } else if (!found) {
+      // Si no existe la opción en children, dejamos el label como está o undefined
+      // aquí podrías usar un fallback (por ejemplo mostrar el value crudo)
+      // setLabel(value);
+      setLabel(undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, children, collectItemsFromChildren]);
+
+  // Memorizar setValue para evitar recreaciones
   const setValue = useCallback(
     (val: string, lbl: string) => {
       onValueChange(val);
@@ -69,7 +113,6 @@ export function Select({
     [onValueChange]
   );
 
-  // Optimización: Memorizar setOpen para evitar recreaciones
   const handleSetOpen = useCallback(
     (val: boolean) => {
       if (!disabled) {
@@ -79,7 +122,6 @@ export function Select({
     [disabled]
   );
 
-  // Optimización: Memorizar el valor del contexto
   const contextValue = useMemo(
     () => ({
       value,
@@ -93,7 +135,6 @@ export function Select({
     [value, label, setValue, open, handleSetOpen, error, disabled]
   );
 
-  // Optimización: Memorizar estilos del helper text
   const helperTextStyles = useMemo(
     () => [
       styles.helperTextBase,
@@ -107,7 +148,6 @@ export function Select({
       <SelectContext.Provider value={contextValue}>
         {children}
       </SelectContext.Provider>
-      {/* Show helper text or error message */}
       {(helperText || errorMessage) && (
         <Text style={helperTextStyles}>
           {error ? errorMessage : helperText}
@@ -117,14 +157,12 @@ export function Select({
   );
 }
 
-// Hook interno
 function useSelectContext() {
   const ctx = useContext(SelectContext);
   if (!ctx) throw new Error("Select components must be used within <Select>");
   return ctx;
 }
 
-// Trigger (abre el modal y muestra el label seleccionado)
 export function SelectTrigger({
   placeholder = "Select...",
   labelText,
@@ -136,14 +174,12 @@ export function SelectTrigger({
 }) {
   const { label, setOpen, error, disabled } = useSelectContext();
 
-  // Optimización: Memorizar el handlePress
   const handlePress = useCallback(() => {
     if (!disabled) {
       setOpen(true);
     }
   }, [disabled, setOpen]);
 
-  // Optimización: Memorizar estilos del trigger
   const triggerStyles = useMemo(
     () => [
       styles.trigger,
@@ -154,7 +190,6 @@ export function SelectTrigger({
     [error, disabled, style]
   );
 
-  // Optimización: Memorizar estilos del label flotante
   const floatingLabelStyles = useMemo(
     () => [
       styles.floatingLabel,
@@ -163,7 +198,6 @@ export function SelectTrigger({
     [error]
   );
 
-  // Optimización: Memorizar estilos del texto del trigger
   const triggerTextStyles = useMemo(
     () => ({
       color: disabled
@@ -174,7 +208,7 @@ export function SelectTrigger({
             ? theme.foreground
             : theme.muted,
     }),
-    [label, disabled]
+    [label, disabled, error]
   );
 
   return (
@@ -192,7 +226,6 @@ export function SelectTrigger({
         <ThemedText style={floatingLabelStyles}>{labelText}</ThemedText>
       )}
       <Text style={triggerTextStyles}>{label || placeholder}</Text>
-      {/* Ícono de flecha opcional */}
       <Text style={styles.chevron}>
         <Ionicons
           name="chevron-down-outline"
@@ -204,7 +237,6 @@ export function SelectTrigger({
   );
 }
 
-// Content (lista de opciones en modal)
 export function SelectContent({
   children,
   maxHeight = "60%",
@@ -214,14 +246,12 @@ export function SelectContent({
 }) {
   const { open, setOpen, disabled } = useSelectContext();
 
-  // Optimización: Memorizar el handler de cierre
   const handleClose = useCallback(() => {
     if (!disabled) {
       setOpen(false);
     }
   }, [disabled, setOpen]);
 
-  // Optimización: Memorizar estilos del contenido
   const contentStyles = useMemo(
     () => [styles.content, { maxHeight }],
     [maxHeight]
@@ -250,7 +280,7 @@ export function SelectContent({
           <FlatList
             data={React.Children.toArray(children)}
             renderItem={({ item }) => item as React.ReactElement}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(_, index) => index.toString()}
             showsVerticalScrollIndicator={true}
             keyboardShouldPersistTaps="handled"
           />
@@ -260,7 +290,6 @@ export function SelectContent({
   );
 }
 
-// Item (opción dentro de la lista)
 export function SelectItem({
   label,
   value,
@@ -281,14 +310,12 @@ export function SelectItem({
   const isSelected = selectedValue === value;
   const isDisabled = disabled || selectDisabled;
 
-  // Optimización: Memorizar el handler de press
   const handlePress = useCallback(() => {
     if (!isDisabled) {
       setValue(value, label);
     }
   }, [isDisabled, setValue, value, label]);
 
-  // Optimización: Memorizar estilos del item
   const itemStyles = useMemo(
     () => [
       styles.item,
@@ -299,7 +326,6 @@ export function SelectItem({
     [isSelected, isDisabled, style]
   );
 
-  // Optimización: Memorizar estilos del texto
   const textStyles = useMemo(
     () => [
       styles.itemText,
@@ -326,7 +352,6 @@ export function SelectItem({
 }
 
 const styles = StyleSheet.create({
-  // Trigger styles
   trigger: {
     minHeight: 52,
     paddingHorizontal: 12,
@@ -361,8 +386,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: theme.muted,
   },
-
-  // Modal styles
   overlay: {
     flex: 1,
     justifyContent: "center",
@@ -382,8 +405,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
   },
-
-  // Item styles
   item: {
     paddingVertical: 14,
     paddingHorizontal: 12,
@@ -417,8 +438,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginLeft: 8,
   },
-
-  // Helper text styles
   helperTextBase: {
     marginTop: 4,
     fontSize: 12,

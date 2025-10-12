@@ -5,14 +5,10 @@ import { ForgotPasswordRequest } from "../schemas/forgot-password.schema";
 export const forgotPasswordAction = async ({
   email,
 }: ForgotPasswordRequest): Promise<ForgotPasswordResponse> => {
-  try {
-    const { data } = await api.post<ForgotPasswordResponse>(
-      "/auth/forgot-password",
-      { email }
-    );
+  const { data } = await api.post<ForgotPasswordResponse>(
+    "/auth/forgot-password",
+    { email }
+  );
 
-    return data;
-  } catch (error) {
-    throw error;
-  }
+  return data;
 };

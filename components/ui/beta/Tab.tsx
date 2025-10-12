@@ -7,7 +7,6 @@ import {
   ScrollView,
   ViewStyle,
   TextStyle,
-  Animated,
 } from "react-native";
 import { theme } from "../theme";
 

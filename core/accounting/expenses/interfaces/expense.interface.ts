@@ -1,5 +1,5 @@
 import { User } from "@/core/auth/interfaces";
-import { Category } from "../../categories/interfaces";
+import { Category } from "../../categories/interfaces/category.interface";
 import { Subcategory } from "../../subcategories/interfaces";
 
 export interface ExpenseResponse {

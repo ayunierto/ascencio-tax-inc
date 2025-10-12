@@ -17,7 +17,7 @@ export const useServices = (limit: number = 100, offset = 0) => {
         limit: isNaN(limit) ? 9 : limit,
         offset: isNaN(offset) ? 0 : offset,
       }),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    // staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
     retry: false,
   });
