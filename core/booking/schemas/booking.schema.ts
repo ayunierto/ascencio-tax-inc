@@ -3,7 +3,12 @@ import z from "zod";
 export const bookingSchema = z.object({
   serviceId: z.string().uuid({ message: "Invalid service ID format" }),
   staffId: z.string().uuid({ message: "Staff member is required" }),
-  utcDateTime: z
+  start: z
+    .string({ required_error: "The date-time is required" })
+    .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/, {
+      message: "Invalid date-time format",
+    }),
+  end: z
     .string({ required_error: "The date-time is required" })
     .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/, {
       message: "Invalid date-time format",

@@ -1,13 +1,15 @@
 import { api } from "@/core/api/api";
 import { AvailabilitySlot } from "../interfaces/availability.response";
 
+interface AvailabilityRequest {
+  serviceId: string;
+  date: string;
+  staffId?: string;
+  timeZone: string; // IANA, ej. "America/Lima", "America/Toronto", etc.
+}
+
 export const getAvailabilityAction = async (
-  staffId: string,
-  date: string
+  data: AvailabilityRequest
 ): Promise<AvailabilitySlot[]> => {
-  const { data } = await api.post("/appointments/availability", {
-    staffId,
-    date,
-  });
-  return data;
+  return (await api.post("/availability", data)).data;
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getLocales } from "expo-localization";
 
 import useIPGeolocation from "@/core/hooks/useIPGeolocation";
 import { SignUpRequest, signUpSchema } from "../schemas/sign-up.schema";
@@ -27,6 +28,7 @@ export const useSignUp = () => {
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      locale: getLocales()[0].languageTag,
     },
   });
 

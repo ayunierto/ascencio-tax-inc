@@ -81,16 +81,17 @@ const BookingScreen = () => {
     resolver: zodResolver(bookingSchema),
     defaultValues: {
       serviceId: selectedService.id,
-      staffId: selectedService.staff[0].id,
-      utcDateTime: DateTime.utc().toISO(),
+      start: DateTime.utc().toISO(),
       timeZone: TIME_ZONE,
       comments: "",
+      date: DateTime.now().toISO(),
     },
   });
 
   const serviceId = form.watch("serviceId");
   const staffId = form.watch("staffId");
-  const utcDateTime = form.watch("utcDateTime");
+  const start = form.watch("start");
+  const date = form.watch("date");
 
   const availability = useQuery<
     AvailabilitySlot[],
@@ -98,21 +99,21 @@ const BookingScreen = () => {
   >({
     queryKey: ["availability"],
     queryFn: async () => {
-      return await getAvailabilityAction(
+      return await getAvailabilityAction({
+        serviceId,
         staffId,
-        DateTime.fromISO(utcDateTime).toFormat("yyyy-MM-dd")
-      );
+        date,
+        timeZone: TIME_ZONE,
+      });
     },
-    // enabled: !!staffId && !!date,
-    retry: 3,
   });
 
-  useEffect(() => {
-    if (!serviceId || !staffId || !utcDateTime) return;
-    availability.refetch();
-  }, [serviceId, staffId, utcDateTime]);
+  console.log(availability.data);
 
-  console.log({ availability: availability.data });
+  useEffect(() => {
+    if (!serviceId || !date) return;
+    availability.refetch();
+  }, [serviceId, staffId, date]);
 
   function handleBooking(values: BookingFormFields): void {
     const selectedService = services?.services.find(
@@ -125,7 +126,8 @@ const BookingScreen = () => {
     setBookingDetails(
       selectedService,
       selectedStaff,
-      values.utcDateTime,
+      "",
+      "",
       values.timeZone,
       values.comments
     );
@@ -221,29 +223,25 @@ const BookingScreen = () => {
               >
                 <Controller
                   control={form.control}
-                  name={"utcDateTime"}
-                  render={({ field: { value } }) => (
+                  name={"date"}
+                  render={({ field: { value, onChange } }) => (
                     <Calendar
-                      minDate={DateTime.utc().toFormat("yyyy-MM-dd")}
+                      minDate={DateTime.now().toFormat("yyyy-MM-dd")}
                       theme={{
                         selectedDayBackgroundColor: theme.primary,
                       }}
                       onDayPress={(day: Day) => {
-                        const newDate = DateTime.fromObject({
-                          year: day.year,
-                          month: day.month,
-                          day: day.day,
-                          hour: utcDateTime
-                            ? DateTime.fromISO(utcDateTime).hour
-                            : 0,
-                          minute: utcDateTime
-                            ? DateTime.fromISO(utcDateTime).minute
-                            : 0,
-                          second: 0,
-                          millisecond: 0,
-                        });
-                        form.setValue("utcDateTime", newDate.toISO() || "");
-                        // onChange(day.dateString);
+                        const userDate = DateTime.fromISO(day.dateString);
+                        onChange(
+                          userDate
+                            .set({
+                              hour: DateTime.now().hour,
+                              minute: DateTime.now().minute,
+                              second: DateTime.now().second,
+                              millisecond: DateTime.now().millisecond,
+                            })
+                            .toISO()
+                        );
                         setSelectedSlot(undefined);
                       }}
                       markedDates={{
@@ -264,7 +262,7 @@ const BookingScreen = () => {
             <View style={{ marginVertical: 20 }}>
               {availability.isFetching ? (
                 <Loader message="Checking availability..." />
-              ) : !staffId || !utcDateTime ? (
+              ) : !staffId || !start || !date || !serviceId ? (
                 <Alert style={{ width: "100%" }}>
                   Select a staff member and date to see the schedules available.
                 </Alert>
@@ -294,7 +292,7 @@ const BookingScreen = () => {
                       onPress={() => {
                         setSelectedSlot(slot);
                         form.setValue("time", slot.start);
-                        form.setValue("utcDateTime", slot.start);
+                        form.setValue("start", slot.start);
                       }}
                       style={[
                         {
@@ -319,9 +317,9 @@ const BookingScreen = () => {
                   {form.formState.errors.time.message}
                 </Alert>
               )}
-              {!!form.formState.errors.utcDateTime && (
+              {!!form.formState.errors.start && (
                 <Alert style={{ width: "100%" }}>
-                  {form.formState.errors.utcDateTime.message}
+                  {form.formState.errors.start.message}
                 </Alert>
               )}
               {!!form.formState.errors.timeZone && (

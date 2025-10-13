@@ -7,7 +7,8 @@ import { Appointment } from "@/core/appointments/interfaces";
 export interface BookingState {
   service: Service | undefined;
   staff: Staff | undefined;
-  utcDateTime: string | undefined;
+  start: string | undefined;
+  end: string | undefined;
   timeZone: string | undefined;
   comments: string | undefined;
 
@@ -15,7 +16,8 @@ export interface BookingState {
   setBookingDetails: (
     service: Service,
     staff: Staff,
-    utcDateTime: string,
+    start: string,
+    end: string,
     timeZone: string,
     comments?: string
   ) => void;
@@ -26,7 +28,8 @@ export interface BookingState {
 export const useBookingStore = create<BookingState>()((set, get) => ({
   service: undefined,
   staff: undefined,
-  utcDateTime: undefined,
+  start: undefined,
+  end: undefined,
   timeZone: undefined,
   comments: undefined,
 
@@ -37,22 +40,24 @@ export const useBookingStore = create<BookingState>()((set, get) => ({
   setBookingDetails: (
     service: Service,
     staff: Staff,
-    utcDateTime: string,
+    start: string,
+    end: string,
     timeZone: string,
     comments?: string
   ) => {
-    set({ service, staff, utcDateTime, timeZone, comments });
+    set({ service, staff, start, end, timeZone, comments });
   },
 
   bookNow: async () => {
-    const { service, staff, utcDateTime, timeZone, comments } = get();
-    if (!service || !staff || !utcDateTime || !timeZone || !comments)
+    const { service, staff, start, end, timeZone, comments } = get();
+    if (!service || !staff || !start || !end || !timeZone || !comments)
       throw new Error("Missing required fields");
 
     return await bookAppointment({
       serviceId: service.id,
       staffId: staff.id,
-      utcDateTime,
+      start,
+      end,
       timeZone,
       comments,
     });

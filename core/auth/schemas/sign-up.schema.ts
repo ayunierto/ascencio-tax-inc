@@ -14,7 +14,7 @@ export const signUpSchema = z
     countryCode: z.string().optional(),
     phoneNumber: z.string().optional(),
     timeZone: z.string(),
-    locale: z.string().optional(),
+    locale: z.string(),
     password: z
       .string({ message: "The password is required" })
       .min(6, "Password must be at least 6 characters"),
