@@ -9,6 +9,7 @@ import { useReceiptImageMutation } from './useReceiptImageMutation';
 import { useExpenseStore } from '../store/useExpenseStore';
 
 export const useScanReceipts = (id: string) => {
+  console.log({ scanReceiptForId: id });
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const ref = useRef<CameraView>(null);
@@ -54,33 +55,48 @@ export const useScanReceipts = (id: string) => {
   const confirmPicture = async () => {
     if (!pictureUri) return;
 
-    setLoading(true);
-    setStatusMessage('Processing receipt image...');
+    try {
+      setLoading(true);
+      setStatusMessage('Processing receipt image...');
 
-    // Save to media library (optional)
-    // setStatusMessage('Saving image to media library...');
-    // await MediaLibrary.createAssetAsync(picture.uri);
+      // Save to media library (optional)
+      // setStatusMessage('Saving image to media library...');
+      // await MediaLibrary.createAssetAsync(picture.uri);
 
-    // 1. Upload picture.
-    setStatusMessage('Uploading image...');
-    const uploadedPicture = await uploadPicture(pictureUri);
-    setDetails({
-      imageUrl: uploadedPicture.url,
-    });
+      // 1. Upload picture.
+      setStatusMessage('Uploading image...');
+      const uploadedPicture = await uploadPicture(pictureUri);
+      setDetails({
+        imageUrl: uploadedPicture.url,
+      });
 
-    setStatusMessage('Extracting receipt values...');
-    // 2. Extract receipt values (OCR + GPT)
-    const extractedValues = await getReceiptValues(uploadedPicture.url);
-    setDetails({ ...extractedValues });
+      setStatusMessage('Extracting receipt values...');
+      // 2. Extract receipt values (OCR + GPT)
+      const extractedValues = await getReceiptValues(uploadedPicture.url);
+      setDetails({ ...extractedValues });
 
-    setLoading(false);
-
-    // 3. Redirect
-    if (id === 'new') {
-      router.replace('/(tabs)/accounting/receipts/expense/new');
-      return;
+      // 3. Redirect
+      if (id === 'new') {
+        router.replace('/(tabs)/accounting/receipts/expense/new'); // from scan
+        return;
+      }
+      setPictureUri(null);
+      router.replace({
+        pathname: '/(tabs)/accounting/receipts/expense/[id]', // from create
+        params: { id },
+      });
+    } catch (error) {
+      console.error(error);
+      Toast.show({
+        type: 'error',
+        text1:
+          (error instanceof Error && error.message) ||
+          'Unknown error, please try again.',
+      });
+    } finally {
+      setLoading(false);
+      setPictureUri(null);
     }
-    router.dismiss();
   };
 
   // Helpers

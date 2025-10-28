@@ -32,10 +32,12 @@ export const expenseSchema = z.object({
   // .regex(/^\d+(\.\d+)?$/, 'Only numbers with decimals are allowed'),
   total: z.coerce.number().positive().multipleOf(0.01),
   // .regex(/^\d+(\.\d+)?$/, 'Only numbers with decimals are allowed'),
-  imageUrl: z.string().optional(),
-  notes: z.string().optional(),
+  imageUrl: z.string({ required_error: 'The image is required' }).optional(),
+  notes: z.string({ required_error: 'The notes are required' }).optional(),
   categoryId: z.string({ required_error: 'The category is required' }),
-  subcategoryId: z.string().optional(),
+  subcategoryId: z
+    .string({ required_error: 'The subcategory is required' })
+    .optional(),
 
   // Transient field for file upload. Not stored in the database.
   // imageFile: imageFileSchema.optional(),

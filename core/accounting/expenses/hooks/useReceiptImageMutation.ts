@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { uploadReceiptImage } from '../actions/upload-receipt-image';
 import { AnalyzedExpense } from '../interfaces/analyze-expense.interface';
 import { getReceiptValues } from '../../receipts/actions/get-receipt-values.action';
+import { removeReceiptImage } from '../actions/remove-receipt-image.action';
 
 export const useReceiptImageMutation = () => {
   const uploadImageMutation = useMutation<
@@ -29,8 +30,23 @@ export const useReceiptImageMutation = () => {
     },
   });
 
+  const removeReceiptImageMutation = useMutation<
+    void,
+    AxiosError<ServerException>,
+    {
+      imageUrl: string;
+    },
+    unknown
+  >({
+    mutationFn: removeReceiptImage,
+    onError(error) {
+      console.error(error);
+    },
+  });
+
   return {
     uploadImageMutation,
     getReceiptValuesMutation,
+    removeReceiptImageMutation,
   };
 };

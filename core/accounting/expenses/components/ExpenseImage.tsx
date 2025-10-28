@@ -7,20 +7,47 @@ import { ThemedText } from '@/components/ui/ThemedText';
 import { theme } from '@/components/ui/theme';
 import { SinglePhotoViewer } from '@/core/components/SinglePhotoViewer';
 import { Button, ButtonIcon } from '@/components/ui/Button';
+import { useReceiptImageMutation } from '../hooks/useReceiptImageMutation';
+import Toast from 'react-native-toast-message';
 
 type ExpenseImageProps = {
   imageUrl?: string;
-  onChange: (image: { imagePublicId: string; imageUrl: string } | null) => void;
+  onChange: (image: string | undefined) => void;
+  expenseId: string;
 };
 
-const ReceiptUploader = ({ imageUrl, onChange }: ExpenseImageProps) => {
+const ReceiptUploader = ({
+  imageUrl,
+  onChange,
+  expenseId,
+}: ExpenseImageProps) => {
   const [isViewerVisible, setIsViewerVisible] = useState(false);
+  const { removeReceiptImageMutation } = useReceiptImageMutation();
 
   const openViewer = () => setIsViewerVisible(true);
   const closeViewer = () => setIsViewerVisible(false);
 
-  const handleRemoveImage = () => {
-    onChange(null);
+  const handleRemoveImage = async () => {
+    if (!imageUrl) return;
+    await removeReceiptImageMutation.mutateAsync(
+      { imageUrl },
+      {
+        onSuccess: () => {
+          Toast.show({
+            type: 'success',
+            text1: 'Image removed',
+          });
+          onChange(undefined);
+        },
+        onError: (error) => {
+          console.error(error);
+          Toast.show({
+            type: 'error',
+            text1: error.response?.data.message || error.message,
+          });
+        },
+      }
+    );
   };
 
   return (
@@ -61,9 +88,9 @@ const ReceiptUploader = ({ imageUrl, onChange }: ExpenseImageProps) => {
             variant="default"
             size="icon"
             onPress={() =>
-              router.push({
+              router.replace({
                 pathname: '/scan-receipts',
-                params: { id: 'replace-image' },
+                params: { id: expenseId },
               })
             }
           >
@@ -89,7 +116,7 @@ const styles = StyleSheet.create({
     borderColor: theme.foreground,
     borderWidth: 1,
     borderRadius: theme.radius,
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     paddingVertical: 10,
   },
 });

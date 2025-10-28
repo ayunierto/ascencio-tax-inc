@@ -42,6 +42,7 @@ const ExpenseScreen = () => {
     isLoading,
     isError,
     error,
+    refetch,
   } = useExpense((id as string) || 'new');
   const {
     data: categories,
@@ -49,8 +50,6 @@ const ExpenseScreen = () => {
     error: errorCategories,
     isLoading: isLoadingCategories,
   } = useCategories();
-
-  console.warn(expense);
 
   useLayoutEffect(() => {
     // This is to customize the header with drawer and back button
@@ -112,20 +111,23 @@ const ExpenseScreen = () => {
   useFocusEffect(
     useCallback(() => {
       // Screen focused
-
+      console.log('Screen focused');
+      refetch();
       return () => {
+        console.log('Screen unfocus');
         // Handle cleanup on screen unfocus
         // Remove uploaded image from cloudinary if any
         // and clear the store
-        reset();
-        removeImage();
+        if (id !== 'new') {
+          removeImage();
+        }
 
         reset();
       };
     }, [imageUrl])
   );
 
-  if (isError)
+  if (isError) {
     return (
       <EmptyContent
         title="Error"
@@ -133,6 +135,7 @@ const ExpenseScreen = () => {
         icon="sad-outline"
       />
     );
+  }
 
   if (isLoading) return <Loader message="Loading expense..." />;
   if (!expense) {

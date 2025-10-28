@@ -23,6 +23,7 @@ import { Subcategory } from '@/core/accounting/subcategories/interfaces';
 import { useExpenseMutation } from '@/core/accounting/expenses/hooks/useExpenseMutation';
 import ExpenseImage from '@/core/accounting/expenses/components/ExpenseImage';
 import { Category } from '@/core/accounting/categories/interfaces/category.interface';
+import ErrorMessage from '@/core/components/ErrorMessage';
 
 interface ExpenseFormProps {
   expense: ExpenseResponse;
@@ -54,6 +55,8 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
   const expenseMutation = useExpenseMutation();
 
   const onSubmit = async (values: ExpenseFormFields) => {
+    console.warn(values);
+
     await expenseMutation.mutateAsync(values, {
       onSuccess: () => {
         Toast.show({
@@ -75,19 +78,26 @@ export default function ExpenseForm({ expense, categories }: ExpenseFormProps) {
   return (
     <KeyboardAvoidingView behavior="padding">
       <ScrollView>
-        <View style={{ marginHorizontal: 20, gap: 20 }}>
+        <View style={{ margin: 10, gap: 20 }}>
           <Controller
             control={control}
             name="imageUrl"
             render={({ field: { onChange, value } }) => (
               <ExpenseImage
                 onChange={(image) => {
-                  onChange(image?.imageUrl);
+                  onChange(null);
+                  setValue('imageUrl', image);
                 }}
                 imageUrl={value}
+                expenseId={expense.id}
               />
             )}
           />
+          {errors.id && <ErrorMessage message={errors.id.message} />}
+          {errors.imageUrl && (
+            <ErrorMessage message={errors.imageUrl.message} />
+          )}
+          {errors.notes && <ErrorMessage message={errors.notes.message} />}
 
           <Controller
             control={control}

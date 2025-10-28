@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { removeReceiptImage } from '../actions/remove-receipt.action';
+import { removeReceiptImage } from '../actions/remove-receipt-image.action';
 
 interface ExpenseState {
   merchant?: string;
@@ -10,7 +10,6 @@ interface ExpenseState {
   imageUrl?: string;
   categoryId?: string;
   subcategoryId?: string;
-  statusMessage?: string;
 
   setDetails: (details: {
     merchant?: string;
@@ -38,13 +37,14 @@ export const useExpenseStore = create<ExpenseState>()((set, get) => ({
   removeImage: async () => {
     const imageUrl = get().imageUrl;
     if (imageUrl) {
-      await removeReceiptImage(imageUrl);
+      await removeReceiptImage({ imageUrl });
     }
     set({
       imageUrl: undefined,
       localImageUri: undefined,
     });
   },
+
   setDetails: (details: {
     merchant?: string;
     date?: string;
