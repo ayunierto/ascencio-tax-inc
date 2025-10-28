@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  SafeAreaView,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { View, SafeAreaView, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { router } from "expo-router";
 
 import { Controller } from "react-hook-form";
@@ -21,15 +15,11 @@ import { useSignIn } from "@/core/auth/hooks";
 import SimpleLogo from "@/components/SimpleLogo";
 
 const SignInScreen = () => {
-  const { control, handleSubmit, formErrors, isPending, handleSignIn } =
-    useSignIn();
+  const { control, handleSubmit, formErrors, isPending, handleSignIn } = useSignIn();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
         <ScrollView>
           <View
             style={{

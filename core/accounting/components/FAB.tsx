@@ -1,7 +1,6 @@
-// components/ui/fab.tsx
-import { Ionicons } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
-import { Pressable, StyleSheet, Animated, View } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import React, { useRef, useState } from 'react';
+import { Pressable, StyleSheet, Animated, View } from 'react-native';
 
 type Action = {
   icon: React.ReactNode;
@@ -27,7 +26,7 @@ export const Fab = ({ actions }: FabProps) => {
 
   const rotation = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "45deg"],
+    outputRange: ['0deg', '45deg'],
   });
 
   return (
@@ -49,7 +48,13 @@ export const Fab = ({ actions }: FabProps) => {
               },
             ]}
           >
-            <Pressable style={styles.fabSmall} onPress={action.onPress}>
+            <Pressable
+              style={styles.fabSmall}
+              onPress={() => {
+                action.onPress();
+                toggleMenu();
+              }}
+            >
               {action.icon}
             </Pressable>
           </Animated.View>
@@ -68,19 +73,19 @@ export const Fab = ({ actions }: FabProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 30,
     right: 30,
-    alignItems: "center",
+    alignItems: 'center',
   },
   fab: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: "#2563eb",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
+    backgroundColor: '#2563eb',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
@@ -90,16 +95,16 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#2563eb",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
+    backgroundColor: '#2563eb',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 3,
   },
   action: {
-    position: "absolute",
+    position: 'absolute',
   },
 });

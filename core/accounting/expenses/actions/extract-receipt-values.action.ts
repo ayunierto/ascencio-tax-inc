@@ -1,24 +1,10 @@
-import { httpClient } from '@/core/adapters/http/httpClient.adapter';
-import { AnalyzeExpenseRequest, AnalyzeExpenseResponse } from '../interfaces';
-import { handleApiErrors } from '@/core/auth/utils/handleApiErrors';
+// TODO: Pending review.
+import { AnalyzeExpenseResponse } from "../interfaces";
+import { api } from "@/core/api/api";
 
-export const extractReceiptValues = async (
-  base64Image: AnalyzeExpenseRequest
-): Promise<AnalyzeExpenseResponse> => {
-  try {
-    const res = await httpClient.post<AnalyzeExpenseResponse>(
-      'expense/analyze-expense',
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ base64Image }),
-      }
-    );
-
-    return res;
-  } catch (error) {
-    console.error(error);
-    return handleApiErrors(error, 'extractReceiptValues');
-  }
+// TODO: Implement uploading the image to the server first and send the image URL to the analyze endpoint.
+// TODO: Change this logic once the backend is ready to accept image URLs.
+export const extractReceiptValues = async (base64Image: string): Promise<AnalyzeExpenseResponse> => {
+  const { data } = await api.post<AnalyzeExpenseResponse>("expense/analyze-expense", { base64Image });
+  return data;
 };

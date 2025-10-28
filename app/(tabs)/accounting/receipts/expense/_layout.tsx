@@ -10,6 +10,7 @@ export default function ExpenseLayout() {
         headerStyle: { backgroundColor: theme.background },
         headerTintColor: theme.foreground,
         headerTitleAlign: "center",
+        headerShown: false
       }}
     >
       <Stack.Screen

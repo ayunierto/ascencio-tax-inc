@@ -16,16 +16,19 @@ import {
 } from '@/core/camera/components';
 import Loader from '@/components/Loader';
 import { ThemedText } from '@/components/ui/ThemedText';
-import Button from '@/components/ui/Button';
+import { Button, ButtonText } from '@/components/ui/Button';
+import { Card } from '@/components/ui';
+import { CardContent } from '@/components/ui/Card/CardContent';
+import { theme } from '@/components/ui/theme';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function CameraScreen() {
-  const { selectImage: addSelectedImage, clearImages } = useCameraStore();
+  const { selectImage, removeImage, selectedImage } = useCameraStore();
 
   const [facing, setFacing] = useState<CameraType>('back');
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [, requestMediaPermission] = MediaLibrary.usePermissions();
 
-  const [selectedImage, setSelectedImage] = useState<string>();
   const cameraRef = useRef<CameraView>(null);
 
   const onRequestPermissions = async () => {
@@ -57,10 +60,29 @@ export default function CameraScreen() {
     // Camera permissions are not granted yet.
     return (
       <View style={{ ...styles.container, padding: 20 }}>
-        <ThemedText style={styles.message}>
-          We need your permission to show the camera and gallery
-        </ThemedText>
-        <Button onPress={onRequestPermissions}>Grant permission</Button>
+        <Card>
+          <CardContent>
+            <View
+              style={{
+                alignItems: 'center',
+                marginBottom: 20,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                gap: 20,
+              }}
+            >
+              <Ionicons name="camera-outline" size={48} color={theme.muted} />
+              <Ionicons name="add-outline" size={24} color={theme.muted} />
+              <Ionicons name="image-outline" size={48} color={theme.muted} />
+            </View>
+            <ThemedText style={styles.message}>
+              We need your permission to show the camera and gallery
+            </ThemedText>
+            <Button onPress={onRequestPermissions}>
+              <ButtonText>Grant</ButtonText>
+            </Button>
+          </CardContent>
+        </Card>
       </View>
     );
   }
@@ -75,31 +97,28 @@ export default function CameraScreen() {
 
     if (!picture?.uri) return;
 
-    setSelectedImage(picture.uri);
-
-    // TODO: Save Image
+    selectImage(picture);
   };
 
   const onReturnCancel = () => {
-    // TODO: Clean state
-    clearImages();
+    removeImage();
     router.dismiss();
   };
 
-  function toggleCameraFacing() {
+  const toggleCameraFacing = () => {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
-  }
+  };
 
   const onPictureConfirm = async () => {
-    // TODO: Implement
     if (!selectedImage) return;
-    await MediaLibrary.createAssetAsync(selectedImage);
-    addSelectedImage({ uri: selectedImage, base64: undefined });
-    router.dismiss();
+    // Save to media library
+    await MediaLibrary.createAssetAsync(selectedImage.uri);
+    selectImage(selectedImage);
+    router.push('/(tabs)/accounting/receipts/expense/new');
   };
 
   const onRetakePicture = () => {
-    setSelectedImage(undefined);
+    removeImage();
   };
 
   const onPickImages = async () => {
@@ -111,21 +130,17 @@ export default function CameraScreen() {
 
     if (result.canceled) return;
 
-    clearImages();
-    result.assets.map((img) =>
-      addSelectedImage({
-        uri: img.uri,
-        base64: undefined,
-      })
-    );
+    removeImage();
+    result.assets.map((img) => selectImage(img));
 
     router.dismiss();
   };
 
+  // Show selected image preview
   if (selectedImage) {
     return (
       <View style={styles.container}>
-        <Image source={{ uri: selectedImage }} style={styles.camera} />
+        <Image source={{ uri: selectedImage.uri }} style={styles.camera} />
         <ConfirmImageButton onPress={onPictureConfirm} />
         <RetakeImageButton onPress={onRetakePicture} />
         <ReturnCancelButton onPress={onReturnCancel} />
@@ -133,6 +148,7 @@ export default function CameraScreen() {
     );
   }
 
+  // Show camera view
   return (
     <View style={styles.container}>
       <CameraView ref={cameraRef} style={styles.camera} facing={facing}>

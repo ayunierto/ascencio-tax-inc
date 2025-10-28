@@ -1,16 +1,10 @@
 import React from "react";
-import { Pressable, Text, TextStyle, ViewStyle } from "react-native";
+import { Pressable, StyleProp, Text, TextStyle, ViewStyle } from "react-native";
 import { theme } from "@/components/ui/theme";
 import { Ionicons } from "@expo/vector-icons";
 
 // === Variantes ===
-type ButtonVariant =
-  | "default"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "destructive"
-  | "link";
+type ButtonVariant = "default" | "secondary" | "outline" | "ghost" | "destructive" | "link";
 type ButtonSize = "default" | "sm" | "lg" | "icon";
 
 interface ButtonProps {
@@ -20,16 +14,11 @@ interface ButtonProps {
   fullWidth?: boolean;
   children: React.ReactNode;
   onPress?: () => void;
+  style?: StyleProp<ViewStyle>;
 }
 
 // === Contenedor estilo cva ===
-const buttonVariants = ({
-  variant,
-  size,
-}: {
-  variant: ButtonVariant;
-  size: ButtonSize;
-}): ViewStyle[] => {
+const buttonVariants = ({ variant, size }: { variant: ButtonVariant; size: ButtonSize }): ViewStyle[] => {
   const base: ViewStyle = {
     flexDirection: "row",
     alignItems: "center",
@@ -62,13 +51,7 @@ const buttonVariants = ({
 };
 
 // === Texto estilo cva ===
-const buttonTextVariants = ({
-  variant,
-  size,
-}: {
-  variant: ButtonVariant;
-  size: ButtonSize;
-}): TextStyle[] => {
+const buttonTextVariants = ({ variant, size }: { variant: ButtonVariant; size: ButtonSize }): TextStyle[] => {
   const base: TextStyle = {
     fontWeight: "600",
     textAlign: "center",
@@ -101,6 +84,7 @@ export const Button: React.FC<ButtonProps> = ({
   fullWidth = false,
   children,
   onPress,
+  style,
 }) => {
   return (
     <Pressable
@@ -112,6 +96,8 @@ export const Button: React.FC<ButtonProps> = ({
         disabled && { opacity: 0.6 },
         pressed && !disabled && { opacity: 0.9 },
         { gap: 10 },
+        // custom styles
+        style,
       ]}
     >
       {children}

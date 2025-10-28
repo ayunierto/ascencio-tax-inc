@@ -46,12 +46,7 @@ const ExpensesList = ({ expenses, loadNextPage }: ExpenseListProps) => {
         />
       }
       contentContainerStyle={{ flexGrow: 1 }}
-      ListEmptyComponent={
-        <EmptyContent
-          title="No expenses found."
-          subtitle="Add a new expense to get started"
-        />
-      }
+      ListEmptyComponent={<EmptyContent title="No expenses found." subtitle="Add a new expense to get started" />}
     />
   );
 };

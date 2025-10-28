@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -15,7 +8,7 @@ import {
   StyleProp,
   TextStyle,
   ViewStyle,
-  FlatList,
+  ScrollView,
 } from "react-native";
 import { theme } from "./theme";
 import { ThemedText } from "./ThemedText";
@@ -45,6 +38,7 @@ interface SelectProps {
   errorTextStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
 }
+
 export function Select({
   value,
   onValueChange,
@@ -59,32 +53,24 @@ export function Select({
   const [open, setOpen] = useState(false);
   const [label, setLabel] = useState<string | undefined>(undefined);
 
-  // Busca en los children (recursivamente) opciones que tengan props.value y props.label
-  const collectItemsFromChildren = useCallback(
-    (nodes: React.ReactNode): Array<{ val: string; lbl: string }> => {
-      const out: Array<{ val: string; lbl: string }> = [];
-      React.Children.forEach(nodes, (child) => {
-        if (!React.isValidElement(child)) return;
-        const props: any = child.props;
-        // Si es un item con value+label lo agrego
-        if (
-          props &&
-          typeof props.value === "string" &&
-          typeof props.label === "string"
-        ) {
-          out.push({ val: props.value, lbl: props.label });
-        }
-        // Si tiene children, recorro dentro
-        if (props && props.children) {
-          out.push(...collectItemsFromChildren(props.children));
-        }
-      });
-      return out;
-    },
-    []
-  );
+  const collectItemsFromChildren = useCallback((nodes: React.ReactNode): Array<{ val: string; lbl: string }> => {
+    const out: Array<{ val: string; lbl: string }> = [];
+    React.Children.forEach(nodes, (child) => {
+      if (!React.isValidElement(child)) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const props: any = child.props;
+      // eslint-disable-next-line react/prop-types
+      if (props && typeof props.value === "string" && typeof props.label === "string") {
+        // eslint-disable-next-line react/prop-types
+        out.push({ val: props.value, lbl: props.label });
+      }
+      if (props && props.children) {
+        out.push(...collectItemsFromChildren(props.children));
+      }
+    });
+    return out;
+  }, []);
 
-  // Si cambia el value (o los children), intento resolver el label desde las opciones
   useEffect(() => {
     if (!value) {
       setLabel(undefined);
@@ -95,15 +81,10 @@ export function Select({
     if (found && found.lbl !== label) {
       setLabel(found.lbl);
     } else if (!found) {
-      // Si no existe la opción en children, dejamos el label como está o undefined
-      // aquí podrías usar un fallback (por ejemplo mostrar el value crudo)
-      // setLabel(value);
       setLabel(undefined);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, children, collectItemsFromChildren]);
+  }, [value, children, collectItemsFromChildren, label]);
 
-  // Memorizar setValue para evitar recreaciones
   const setValue = useCallback(
     (val: string, lbl: string) => {
       onValueChange(val);
@@ -115,9 +96,7 @@ export function Select({
 
   const handleSetOpen = useCallback(
     (val: boolean) => {
-      if (!disabled) {
-        setOpen(val);
-      }
+      if (!disabled) setOpen(val);
     },
     [disabled]
   );
@@ -136,23 +115,14 @@ export function Select({
   );
 
   const helperTextStyles = useMemo(
-    () => [
-      styles.helperTextBase,
-      error && [styles.errorMessage, errorTextStyle],
-    ],
+    () => [styles.helperTextBase, error && [styles.errorMessage, errorTextStyle]],
     [error, errorTextStyle]
   );
 
   return (
     <View style={containerStyle}>
-      <SelectContext.Provider value={contextValue}>
-        {children}
-      </SelectContext.Provider>
-      {(helperText || errorMessage) && (
-        <Text style={helperTextStyles}>
-          {error ? errorMessage : helperText}
-        </Text>
-      )}
+      <SelectContext.Provider value={contextValue}>{children}</SelectContext.Provider>
+      {(helperText || errorMessage) && <Text style={helperTextStyles}>{error ? errorMessage : helperText}</Text>}
     </View>
   );
 }
@@ -175,38 +145,22 @@ export function SelectTrigger({
   const { label, setOpen, error, disabled } = useSelectContext();
 
   const handlePress = useCallback(() => {
-    if (!disabled) {
-      setOpen(true);
-    }
+    if (!disabled) setOpen(true);
   }, [disabled, setOpen]);
 
   const triggerStyles = useMemo(
-    () => [
-      styles.trigger,
-      error && styles.triggerError,
-      disabled && styles.triggerDisabled,
-      style,
-    ],
+    () => [styles.trigger, error && styles.triggerError, disabled && styles.triggerDisabled, style],
     [error, disabled, style]
   );
 
   const floatingLabelStyles = useMemo(
-    () => [
-      styles.floatingLabel,
-      { color: error ? theme.destructive : theme.primary },
-    ],
+    () => [styles.floatingLabel, { color: error ? theme.destructive : theme.primary }],
     [error]
   );
 
   const triggerTextStyles = useMemo(
     () => ({
-      color: disabled
-        ? theme.mutedForeground
-        : error
-          ? theme.destructive
-          : label
-            ? theme.foreground
-            : theme.muted,
+      color: disabled ? theme.mutedForeground : error ? theme.destructive : label ? theme.foreground : theme.muted,
     }),
     [label, disabled, error]
   );
@@ -222,16 +176,10 @@ export function SelectTrigger({
       activeOpacity={disabled ? 1 : 0.7}
       disabled={disabled}
     >
-      {labelText && (
-        <ThemedText style={floatingLabelStyles}>{labelText}</ThemedText>
-      )}
+      {labelText && <ThemedText style={floatingLabelStyles}>{labelText}</ThemedText>}
       <Text style={triggerTextStyles}>{label || placeholder}</Text>
       <Text style={styles.chevron}>
-        <Ionicons
-          name="chevron-down-outline"
-          color={theme.foreground}
-          size={24}
-        />
+        <Ionicons name="chevron-down-outline" color={theme.foreground} size={24} />
       </Text>
     </TouchableOpacity>
   );
@@ -247,24 +195,13 @@ export function SelectContent({
   const { open, setOpen, disabled } = useSelectContext();
 
   const handleClose = useCallback(() => {
-    if (!disabled) {
-      setOpen(false);
-    }
+    if (!disabled) setOpen(false);
   }, [disabled, setOpen]);
 
-  const contentStyles = useMemo(
-    () => [styles.content, { maxHeight }],
-    [maxHeight]
-  );
+  const contentStyles = useMemo(() => [styles.content, { maxHeight }], [maxHeight]);
 
   return (
-    <Modal
-      visible={open}
-      transparent
-      animationType="fade"
-      onRequestClose={handleClose}
-      accessibilityViewIsModal
-    >
+    <Modal visible={open} transparent animationType="fade" onRequestClose={handleClose}>
       <TouchableOpacity
         style={styles.overlay}
         onPress={handleClose}
@@ -272,18 +209,14 @@ export function SelectContent({
         accessibilityRole="button"
         accessibilityLabel="Close options"
       >
-        <TouchableOpacity
-          style={contentStyles}
-          activeOpacity={1}
-          onPress={(e) => e.stopPropagation()}
-        >
-          <FlatList
-            data={React.Children.toArray(children)}
-            renderItem={({ item }) => item as React.ReactElement}
-            keyExtractor={(_, index) => index.toString()}
-            showsVerticalScrollIndicator={true}
+        <TouchableOpacity style={contentStyles} activeOpacity={1} onPress={(e) => e.stopPropagation()}>
+          <ScrollView
+            showsVerticalScrollIndicator
             keyboardShouldPersistTaps="handled"
-          />
+            contentContainerStyle={{ paddingVertical: 4 }}
+          >
+            {children}
+          </ScrollView>
         </TouchableOpacity>
       </TouchableOpacity>
     </Modal>
@@ -301,11 +234,7 @@ export function SelectItem({
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
-  const {
-    setValue,
-    value: selectedValue,
-    disabled: selectDisabled,
-  } = useSelectContext();
+  const { setValue, value: selectedValue, disabled: selectDisabled } = useSelectContext();
 
   const isSelected = selectedValue === value;
   const isDisabled = disabled || selectDisabled;
@@ -317,21 +246,12 @@ export function SelectItem({
   }, [isDisabled, setValue, value, label]);
 
   const itemStyles = useMemo(
-    () => [
-      styles.item,
-      isSelected && styles.itemSelected,
-      isDisabled && styles.itemDisabled,
-      style,
-    ],
+    () => [styles.item, isSelected && styles.itemSelected, isDisabled && styles.itemDisabled, style],
     [isSelected, isDisabled, style]
   );
 
   const textStyles = useMemo(
-    () => [
-      styles.itemText,
-      isSelected && styles.itemTextSelected,
-      isDisabled && styles.itemTextDisabled,
-    ],
+    () => [styles.itemText, isSelected && styles.itemTextSelected, isDisabled && styles.itemTextDisabled],
     [isSelected, isDisabled]
   );
 
@@ -346,7 +266,11 @@ export function SelectItem({
       disabled={isDisabled}
     >
       <Text style={textStyles}>{label}</Text>
-      {isSelected && <Text style={styles.checkmark}>✓</Text>}
+      {isSelected && (
+        <Text style={styles.checkmark}>
+          <Ionicons name="checkmark" size={24} />
+        </Text>
+      )}
     </TouchableOpacity>
   );
 }
@@ -355,7 +279,7 @@ const styles = StyleSheet.create({
   trigger: {
     minHeight: 52,
     paddingHorizontal: 12,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: theme.foreground,
     borderRadius: theme.radius,
     backgroundColor: theme.background,
@@ -369,7 +293,7 @@ const styles = StyleSheet.create({
   },
   triggerDisabled: {
     opacity: 0.5,
-    backgroundColor: theme.muted + "20",
+    backgroundColor: "rgba(0,0,0,0.05)",
   },
   floatingLabel: {
     position: "absolute",
@@ -377,7 +301,6 @@ const styles = StyleSheet.create({
     left: 15,
     backgroundColor: theme.background,
     paddingHorizontal: 4,
-    paddingVertical: 0,
     fontSize: 12,
     fontWeight: "500",
   },

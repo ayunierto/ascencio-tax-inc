@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
 
-import { View, StyleSheet } from "react-native";
-import { router, useFocusEffect } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
-import Toast from "react-native-toast-message";
-import { AxiosError } from "axios";
+import { View, StyleSheet } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
+import Toast from 'react-native-toast-message';
+import { AxiosError } from 'axios';
 
-import { getExpenses } from "@/core/accounting/expenses/actions";
-import { getLogs } from "@/core/logs/actions";
-import { ExpenseResponse } from "@/core/accounting/expenses/interfaces";
-import { Metrics } from "./Metrics";
-import { QuickActions } from "./QuickActions/QuickActions";
-import { RecentActivity } from "./RecentActivity";
-import Loader from "@/components/Loader";
-import { useRevenueCat } from "@/providers/RevenueCat";
-import { goPro } from "@/core/accounting/actions";
-import { EmptyContent } from "@/core/components";
-import { Log } from "@/core/logs/interfaces";
-import { ServerException } from "@/core/interfaces/server-exception.response";
+import { getExpenses } from '@/core/accounting/expenses/actions';
+import { getLogs } from '@/core/logs/actions';
+import { ExpenseResponse } from '@/core/accounting/expenses/interfaces';
+import { Metrics } from './Metrics';
+import { QuickActions } from './QuickActions/QuickActions';
+import { RecentActivity } from './RecentActivity';
+import Loader from '@/components/Loader';
+import { useRevenueCat } from '@/providers/RevenueCat';
+import { goPro } from '@/core/accounting/actions';
+import { EmptyContent } from '@/core/components';
+import { Log } from '@/core/logs/interfaces';
+import { ServerException } from '@/core/interfaces/server-exception.response';
 
 const ReceiptsDashboard = () => {
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -29,7 +29,7 @@ const ReceiptsDashboard = () => {
     isError: isErrorExpenses,
     error: errorExpenses,
   } = useQuery<ExpenseResponse[], AxiosError<ServerException>>({
-    queryKey: ["totalExpenses"],
+    queryKey: ['totalExpenses'],
     queryFn: () => getExpenses(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
@@ -41,7 +41,7 @@ const ReceiptsDashboard = () => {
     isError: isErrorLogs,
     error: errorLogs,
   } = useQuery<Log[], AxiosError<ServerException>>({
-    queryKey: ["logs"],
+    queryKey: ['logs'],
     queryFn: () => getLogs(),
     staleTime: 1000 * 60 * 60, // 1 hour
   });
@@ -54,7 +54,7 @@ const ReceiptsDashboard = () => {
   );
 
   useEffect(() => {
-    if (expenses && !("error" in expenses)) {
+    if (expenses && !('error' in expenses)) {
       if (expenses.length > 0) {
         const total = expenses.reduce(
           (acc: number, receipt: ExpenseResponse) => acc + +receipt.total,
@@ -88,13 +88,13 @@ const ReceiptsDashboard = () => {
   const getReport = () => {
     if (expenses.length === 0) {
       Toast.show({
-        type: "info",
-        text1: "Info",
-        text2: "No expenses to generate report",
+        type: 'info',
+        text1: 'Info',
+        text2: 'No expenses to generate report',
       });
       return;
     }
-    router.push("/(tabs)/accounting/reports");
+    router.push('/(tabs)/accounting/reports');
   };
 
   const keyMetrics = [
@@ -102,28 +102,28 @@ const ReceiptsDashboard = () => {
     // { label: 'Today', value: `$${totalExpenses}` },
     // { label: 'This Week', value: `$${totalExpenses}` },
     // { label: 'This month', value: `$${totalExpenses}` },
-    { label: "Total Expenses", value: `$${totalExpenses}` },
+    { label: 'Total Expenses', value: `$${totalExpenses}` },
     // { label: 'Net Profit', value: '$4,000' },
   ];
 
   const quickActions = [
     {
-      label: "Add Expense",
+      label: 'Add Expense',
       onPress: () => addExpense(),
     },
     {
-      label: "Scan Expense",
+      label: 'Scan Expense',
       onPress: () => scanExpense(),
     },
     // { label: 'Add Income', onPress: () => addIncome('Add Income') },
-    { label: "View Reports", onPress: () => viewReport() },
+    { label: 'View Reports', onPress: () => viewReport() },
   ];
 
   const addExpense = () => {
     if (!isPro && expenses.length >= 5) {
       goPro();
     } else {
-      router.push("/(tabs)/accounting/receipts/expense/new");
+      router.push('/(tabs)/accounting/receipts/expense/new');
     }
   };
 
@@ -131,7 +131,7 @@ const ReceiptsDashboard = () => {
     if (!isPro && expenses.length >= 5) {
       goPro();
     } else {
-      router.push("/scan-receipts");
+      router.push({ pathname: '/scan-receipts', params: { id: 'new' } });
     }
   };
 

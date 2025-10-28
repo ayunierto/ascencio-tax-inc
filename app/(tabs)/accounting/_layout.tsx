@@ -16,6 +16,7 @@ export default function AccountingLayout() {
         },
         drawerType: "slide",
         headerTitleAlign: "center",
+        
       }}
     >
       <Drawer.Screen

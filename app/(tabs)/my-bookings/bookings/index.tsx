@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Linking,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, SafeAreaView, Linking, TouchableOpacity } from "react-native";
 import React from "react";
 import { DateTime } from "luxon";
 
@@ -43,12 +37,7 @@ const MyBookings = () => {
 
   if (isError) {
     return (
-      <EmptyContent
-        title="Error"
-        subtitle={
-          error.response?.data.message || error.message || "An error occurred"
-        }
-      />
+      <EmptyContent title="Error" subtitle={error.response?.data.message || error.message || "An error occurred"} />
     );
   }
   if (isLoading) {
@@ -56,12 +45,7 @@ const MyBookings = () => {
   }
 
   if (!pendingAppointments || pendingAppointments.length === 0) {
-    return (
-      <EmptyContent
-        title="No appointments found."
-        subtitle="Add a new appointment to get started"
-      />
-    );
+    return <EmptyContent title="No appointments found." subtitle="Add a new appointment to get started" />;
   }
 
   // TODO: Add button to cancel appointment
@@ -80,26 +64,18 @@ const MyBookings = () => {
               <Card>
                 <CardContent>
                   <SimpleCardHeader>
-                    <Ionicons
-                      name="calendar-outline"
-                      color={theme.foreground}
-                      size={24}
-                    />
+                    <Ionicons name="calendar-outline" color={theme.foreground} size={24} />
                     <View>
-                      <SimpleCardHeaderTitle>
-                        {appt.service.name}
-                      </SimpleCardHeaderTitle>
+                      <SimpleCardHeaderTitle>{appt.service.name}</SimpleCardHeaderTitle>
                       <SimpleCardHeaderSubTitle>
-                        {DateTime.fromISO(appt.startDateAndTime).toLocaleString(
-                          {
-                            year: "numeric",
-                            month: "2-digit",
-                            day: "2-digit",
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                          }
-                        )}
+                        {DateTime.fromISO(appt.start).toLocaleString({
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
                       </SimpleCardHeaderSubTitle>
                     </View>
                   </SimpleCardHeader>

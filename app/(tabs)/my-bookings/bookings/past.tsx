@@ -33,12 +33,7 @@ const PastBookings = (): JSX.Element => {
 
   if (isError) {
     return (
-      <EmptyContent
-        title="Error"
-        subtitle={
-          error.response?.data.message || error.message || "An error occurred"
-        }
-      />
+      <EmptyContent title="Error" subtitle={error.response?.data.message || error.message || "An error occurred"} />
     );
   }
   if (isLoading) {
@@ -46,12 +41,7 @@ const PastBookings = (): JSX.Element => {
   }
 
   if (!historicalBookings || historicalBookings.length === 0) {
-    return (
-      <EmptyContent
-        title="No past appointments found"
-        subtitle="You have no past appointments"
-      />
-    );
+    return <EmptyContent title="No past appointments found" subtitle="You have no past appointments" />;
   }
 
   return (
@@ -67,17 +57,11 @@ const PastBookings = (): JSX.Element => {
             <Card>
               <CardContent>
                 <SimpleCardHeader>
-                  <Ionicons
-                    name={"calendar-outline"}
-                    color={theme.foreground}
-                    size={24}
-                  />
+                  <Ionicons name={"calendar-outline"} color={theme.foreground} size={24} />
                   <View>
-                    <SimpleCardHeaderTitle>
-                      {appt.service.name}
-                    </SimpleCardHeaderTitle>
+                    <SimpleCardHeaderTitle>{appt.service.name}</SimpleCardHeaderTitle>
                     <SimpleCardHeaderSubTitle>
-                      {DateTime.fromISO(appt.startDateAndTime).toLocaleString({
+                      {DateTime.fromISO(appt.start).toLocaleString({
                         year: "numeric",
                         month: "2-digit",
                         day: "2-digit",

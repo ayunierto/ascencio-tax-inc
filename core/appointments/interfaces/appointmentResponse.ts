@@ -4,13 +4,13 @@ import { Staff } from "@/core/staff/interfaces";
 
 export interface Appointment {
   id: string;
-  startDateAndTime: string;
-  endDateAndTime: string;
-  state: string;
+  start: string;
+  end: string;
+  status: string;
   comments: string;
   calendarEventId: string;
   zoomMeetingId: string;
-  zoomMeetingLink?: string;
+  zoomMeetingLink: string;
   source?: string;
   cancellationReason?: string;
   service: Service;

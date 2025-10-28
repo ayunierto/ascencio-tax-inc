@@ -1,25 +1,29 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { DateTime } from "luxon";
-import { ExpenseFormFields, expenseSchema } from "@/core/accounting/expenses/schemas";
-import { ExpenseResponse } from "@/core/accounting/expenses/interfaces";
+// TODO: Pending review.
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { DateTime } from 'luxon';
+import {
+  ExpenseFormFields,
+  expenseSchema,
+} from '@/core/accounting/expenses/schemas';
+import { ExpenseResponse } from '@/core/accounting/expenses/interfaces';
 
 export const useExpenseForm = (expense?: ExpenseResponse | null) => {
   const form = useForm<ExpenseFormFields>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      id: expense?.id || "new",
-      merchant: expense?.merchant || "",
+      id: expense?.id || 'new',
+      merchant: expense?.merchant || '',
       date: expense?.date || DateTime.now().toISO(),
       total: expense?.total || 0,
       tax: expense?.tax || 0,
-      notes: expense?.notes || "",
-      categoryId: expense?.category?.id || "",
-      subcategoryId: expense?.subcategory?.id || "",
-      imageUrl: expense?.imageUrl || "",
+      notes: expense?.notes || '',
+      categoryId: expense?.category?.id || '',
+      subcategoryId: expense?.subcategory?.id || '',
+      imageUrl: expense?.imageUrl || '',
     },
-    mode: "onChange", // Enable real-time validation
+    mode: 'onChange', // Enable real-time validation
   });
 
   // Reset form when expense changes (useful for switching between expenses)
@@ -31,10 +35,10 @@ export const useExpenseForm = (expense?: ExpenseResponse | null) => {
         date: expense.date,
         total: expense.total,
         tax: expense.tax,
-        notes: expense.notes || "",
-        categoryId: expense.category?.id || "",
-        subcategoryId: expense.subcategory?.id || "",
-        imageUrl: expense.imageUrl || "",
+        notes: expense.notes || '',
+        categoryId: expense.category?.id || '',
+        subcategoryId: expense.subcategory?.id || '',
+        imageUrl: expense.imageUrl || '',
       });
     }
   }, [expense?.id, form]);

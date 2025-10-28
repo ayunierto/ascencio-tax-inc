@@ -6,11 +6,7 @@ import { ServicesResponse } from "../interfaces";
 import { ServerException } from "@/core/interfaces/server-exception.response";
 
 export const useServices = (limit: number = 100, offset = 0) => {
-  return useQuery<
-    ServicesResponse,
-    AxiosError<ServerException>,
-    ServicesResponse
-  >({
+  return useQuery<ServicesResponse, AxiosError<ServerException>, ServicesResponse>({
     queryKey: ["services", { offset, limit }],
     queryFn: () =>
       getServicesAction({

@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   trigger: {
     minHeight: 52,
     paddingHorizontal: 12,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: theme.foreground,
     borderRadius: theme.radius,
     backgroundColor: theme.background,

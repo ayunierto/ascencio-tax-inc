@@ -2,11 +2,7 @@ import Loader from "@/components/Loader";
 import React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Platform } from "react-native";
-import Purchases, {
-  LOG_LEVEL,
-  PurchasesOffering,
-  CustomerInfo,
-} from "react-native-purchases";
+import Purchases, { LOG_LEVEL, PurchasesOffering, CustomerInfo } from "react-native-purchases";
 
 const APIKeys = {
   apple: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY as string,
@@ -27,15 +23,10 @@ const RevenueCatContext = createContext<Partial<RevenueCatProps>>({
   isReady: false,
 });
 
-export const RevenueCatProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const RevenueCatProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPro, setIsPro] = useState(false);
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
-  const [currentOffering, setCurrentOffering] =
-    useState<PurchasesOffering | null>(null);
+  const [currentOffering, setCurrentOffering] = useState<PurchasesOffering | null>(null);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -62,10 +53,7 @@ export const RevenueCatProvider = ({
 
         setCurrentOffering(offerings.current);
       } catch (error) {
-        console.error(
-          "RC Provider: Error during setup or fetching initial data: ",
-          error
-        );
+        // console.log("RC Provider: Error during setup or fetching initial data: ", error);
       } finally {
         // Mark as ready AFTER attempting setup and initial fetch
         setIsReady(true);
@@ -83,9 +71,7 @@ export const RevenueCatProvider = ({
   }
 
   return (
-    <RevenueCatContext.Provider
-      value={{ isPro, customerInfo, currentOffering, isReady }}
-    >
+    <RevenueCatContext.Provider value={{ isPro, customerInfo, currentOffering, isReady }}>
       {children}
     </RevenueCatContext.Provider>
   );

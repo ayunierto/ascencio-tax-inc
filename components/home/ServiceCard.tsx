@@ -8,13 +8,10 @@ import { Button, ButtonText } from "../ui/Button";
 
 interface ServiceCardProps {
   service: Service;
-  handleServiceSelection: (service: Service) => void;
+  selectService: (service: Service) => void;
 }
 
-export const ServiceCard = ({
-  service,
-  handleServiceSelection,
-}: ServiceCardProps) => {
+export const ServiceCard = ({ service, selectService }: ServiceCardProps) => {
   return (
     <View
       style={{
@@ -27,10 +24,7 @@ export const ServiceCard = ({
       }}
       key={service.id}
     >
-      <Image
-        style={{ width: 60, height: 60, borderRadius: theme.radius }}
-        source={{ uri: service.imageUrl }}
-      />
+      <Image style={{ width: 60, height: 60, borderRadius: theme.radius }} source={{ uri: service.imageUrl }} />
       <View
         style={{
           flexDirection: "column",
@@ -60,15 +54,11 @@ export const ServiceCard = ({
           <Ionicons
             size={18}
             color={theme.primary}
-            name={
-              service.isAvailableOnline
-                ? "videocam-outline"
-                : "videocam-off-outline"
-            }
+            name={service.isAvailableOnline ? "videocam-outline" : "videocam-off-outline"}
           />
         </View>
       </View>
-      <Button onPress={() => handleServiceSelection(service)}>
+      <Button onPress={() => selectService(service)}>
         <ButtonText>Book</ButtonText>
       </Button>
     </View>

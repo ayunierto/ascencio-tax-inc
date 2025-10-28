@@ -1,6 +1,6 @@
-import { User } from "@/core/auth/interfaces";
-import { Category } from "../../categories/interfaces/category.interface";
-import { Subcategory } from "../../subcategories/interfaces";
+import { User } from '@/core/auth/interfaces';
+import { Category } from '../../categories/interfaces/category.interface';
+import { Subcategory } from '../../subcategories/interfaces';
 
 export interface ExpenseResponse {
   id: string;
@@ -10,8 +10,8 @@ export interface ExpenseResponse {
   tax: number;
   imageUrl?: string;
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   category?: Category;
   subcategory?: Subcategory;
   user?: User;

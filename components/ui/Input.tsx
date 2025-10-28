@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { theme } from "./theme";
 
 interface InputProps extends TextInputProps {
+  ref?: React.Ref<TextInput>;
   label?: string;
   leadingIcon?: keyof typeof Ionicons.glyphMap;
   trailingIcon?: keyof typeof Ionicons.glyphMap;
@@ -56,9 +57,7 @@ export const Input = ({
   // We use UseRef for the animated value so that it does not restart in each render.
   const animatedValue = useRef(new Animated.Value(0)).current;
 
-  const [isPasswordVisible, setIsPasswordVisible] = useState(
-    props.secureTextEntry || false
-  );
+  const [isPasswordVisible, setIsPasswordVisible] = useState(props.secureTextEntry || false);
 
   const hasValue = value && value.length > 0;
   const shouldFloat = isFocused || hasValue;
@@ -74,16 +73,12 @@ export const Input = ({
   }, [shouldFloat, animatedValue]);
 
   // --- Handlers ---
-  const handleFocus = (
-    event: NativeSyntheticEvent<TextInputFocusEventData>
-  ): void => {
+  const handleFocus = (event: NativeSyntheticEvent<TextInputFocusEventData>): void => {
     setIsFocused(true);
     onFocus?.(event); // Call the original onFocus if it exists.
   };
 
-  const handleBlur = (
-    event: NativeSyntheticEvent<TextInputFocusEventData>
-  ): void => {
+  const handleBlur = (event: NativeSyntheticEvent<TextInputFocusEventData>): void => {
     setIsFocused(false);
     onBlur?.(event); // Call the original onBlur if it exists.
   };
@@ -100,7 +95,7 @@ export const Input = ({
           ? focusedBorderColor
           : theme.input;
 
-    const borderWidth = isFocused || error ? 2 : 2;
+    const borderWidth = isFocused || error ? 1 : 1  ;
 
     return [styles.containerBase, { borderColor, borderWidth }, containerStyle];
   }, [isFocused, error, readOnly, focusedBorderColor, containerStyle]);
@@ -137,11 +132,7 @@ export const Input = ({
 
   // We memorize the styles of TextInput.
   const computedInputStyle = useMemo<StyleProp<TextStyle>>(() => {
-    return [
-      styles.inputBase,
-      { color: readOnly ? theme.mutedForeground : theme.primaryForeground },
-      inputStyle,
-    ];
+    return [styles.inputBase, { color: readOnly ? theme.mutedForeground : theme.primaryForeground }, inputStyle];
   }, [readOnly, inputStyle]);
 
   const handleTogglePasswordVisibility = () => {
@@ -157,19 +148,13 @@ export const Input = ({
               name={leadingIcon}
               size={24}
               color={theme.primaryForeground}
-              style={[
-                styles.icon,
-                error ? [styles.errorText, errorTextStyle] : null,
-              ]}
+              style={[styles.icon, error ? [styles.errorText, errorTextStyle] : null]}
             />
           )}
 
           <View style={styles.inputArea}>
             {label && (
-              <Animated.Text
-                style={animatedLabelStyles}
-                onPress={() => textInputRef.current?.focus()}
-              >
+              <Animated.Text style={animatedLabelStyles} onPress={() => textInputRef.current?.focus()}>
                 {label}
               </Animated.Text>
             )}
@@ -190,12 +175,7 @@ export const Input = ({
           </View>
 
           {trailingIcon && (
-            <Ionicons
-              name={trailingIcon}
-              size={24}
-              color={theme.primaryForeground}
-              style={styles.icon}
-            />
+            <Ionicons name={trailingIcon} size={24} color={theme.primaryForeground} style={styles.icon} />
           )}
 
           {props.secureTextEntry && (
@@ -212,12 +192,7 @@ export const Input = ({
 
       {/* Show helper text or error message */}
       {(helperText || errorMessage) && (
-        <Text
-          style={[
-            styles.helperTextBase,
-            error ? [styles.errorText, errorTextStyle] : null,
-          ]}
-        >
+        <Text style={[styles.helperTextBase, error ? [styles.errorText, errorTextStyle] : null]}>
           {error ? errorMessage : helperText}
         </Text>
       )}

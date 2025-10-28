@@ -1,6 +1,8 @@
 import React from 'react';
+import { useLocalSearchParams } from 'expo-router';
 import { Alert, Image, StyleSheet, View } from 'react-native';
-import { CameraView } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
 
 import 'react-native-get-random-values';
 import {
@@ -10,28 +12,37 @@ import {
   ReturnCancelButton,
   ShutterButton,
 } from '@/core/camera/components';
-import { useScanReceipts } from '@/core/accounting/scan-receipts/hooks/useScanReceipts';
 
 import { Buffer } from 'buffer';
 import Loader from '@/components/Loader';
 import { ThemedText } from '@/components/ui/ThemedText';
-import Button from '@/components/ui/Button';
+import { Button, ButtonText } from '@/components/ui/Button';
+import { Card } from '@/components/ui';
+import { CardContent } from '@/components/ui/Card/CardContent';
+import { Octicons } from '@expo/vector-icons';
+import { theme } from '@/components/ui/theme';
+import { useScanReceipts } from '@/core/accounting/expenses/hooks/useScanReceipts';
 globalThis.Buffer = Buffer;
 
 export default function ScanReceiptScreen() {
+  const { id } = useLocalSearchParams(); // new or uuid
+  console.log({ id });
+  if (!id) throw new Error('Mode is required');
+
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [, requestMediaPermission] = MediaLibrary.usePermissions();
+
   const {
-    requestCameraPermission,
     loading,
-    requestMediaPermission,
-    cameraPermission,
     cameraRef,
-    selectedImage,
-    onPictureConfirm,
-    onRetakePicture,
-    onReturnCancel,
-    onPickImages,
-    onShutterButtonPress,
-  } = useScanReceipts();
+    pictureUri,
+    confirmPicture,
+    retakePicture,
+    dismissReceiptScanner,
+    pickFromGallery,
+    takePicture,
+    statusMessage,
+  } = useScanReceipts(id as string);
 
   const onRequestPermissions = async () => {
     try {
@@ -57,49 +68,62 @@ export default function ScanReceiptScreen() {
     return <Loader />;
   }
 
+  // Permission not granted view
   if (!cameraPermission.granted) {
     return (
       <View style={{ ...styles.container, padding: 20 }}>
-        <ThemedText style={styles.message}>
-          We need your permission to show the camera and gallery
-        </ThemedText>
-        <Button onPress={onRequestPermissions}>Grant permission</Button>
+        <Card>
+          <CardContent style={{ alignItems: 'center', gap: 10 }}>
+            <Octicons name="unlock" size={50} color={theme.foreground} />
+            <ThemedText style={styles.message}>
+              We need your permission to show the camera and gallery
+            </ThemedText>
+            <Button onPress={onRequestPermissions}>
+              <ButtonText>Grant</ButtonText>
+            </Button>
+          </CardContent>
+        </Card>
       </View>
     );
   }
 
   if (loading) {
-    return <Loader />;
+    return <Loader message={statusMessage} />;
   }
 
-  // Confirm image view
-  if (selectedImage) {
+  // Picture to confirm view
+  if (pictureUri) {
     return (
       <View style={styles.container}>
-        <Image source={{ uri: selectedImage }} style={styles.camera} />
+        <Image
+          source={{ uri: pictureUri }}
+          style={{ flex: 1, resizeMode: 'contain' }}
+        />
         <ConfirmImageButton
           loading={loading}
           disabled={loading}
-          onPress={onPictureConfirm}
+          onPress={confirmPicture}
         />
-        <RetakeImageButton onPress={onRetakePicture} />
-        <ReturnCancelButton onPress={onReturnCancel} />
+        <RetakeImageButton onPress={retakePicture} />
+        <ReturnCancelButton onPress={dismissReceiptScanner} />
       </View>
     );
   }
 
-  // Camera view
+  // Camera
   return (
     <View style={styles.container}>
       <CameraView ref={cameraRef} style={styles.camera} facing={'back'}>
         <GalleryButton
-          onPress={onPickImages}
-          style={{ position: 'absolute', left: 30, bottom: 45 }}
+          onPress={pickFromGallery}
+          style={{ position: 'absolute', right: 30, bottom: 45 }}
         />
+
         <View style={styles.buttonsBottomContainer}>
-          <ShutterButton onPress={onShutterButtonPress} />
+          <ShutterButton onPress={takePicture} />
         </View>
-        <ReturnCancelButton onPress={onReturnCancel} />
+
+        <ReturnCancelButton onPress={dismissReceiptScanner} />
       </CameraView>
     </View>
   );
@@ -111,7 +135,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   message: {
-    textAlign: 'center',
     paddingBottom: 10,
   },
   camera: {

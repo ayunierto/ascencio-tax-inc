@@ -1,6 +1,6 @@
 import React from "react";
 
-import { View, ScrollView } from "react-native";
+import { FlatList } from "react-native";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 
@@ -14,12 +14,12 @@ import { ServiceCard } from "@/components/home/ServiceCard";
 
 const ServicesScreen = () => {
   const { authStatus } = useAuthStore();
-  const { setService } = useBookingStore();
+  const { updateState } = useBookingStore();
 
-  const { data: servicesData, isLoading, isError, error } = useServices();
+  const { data: servicesData, isPending, isError, error, refetch } = useServices();
 
-  const handleServiceSelection = (service: Service): void => {
-    setService(service);
+  const selectService = (service: Service): void => {
+    updateState({ service });
     if (authStatus !== "authenticated") {
       router.push("/(tabs)/auth/sign-in");
       Toast.show({
@@ -34,38 +34,24 @@ const ServicesScreen = () => {
   };
 
   if (isError)
-    return (
-      <EmptyContent
-        title="Something went wrong."
-        subtitle={error.response?.data.message || error.message}
-      />
-    );
+    return <EmptyContent title="Something went wrong." subtitle={error.response?.data.message || error.message} />;
 
-  if (isLoading) return <Loader message="Loading services..." />;
+  if (isPending) return <Loader message="Loading services..." />;
 
   if (!servicesData || servicesData.services.length === 0) {
-    return (
-      <EmptyContent
-        title="No services available."
-        subtitle="Please check back later."
-      />
-    );
+    return <EmptyContent title="No services available." subtitle="Please check back later." onRetry={refetch} />;
   }
 
   return (
-    <ScrollView>
-      <View style={{ padding: 10, flex: 1 }}>
-        <View style={{ flexDirection: "column", gap: 10 }}>
-          {servicesData.services.map((service: Service) => (
-            <ServiceCard
-              key={service.id}
-              service={service}
-              handleServiceSelection={handleServiceSelection}
-            />
-          ))}
-        </View>
-      </View>
-    </ScrollView>
+    <FlatList
+      data={servicesData.services}
+      renderItem={({ item }) => <ServiceCard key={item.id} service={item} selectService={selectService} />}
+      contentContainerStyle={{
+        padding: 10,
+        gap: 10,
+      }}
+      keyExtractor={(item) => item.id}
+    />
   );
 };
 

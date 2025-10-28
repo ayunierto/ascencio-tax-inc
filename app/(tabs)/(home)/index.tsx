@@ -1,13 +1,8 @@
 import React, { useState } from "react";
 
-import { SafeAreaView, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native";
 import Logo from "@/components/Logo";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/beta/Tab";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/beta/Tab";
 import ServicesScreen from "@/components/home/services";
 import BlogScreen from "@/components/home/blog";
 
@@ -15,28 +10,22 @@ export default function TabLayout() {
   const [activeTab, setActiveTab] = useState("services");
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView>
-        <Logo />
+      <Logo />
 
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          defaultValue="services"
-        >
-          <TabsList>
-            <TabsTrigger value="services">Services</TabsTrigger>
-            <TabsTrigger value="blog">Blog</TabsTrigger>
-          </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="services">
+        <TabsList>
+          <TabsTrigger value="services">Services</TabsTrigger>
+          <TabsTrigger value="blog">Blog</TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="services">
-            <ServicesScreen />
-          </TabsContent>
+        <TabsContent value="services">
+          <ServicesScreen />
+        </TabsContent>
 
-          <TabsContent value="blog" style={{ flex: 1 }}>
-            <BlogScreen />
-          </TabsContent>
-        </Tabs>
-      </ScrollView>
+        <TabsContent value="blog" style={{ flex: 1 }}>
+          <BlogScreen />
+        </TabsContent>
+      </Tabs>
 
       {/* <Tabs
         screenOptions={{

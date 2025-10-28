@@ -1,8 +1,7 @@
 import { api } from "@/core/api/api";
-import { BookingDataApiRequest } from "@/core/booking/schemas/booking.schema";
 import { Appointment } from "../interfaces";
+import { AppointmentRequest } from "../interfaces/appointment-request.interface";
 
-export const bookAppointment = async (appointments: BookingDataApiRequest) => {
-  const { data } = await api.post<Appointment>("/appointments", appointments);
-  return data;
+export const bookAppointment = async (appointments: AppointmentRequest) => {
+  return (await api.post<Appointment>("/appointments", appointments)).data;
 };
