@@ -1,11 +1,24 @@
-import React from "react";
-import { Pressable, StyleProp, Text, TextStyle, ViewStyle } from "react-native";
-import { theme } from "@/components/ui/theme";
-import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleProp,
+  Text,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
+import { theme } from '@/components/ui/theme';
+import { Ionicons } from '@expo/vector-icons';
 
-// === Variantes ===
-type ButtonVariant = "default" | "secondary" | "outline" | "ghost" | "destructive" | "link";
-type ButtonSize = "default" | "sm" | "lg" | "icon";
+// === Variants ===
+type ButtonVariant =
+  | 'default'
+  | 'secondary'
+  | 'outline'
+  | 'ghost'
+  | 'destructive'
+  | 'link';
+type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
 
 interface ButtonProps {
   variant?: ButtonVariant;
@@ -15,14 +28,21 @@ interface ButtonProps {
   children: React.ReactNode;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  isLoading?: boolean;
 }
 
-// === Contenedor estilo cva ===
-const buttonVariants = ({ variant, size }: { variant: ButtonVariant; size: ButtonSize }): ViewStyle[] => {
+// === Container cva style ===
+const buttonVariants = ({
+  variant,
+  size,
+}: {
+  variant: ButtonVariant;
+  size: ButtonSize;
+}): ViewStyle[] => {
   const base: ViewStyle = {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: theme.radius,
     marginVertical: 6,
   };
@@ -33,11 +53,11 @@ const buttonVariants = ({ variant, size }: { variant: ButtonVariant; size: Butto
     outline: {
       borderWidth: 1,
       borderColor: theme.border,
-      backgroundColor: "transparent",
+      backgroundColor: 'transparent',
     },
     secondary: { backgroundColor: theme.secondary },
-    ghost: { backgroundColor: "transparent" },
-    link: { backgroundColor: "transparent" },
+    ghost: { backgroundColor: 'transparent' },
+    link: { backgroundColor: 'transparent' },
   };
 
   const sizes: Record<ButtonSize, ViewStyle> = {
@@ -51,10 +71,16 @@ const buttonVariants = ({ variant, size }: { variant: ButtonVariant; size: Butto
 };
 
 // === Texto estilo cva ===
-const buttonTextVariants = ({ variant, size }: { variant: ButtonVariant; size: ButtonSize }): TextStyle[] => {
+const buttonTextVariants = ({
+  variant,
+  size,
+}: {
+  variant: ButtonVariant;
+  size: ButtonSize;
+}): TextStyle[] => {
   const base: TextStyle = {
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: '600',
+    textAlign: 'center',
   };
 
   const variants: Record<ButtonVariant, TextStyle> = {
@@ -63,7 +89,7 @@ const buttonTextVariants = ({ variant, size }: { variant: ButtonVariant; size: B
     outline: { color: theme.foreground },
     secondary: { color: theme.secondaryForeground },
     ghost: { color: theme.foreground },
-    link: { color: theme.primary, textDecorationLine: "underline" },
+    link: { color: theme.primary, textDecorationLine: 'underline' },
   };
 
   const sizes: Record<ButtonSize, TextStyle> = {
@@ -78,13 +104,14 @@ const buttonTextVariants = ({ variant, size }: { variant: ButtonVariant; size: B
 
 // === Button ===
 export const Button: React.FC<ButtonProps> = ({
-  variant = "default",
-  size = "default",
+  variant = 'default',
+  size = 'default',
   disabled = false,
   fullWidth = false,
   children,
   onPress,
   style,
+  isLoading = false,
 }) => {
   return (
     <Pressable
@@ -92,7 +119,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled}
       style={({ pressed }) => [
         ...buttonVariants({ variant, size }),
-        fullWidth && { alignSelf: "stretch" },
+        fullWidth && { alignSelf: 'stretch' },
         disabled && { opacity: 0.6 },
         pressed && !disabled && { opacity: 0.9 },
         { gap: 10 },
@@ -100,26 +127,25 @@ export const Button: React.FC<ButtonProps> = ({
         style,
       ]}
     >
+      {isLoading && <ActivityIndicator size="small" color={theme.foreground} />}
       {children}
     </Pressable>
   );
 };
 
-// === Helper para texto ===
 export const ButtonText: React.FC<{
   variant?: ButtonVariant;
   size?: ButtonSize;
   children: React.ReactNode;
-}> = ({ variant = "default", size = "default", children }) => {
+}> = ({ variant = 'default', size = 'default', children }) => {
   return <Text style={buttonTextVariants({ variant, size })}>{children}</Text>;
 };
 
-// === Helper para Icono ===
 export const ButtonIcon: React.FC<{
   variant?: ButtonVariant;
   size?: ButtonSize;
   name: keyof typeof Ionicons.glyphMap;
-}> = ({ variant = "default", size = "lg", name }) => {
+}> = ({ variant = 'default', size = 'lg', name }) => {
   return (
     <Ionicons
       name={name}

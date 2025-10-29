@@ -1,27 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import {
   View,
   KeyboardAvoidingView,
   SafeAreaView,
   ScrollView,
-} from "react-native";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+} from 'react-native';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
 
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
 
-import { useTimer } from "@/core/auth/hooks/useTimer";
-import Header from "@/core/auth/components/Header";
-import { Input } from "@/components/ui/Input";
-import { Button, ButtonText } from "@/components/ui/Button";
-import ErrorMessage from "@/core/components/ErrorMessage";
-import { useVerifyEmailMutation } from "@/core/auth/hooks/useVerifyEmailMutation";
-import { useResendEmailCodeMutation } from "@/core/auth/hooks/useResendEmailCodeMutation";
+import { useTimer } from '@/core/auth/hooks/useTimer';
+import Header from '@/core/auth/components/Header';
+import { Input } from '@/components/ui/Input';
+import { Button, ButtonText } from '@/components/ui/Button';
+import ErrorMessage from '@/core/components/ErrorMessage';
+import { useVerifyEmailMutation } from '@/core/auth/hooks/useVerifyEmailMutation';
+import { useResendEmailCodeMutation } from '@/core/auth/hooks/useResendEmailCodeMutation';
 import {
   VerifyCodeRequest,
   verifyCodeSchema,
-} from "@/core/auth/schemas/verify-email-code.schema";
-import { EmptyContent } from "@/core/components";
+} from '@/core/auth/schemas/verify-email-code.schema';
+import { EmptyContent } from '@/core/components';
+import { Redirect } from 'expo-router';
 
 const VerifyEmail = () => {
   const { tempEmail } = useAuthStore();
@@ -35,6 +36,10 @@ const VerifyEmail = () => {
     };
   }, []);
 
+  if (!tempEmail) {
+    return <Redirect href={'/(tabs)/(home)'} />;
+  }
+
   const {
     control,
     handleSubmit,
@@ -43,8 +48,8 @@ const VerifyEmail = () => {
   } = useForm<VerifyCodeRequest>({
     resolver: zodResolver(verifyCodeSchema),
     defaultValues: {
-      email: tempEmail || "",
-      code: "",
+      email: tempEmail,
+      code: '',
     },
   });
 
@@ -58,7 +63,7 @@ const VerifyEmail = () => {
       onError: () => {
         resetTimer();
         startTimer();
-        resetField("code");
+        resetField('code');
       },
     });
   };
@@ -94,8 +99,8 @@ const VerifyEmail = () => {
           <View
             style={{
               flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
             <View
@@ -103,13 +108,13 @@ const VerifyEmail = () => {
                 flex: 1,
                 gap: 30,
                 maxWidth: 320,
-                marginHorizontal: "auto",
+                marginHorizontal: 'auto',
               }}
             >
               <Header
-                title={"Verify email"}
+                title={'Verify email'}
                 subtitle={
-                  "Please check your email for a message with your code. Your code is 6 numbers long."
+                  'Please check your email for a message with your code. Your code is 6 numbers long.'
                 }
               />
 
@@ -140,7 +145,7 @@ const VerifyEmail = () => {
                   onPress={handleSubmit(handleEmailVerification)}
                 >
                   <ButtonText>
-                    {isPending ? "Verifying...  " : "Verify"}
+                    {isPending ? 'Verifying...  ' : 'Verify'}
                   </ButtonText>
                 </Button>
 
@@ -151,7 +156,7 @@ const VerifyEmail = () => {
                 >
                   <ButtonText>
                     {timeRemaining === 0
-                      ? "Resend code"
+                      ? 'Resend code'
                       : `Resend in ${timeRemaining}s`}
                   </ButtonText>
                 </Button>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 import {
   View,
@@ -6,25 +6,31 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
   StyleSheet,
-} from "react-native";
-import { Link } from "expo-router";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+  FlatList,
+} from 'react-native';
+import { Link } from 'expo-router';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import Signin from "../../auth/sign-in";
-import { Input } from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
-import Divider from "@/components/ui/Divider";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import { theme } from "@/components/ui/theme";
-import { useCountryCodes } from "@/core/hooks/useCountryCodes";
-import Select from "@/components/ui/Select";
-import useIPGeolocation from "@/core/hooks/useIPGeolocation";
-import { useUpdateProfileMutation } from "@/core/user/hooks/useUpdateProfileMutation";
+import Signin from '../../auth/sign-in';
+import { Input } from '@/components/ui/Input';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import Divider from '@/components/ui/Divider';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { theme } from '@/components/ui/theme';
+import { useCountryCodes } from '@/core/hooks/useCountryCodes';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from '@/components/ui/Select';
+import useIPGeolocation from '@/core/hooks/useIPGeolocation';
+import { useUpdateProfileMutation } from '@/core/user/hooks/useUpdateProfileMutation';
 import {
   UpdateProfileRequest,
   updateProfileSchema,
-} from "@/core/auth/schemas/update-profile.schema";
+} from '@/core/auth/schemas/update-profile.schema';
 
 const ProfileScreen = () => {
   const { user } = useAuthStore();
@@ -35,9 +41,9 @@ const ProfileScreen = () => {
 
   useEffect(() => {
     if (location) {
-      if ("error" in location) return;
+      if ('error' in location) return;
       setCallingCode(`+${location.location.calling_code}`);
-      setValue("countryCode", `+${location.location.calling_code}`);
+      setValue('countryCode', `+${location.location.calling_code}`);
     }
   }, [location]);
 
@@ -56,8 +62,8 @@ const ProfileScreen = () => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      phoneNumber: user.phoneNumber || "",
-      countryCode: user.countryCode || callingCode || "",
+      phoneNumber: user.phoneNumber || '',
+      countryCode: user.countryCode || callingCode || '',
     },
   });
 
@@ -74,9 +80,9 @@ const ProfileScreen = () => {
             style={{
               flex: 1,
               padding: 20,
-              width: "100%",
+              width: '100%',
               maxWidth: 500,
-              marginHorizontal: "auto",
+              marginHorizontal: 'auto',
               gap: 10,
             }}
           >
@@ -93,7 +99,7 @@ const ProfileScreen = () => {
                   autoCapitalize="words"
                   autoComplete="name"
                   error={!!errors.firstName}
-                  errorMessage={errors.firstName?.message || ""}
+                  errorMessage={errors.firstName?.message || ''}
                 />
               )}
             />
@@ -110,7 +116,7 @@ const ProfileScreen = () => {
                   autoCapitalize="words"
                   autoComplete="name-family"
                   error={!!errors.lastName}
-                  errorMessage={errors.lastName?.message || ""}
+                  errorMessage={errors.lastName?.message || ''}
                 />
               )}
             />
@@ -129,23 +135,44 @@ const ProfileScreen = () => {
                   autoComplete="email"
                   readOnly={true}
                   error={!!errors.email}
-                  errorMessage={errors.email?.message || ""}
+                  errorMessage={errors.email?.message || ''}
                 />
               )}
             />
 
             <View style={{ gap: 6 }}>
-              <View style={{ flexDirection: "row", gap: 10, flex: 1 }}>
-                <Select
-                  // label="Country Code"
-                  options={countryCodes}
-                  selectedOptions={countryCodes.find(
-                    (item) => item.value === callingCode
+              <View style={{ flexDirection: 'row', gap: 10, flex: 1 }}>
+                <Controller
+                  control={control}
+                  name={'countryCode'}
+                  render={({ field: { onChange, value } }) => (
+                    <Select
+                      value={value}
+                      onValueChange={onChange}
+                      error={!!errors.countryCode}
+                      errorMessage={errors.countryCode?.message}
+                    >
+                      <SelectTrigger
+                        placeholder="Select a category"
+                        labelText="Category"
+                      />
+                      <SelectContent>
+                        <ScrollView>
+                          <FlatList
+                            data={countryCodes}
+                            keyExtractor={(item) => item.value + item.label}
+                            renderItem={({ item: opt }) => (
+                              <SelectItem
+                                key={opt.value + opt.label}
+                                label={opt.label}
+                                value={opt.value}
+                              />
+                            )}
+                          />
+                        </ScrollView>
+                      </SelectContent>
+                    </Select>
                   )}
-                  // onSelect={(item) => setValue('countryCode', item?.value)}
-                  onChange={(value) => setValue("countryCode", value)}
-                  placeholder="+1"
-                  style={{ flex: 3 }}
                 />
 
                 <Controller
@@ -158,11 +185,12 @@ const ProfileScreen = () => {
                       onBlur={onBlur}
                       onChangeText={onChange}
                       keyboardType="phone-pad"
+                      placeholder="Phone Number"
                       autoCapitalize="none"
                       autoComplete="tel"
                       rootStyle={{ flex: 2 }}
+                      errorMessage={errors.phoneNumber?.message}
                       error={!!errors.phoneNumber}
-                      errorMessage={errors.phoneNumber?.message || ""}
                     />
                   )}
                 />
@@ -182,24 +210,24 @@ const ProfileScreen = () => {
                   secureTextEntry
                   autoComplete="password-new"
                   error={!!errors.password}
-                  errorMessage={errors.password?.message || ""}
+                  errorMessage={errors.password?.message || ''}
                 />
               )}
             />
 
             <View style={{ marginTop: 10, gap: 10 }}>
               <Button
-                loading={isPending}
                 disabled={isPending}
                 onPress={handleSubmit(handleUpdateProfile)}
               >
-                Update
+                <ButtonText>{isPending ? 'Updating...' : 'Update'}</ButtonText>
+                <ButtonIcon name="save-outline" />
               </Button>
 
               <Divider />
 
               <Link
-                href={"/settings/profile/delete-account-modal"}
+                href={'/settings/profile/delete-account-modal'}
                 style={styles.deleteButton}
               >
                 Delete account
@@ -220,7 +248,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: theme.radius,
     height: 48,
-    textAlign: "center",
+    textAlign: 'center',
   },
 });
 

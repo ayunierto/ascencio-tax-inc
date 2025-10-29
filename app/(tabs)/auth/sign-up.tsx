@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import {
   View,
@@ -6,34 +6,34 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   FlatList,
-} from "react-native";
-import { Controller } from "react-hook-form";
-import { AxiosError } from "axios";
-import Toast from "react-native-toast-message";
-import { router } from "expo-router";
+} from 'react-native';
+import { Controller } from 'react-hook-form';
+import { AxiosError } from 'axios';
+import Toast from 'react-native-toast-message';
+import { router } from 'expo-router';
 
-import Header from "@/core/auth/components/Header";
-import { Input } from "@/components/ui/Input";
+import Header from '@/core/auth/components/Header';
+import { Input } from '@/components/ui/Input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from "@/components/ui/Select";
-import ErrorMessage from "@/core/components/ErrorMessage";
-import { Button, ButtonText } from "@/components/ui/Button";
-import TermsAndPrivacy from "@/components/TermsAndPrivacy";
-import { useCountryCodes } from "@/core/hooks/useCountryCodes";
-import { useSignUp } from "@/core/auth/hooks";
-import { ServerException } from "@/core/interfaces/server-exception.response";
-import { SignUpResponse } from "@/core/auth/interfaces";
+} from '@/components/ui/Select';
+import ErrorMessage from '@/core/components/ErrorMessage';
+import { Button, ButtonText } from '@/components/ui/Button';
+import TermsAndPrivacy from '@/components/TermsAndPrivacy';
+import { useCountryCodes } from '@/core/hooks/useCountryCodes';
+import { useSignUp } from '@/core/auth/hooks';
+import { ServerException } from '@/core/interfaces/server-exception.response';
+import { SignUpResponse } from '@/core/auth/interfaces';
 import {
   SignUpApiRequest,
   SignUpRequest,
-} from "@/core/auth/schemas/sign-up.schema";
-import { useMutation } from "@tanstack/react-query";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import SimpleLogo from "@/components/SimpleLogo";
+} from '@/core/auth/schemas/sign-up.schema';
+import { useMutation } from '@tanstack/react-query';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import SimpleLogo from '@/components/SimpleLogo';
 
 const SignUp = () => {
   const { countryCodes } = useCountryCodes();
@@ -49,22 +49,22 @@ const SignUp = () => {
       return await signUp(data);
     },
     onSuccess: () => {
-      router.push("/auth/verify-email");
+      router.push('/auth/verify-email');
       Toast.show({
-        type: "success",
-        text1: "Sign up successful",
-        text2: "Please verify your email to continue.",
+        type: 'success',
+        text1: 'Sign up successful',
+        text2: 'Please verify your email to continue.',
       });
     },
     onError: (error) => {
       Toast.show({
-        type: "error",
-        text1: "Sign up failed",
+        type: 'error',
+        text1: 'Sign up failed',
         text1Style: { fontSize: 13 },
         text2:
           error.response?.data.message ||
           error.message ||
-          "An error occurred during sign up.",
+          'An error occurred during sign up.',
       });
     },
   });
@@ -83,18 +83,18 @@ const SignUp = () => {
           <View
             style={{
               gap: 20,
-              width: "100%",
+              width: '100%',
               maxWidth: 380,
-              marginHorizontal: "auto",
+              marginHorizontal: 'auto',
               padding: 20,
             }}
           >
-            <View style={{ alignItems: "center", marginTop: 20 }}>
+            <View style={{ alignItems: 'center', marginTop: 20 }}>
               <SimpleLogo />
             </View>
             <Header
               title="Sign up for Ascencio Tax"
-              link={"/auth/sign-in"}
+              link={'/auth/sign-in'}
               linkText="Sign in"
               subtitle="Already have an account? "
             />
@@ -156,10 +156,10 @@ const SignUp = () => {
 
               {/* Phone Number */}
               <View>
-                <View style={{ flexDirection: "row", gap: 10, flex: 1 }}>
+                <View style={{ flexDirection: 'row', gap: 10, flex: 1 }}>
                   <Controller
                     control={control}
-                    name={"countryCode"}
+                    name={'countryCode'}
                     render={({ field: { onChange, value } }) => (
                       <Select value={value} onValueChange={onChange}>
                         <SelectTrigger placeholder="Select your country" />
@@ -243,10 +243,11 @@ const SignUp = () => {
 
             <Button
               disabled={mutation.isPending}
+              isLoading={mutation.isPending}
               onPress={handleSubmit(onSignUp)}
             >
               <ButtonText>
-                {mutation.isPending ? "Creating..." : "Create account"}
+                {mutation.isPending ? 'Creating...' : 'Create account'}
               </ButtonText>
             </Button>
 

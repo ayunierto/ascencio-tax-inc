@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,38 +7,38 @@ import {
   Alert,
   TouchableOpacity,
   ScrollView,
-} from "react-native";
-import { PurchasesEntitlementInfo } from "react-native-purchases";
-import { Ionicons } from "@expo/vector-icons";
-import { useRevenueCat } from "@/providers/RevenueCat";
-import { goPro } from "@/core/accounting/actions";
-import Loader from "@/components/Loader";
-import { theme } from "@/components/ui/theme";
-import { ThemedText } from "@/components/ui/ThemedText";
-import Button from "@/components/ui/Button";
+} from 'react-native';
+import { PurchasesEntitlementInfo } from 'react-native-purchases';
+import { Ionicons } from '@expo/vector-icons';
+import { useRevenueCat } from '@/providers/RevenueCat';
+import { goPro } from '@/core/accounting/actions';
+import Loader from '@/components/Loader';
+import { theme } from '@/components/ui/theme';
+import { ThemedText } from '@/components/ui/ThemedText';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
 
 // --- Consts Color for Dark Mode ---
-const secondaryTextColor = "#A9CCE3";
-const cardBackgroundColor = "rgba(255, 255, 255, 0.08)";
-const separatorColor = "rgba(255, 255, 255, 0.15)";
-const secondaryButtonBackground = "rgba(255, 255, 255, 0.15)";
-const secondaryButtonText = "#E0F2FE";
+const secondaryTextColor = '#A9CCE3';
+const cardBackgroundColor = 'rgba(255, 255, 255, 0.08)';
+const separatorColor = 'rgba(255, 255, 255, 0.15)';
+const secondaryButtonBackground = 'rgba(255, 255, 255, 0.15)';
+const secondaryButtonText = '#E0F2FE';
 
 const openSubscriptionManagement = async () => {
   Alert.alert(
-    "Manage Subscription",
+    'Manage Subscription',
     "You'll be redirected to your app store's subscription settings to manage your subscription.",
     [
-      { text: "Cancel", style: "cancel" },
+      { text: 'Cancel', style: 'cancel' },
       {
-        text: "Continue",
+        text: 'Continue',
         onPress: async () => {
           try {
-            let url = "";
-            if (Platform.OS === "ios") {
-              url = "itms-apps://apps.apple.com/account/subscriptions";
-            } else if (Platform.OS === "android") {
-              url = "https://play.google.com/store/account/subscriptions";
+            let url = '';
+            if (Platform.OS === 'ios') {
+              url = 'itms-apps://apps.apple.com/account/subscriptions';
+            } else if (Platform.OS === 'android') {
+              url = 'https://play.google.com/store/account/subscriptions';
               // Opcional: Añadir SKU y paquete si quieres enlazar a una específica
               // url = `https://play.google.com/store/account/subscriptions?sku=tu_sku&package=tu.paquete.app`;
             }
@@ -47,48 +47,48 @@ const openSubscriptionManagement = async () => {
               await Linking.openURL(url);
             } else {
               console.warn(
-                "SubscriptionManager: Plataforma no soportada para deep linking de suscripciones."
+                'SubscriptionManager: Plataforma no soportada para deep linking de suscripciones.'
               );
             }
           } catch (error) {
             console.error(
-              "SubscriptionManager: Error al abrir la gestión de suscripciones:",
+              'SubscriptionManager: Error al abrir la gestión de suscripciones:',
               error
             );
             Alert.alert(
-              "Error",
-              "No se pudo abrir la página de gestión de suscripciones. Por favor, hazlo manualmente desde la App Store o Google Play Store."
+              'Error',
+              'No se pudo abrir la página de gestión de suscripciones. Por favor, hazlo manualmente desde la App Store o Google Play Store.'
             );
           }
           try {
-            let url = "";
-            if (Platform.OS === "ios") {
-              url = "itms-apps://apps.apple.com/account/subscriptions";
-            } else if (Platform.OS === "android") {
-              url = "https://play.google.com/store/account/subscriptions";
+            let url = '';
+            if (Platform.OS === 'ios') {
+              url = 'itms-apps://apps.apple.com/account/subscriptions';
+            } else if (Platform.OS === 'android') {
+              url = 'https://play.google.com/store/account/subscriptions';
             }
 
             if (url) {
               await Linking.openURL(url);
             } else {
               console.warn(
-                "SubscriptionManager: Plataforma no soportada para deep linking de suscripciones."
+                'SubscriptionManager: Plataforma no soportada para deep linking de suscripciones.'
               );
             }
           } catch (error) {
             console.error(
-              "SubscriptionManager: Error al abrir la gestión de suscripciones:",
+              'SubscriptionManager: Error al abrir la gestión de suscripciones:',
               error
             );
             Alert.alert(
-              "Error",
-              "The subscription management page could not be opened."
+              'Error',
+              'The subscription management page could not be opened.'
             );
           }
         },
       },
     ],
-    { userInterfaceStyle: "dark" }
+    { userInterfaceStyle: 'dark' }
   );
 };
 
@@ -103,17 +103,17 @@ const SubscriptionManager = () => {
       const success = await goPro();
       if (success) {
         console.log(
-          "SubscriptionManager: Paywall successful purchase or restoration."
+          'SubscriptionManager: Paywall successful purchase or restoration.'
         );
       } else {
         console.log(
-          "SubscriptionManager: Paywall closed without purchase or restoration."
+          'SubscriptionManager: Paywall closed without purchase or restoration.'
         );
       }
     } catch (error) {
-      console.error("SubscriptionManager: Error to present paywall:", error);
+      console.error('SubscriptionManager: Error to present paywall:', error);
 
-      Alert.alert("Error", "The purchase screen could not be displayed.");
+      Alert.alert('Error', 'The purchase screen could not be displayed.');
     } finally {
       setIsPaywallLoading(false);
     }
@@ -142,7 +142,7 @@ const SubscriptionManager = () => {
   }
 
   const proEntitlement: PurchasesEntitlementInfo | undefined =
-    customerInfo.entitlements.active["Pro"];
+    customerInfo.entitlements.active['Pro'];
 
   return (
     // Asegúrate que el contenedor padre de este componente tenga backgroundColor: darkBackground
@@ -153,7 +153,7 @@ const SubscriptionManager = () => {
         {/* --- Sección Estado Actual --- */}
         <View style={styles.statusSection}>
           <Ionicons
-            name={isPro ? "checkmark-circle" : "close-circle-outline"}
+            name={isPro ? 'checkmark-circle' : 'close-circle-outline'}
             size={28}
             color={isPro ? theme.success : theme.destructive} // Verde o Rojo claro
             style={styles.statusIcon}
@@ -164,7 +164,7 @@ const SubscriptionManager = () => {
               { color: isPro ? theme.success : theme.destructive },
             ]}
           >
-            State: {isPro ? "Active" : "Inactive"}
+            State: {isPro ? 'Active' : 'Inactive'}
           </ThemedText>
         </View>
 
@@ -205,10 +205,10 @@ const SubscriptionManager = () => {
             )}
             <ThemedText style={styles.detailLabel}>Store:</ThemedText>
             <ThemedText style={styles.detailValue}>
-              {proEntitlement.store === "APP_STORE"
-                ? "App Store"
-                : proEntitlement.store === "PLAY_STORE"
-                  ? "Google Play"
+              {proEntitlement.store === 'APP_STORE'
+                ? 'App Store'
+                : proEntitlement.store === 'PLAY_STORE'
+                  ? 'Google Play'
                   : proEntitlement.store}
             </ThemedText>
 
@@ -240,19 +240,14 @@ const SubscriptionManager = () => {
             </ThemedText>
             {/* Botón para Activar */}
             <Button
-              style={{ width: "100%" }}
-              iconLeft={
-                <Ionicons
-                  name="sparkles-outline"
-                  size={20}
-                  color={theme.foreground}
-                />
-              }
+              style={{ width: '100%' }}
               onPress={handleGoPro}
               disabled={isPaywallLoading}
-              loading={isPaywallLoading}
             >
-              Activate Pro Subscription
+              <ButtonIcon name="sparkles-outline" />
+              <ButtonText>
+                {isPaywallLoading ? 'Loading...' : 'Go Pro'}
+              </ButtonText>
             </Button>
           </View>
         )}
@@ -260,8 +255,8 @@ const SubscriptionManager = () => {
 
       {/* Nota de ayuda */}
       <ThemedText style={styles.footerText}>
-        Cancellation or changes are made directly in the{" "}
-        {Platform.OS === "ios" ? "App Store" : "Google Play Store"}.
+        Cancellation or changes are made directly in the{' '}
+        {Platform.OS === 'ios' ? 'App Store' : 'Google Play Store'}.
       </ThemedText>
     </ScrollView>
   );
@@ -271,15 +266,15 @@ const SubscriptionManager = () => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
     // backgroundColor: darkBackground // Quitar si el padre ya lo tiene, si no, ponerlo aquí
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
     // backgroundColor: darkBackground // Quitar si el padre ya lo tiene
   },
@@ -292,10 +287,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 15,
     color: theme.destructive, // Color de error claro
-    textAlign: "center",
+    textAlign: 'center',
   },
   card: {
-    width: "100%",
+    width: '100%',
     maxWidth: 400,
     backgroundColor: cardBackgroundColor, // Fondo de tarjeta semi-transparente
     borderRadius: 12,
@@ -309,15 +304,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: theme.foreground, // Texto blanco
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 25,
   },
   statusSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 20,
     paddingVertical: 10,
     borderRadius: 8,
@@ -328,7 +323,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     // El color se aplica dinámicamente (activeColor/inactiveColor)
   },
   detailsSection: {
@@ -346,40 +341,40 @@ const styles = StyleSheet.create({
   detailValue: {
     fontSize: 16,
     color: theme.foreground, // Texto principal blanco
-    fontWeight: "500",
+    fontWeight: '500',
     marginBottom: 15,
   },
   activateSection: {
     marginTop: 15,
-    alignItems: "center",
+    alignItems: 'center',
   },
   activateText: {
     fontSize: 16,
     color: secondaryTextColor, // Texto secundario claro
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 25,
     lineHeight: 22,
   },
   button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
     marginTop: 15,
-    width: "100%",
+    width: '100%',
     minHeight: 48,
     borderWidth: 1, // Añadimos borde a todos para consistencia
-    borderColor: "transparent", // Por defecto transparente
+    borderColor: 'transparent', // Por defecto transparente
   },
   buttonIcon: {
     marginRight: 8,
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   manageButton: {
     // Botón secundario
@@ -390,8 +385,8 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 13,
     color: secondaryTextColor, // Texto secundario claro
-    textAlign: "center",
-    fontStyle: "italic",
+    textAlign: 'center',
+    fontStyle: 'italic',
     paddingHorizontal: 10,
   },
 });

@@ -9,7 +9,6 @@ import { useReceiptImageMutation } from './useReceiptImageMutation';
 import { useExpenseStore } from '../store/useExpenseStore';
 
 export const useScanReceipts = (id: string) => {
-  console.log({ scanReceiptForId: id });
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string>('');
   const ref = useRef<CameraView>(null);

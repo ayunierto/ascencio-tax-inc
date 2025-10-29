@@ -26,7 +26,6 @@ globalThis.Buffer = Buffer;
 
 export default function ScanReceiptScreen() {
   const { id } = useLocalSearchParams(); // new or uuid
-  console.log({ id });
   if (!id) throw new Error('Mode is required');
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();

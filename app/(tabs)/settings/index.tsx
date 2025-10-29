@@ -1,49 +1,21 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
-import { Ionicons, Feather } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { Linking } from "react-native";
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Redirect, router } from 'expo-router';
+import { Linking } from 'react-native';
 
-import { ThemedText } from "@/components/ui/ThemedText";
-import { Card } from "@/components/ui";
-import { CardContent } from "@/components/ui/Card/CardContent";
-import { Button, ButtonText } from "@/components/ui/Button";
-import { useAuthStore } from "@/core/auth/store/useAuthStore";
-import { theme } from "@/components/ui/theme";
-
-const ListItem = ({
-  icon,
-  label,
-  external = false,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  onPress: () => void;
-  external?: boolean;
-}) => (
-  <Card>
-    <CardContent>
-      <View style={styles.itemRow}>
-        <View style={styles.itemLeft}>
-          <Ionicons name={icon} size={22} color={theme.foreground} />
-          <ThemedText style={styles.itemLabel}>{label}</ThemedText>
-        </View>
-        {external ? (
-          <Feather name="external-link" size={20} color={theme.foreground} />
-        ) : (
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color={theme.mutedForeground}
-          />
-        )}
-      </View>
-    </CardContent>
-  </Card>
-);
+import { ThemedText } from '@/components/ui/ThemedText';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/Button';
+import { useAuthStore } from '@/core/auth/store/useAuthStore';
+import { theme } from '@/components/ui/theme';
+import ListItem from '@/core/settings/components/ListItem';
 
 export default function SettingsScreen() {
   const { logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    await logout();
+    return <Redirect href={'/(tabs)/(home)'} />;
+  };
 
   return (
     <View style={styles.container}>
@@ -55,12 +27,12 @@ export default function SettingsScreen() {
           <ListItem
             icon="person-outline"
             label="My account"
-            onPress={() => router.push("/settings/profile")}
+            onPress={() => router.push('/settings/profile')}
           />
           <ListItem
             icon="diamond-outline"
             label="Subscriptions"
-            onPress={() => router.push("/settings/subscriptions")}
+            onPress={() => router.push('/settings/subscriptions')}
           />
         </View>
 
@@ -72,7 +44,7 @@ export default function SettingsScreen() {
             label="Terms of use"
             external
             onPress={() =>
-              Linking.openURL("https://www.ascenciotax.com/termsofuse")
+              Linking.openURL('https://www.ascenciotax.com/termsofuse')
             }
           />
           <ListItem
@@ -80,7 +52,7 @@ export default function SettingsScreen() {
             label="Privacy policy"
             external
             onPress={() =>
-              Linking.openURL("https://www.ascenciotax.com/privacy")
+              Linking.openURL('https://www.ascenciotax.com/privacy')
             }
           />
         </View>
@@ -88,8 +60,9 @@ export default function SettingsScreen() {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Button variant="destructive" fullWidth onPress={logout}>
+        <Button variant="destructive" fullWidth onPress={handleLogout}>
           <ButtonText>Log out</ButtonText>
+          <ButtonIcon name="log-out-outline" />
         </Button>
       </View>
     </View>
@@ -100,7 +73,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   content: {
     gap: 32, // espacio entre secciones
@@ -113,18 +86,18 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
     color: theme.mutedForeground,
     marginBottom: 4,
   },
   itemRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   itemLeft: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   itemLabel: {
     fontSize: 16,

@@ -10,6 +10,5 @@ export const getReceiptValues = async (
       imageUrl,
     }
   );
-  console.log({ receiptValues: data });
   return data;
 };

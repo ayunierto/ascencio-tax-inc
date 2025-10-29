@@ -5,14 +5,14 @@ export const resetPasswordSchema = z.object({
     message: 'Email must be a valid email.',
   }),
   code: z
-    .string()
+    .string({ required_error: 'Code is required.' })
     .min(6, {
       message: 'Code must be at least 6 characters long.',
     })
     .max(6, {
       message: 'Code must be exactly 6 characters long.',
     }),
-  newPassword: z.string().min(6, {
+  newPassword: z.string({ required_error: 'Password is required.' }).min(6, {
     message: 'Password must be at least 6 characters long.',
   }),
 });

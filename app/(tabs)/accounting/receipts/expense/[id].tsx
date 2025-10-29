@@ -111,10 +111,8 @@ const ExpenseScreen = () => {
   useFocusEffect(
     useCallback(() => {
       // Screen focused
-      console.log('Screen focused');
       refetch();
       return () => {
-        console.log('Screen unfocus');
         // Handle cleanup on screen unfocus
         // Remove uploaded image from cloudinary if any
         // and clear the store

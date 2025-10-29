@@ -1,11 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from '@tanstack/react-query';
 
-import Toast from "react-native-toast-message";
-import { updateProfileAction } from "../actions/update-profile.action";
-import { UpdateProfileRequest } from "../schemas/update-profile.schema";
-import { UpdateProfileResponse } from "../interfaces/update-profile.interface";
-import { AxiosError } from "axios";
-import { ServerException } from "@/core/interfaces/server-exception.response";
+import Toast from 'react-native-toast-message';
+import { updateProfileAction } from '../actions/update-profile.action';
+import { UpdateProfileRequest } from '../schemas/update-profile.schema';
+import { UpdateProfileResponse } from '../interfaces/update-profile.interface';
+import { AxiosError } from 'axios';
+import { ServerException } from '@/core/interfaces/server-exception.response';
 
 export const useUpdateProfileMutation = () => {
   return useMutation<
@@ -15,24 +15,23 @@ export const useUpdateProfileMutation = () => {
   >({
     mutationFn: async (data: UpdateProfileRequest) => {
       const response = await updateProfileAction(data);
-      console.log(response);
       return response;
     },
     onSuccess: (response) => {
       Toast.show({
-        type: "error",
-        text1: "Profile update failed",
+        type: 'error',
+        text1: 'Profile update failed',
         text2: response.message,
       });
     },
     onError: (error) => {
       Toast.show({
-        type: "error",
-        text1: "Profile update failed",
+        type: 'error',
+        text1: 'Profile update failed',
         text2:
           error.response?.data.message ||
           error.message ||
-          "An error occurred while updating the profile.",
+          'An error occurred while updating the profile.',
       });
     },
   });

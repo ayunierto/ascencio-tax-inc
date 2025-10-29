@@ -1,29 +1,21 @@
-import { useMutation } from "@tanstack/react-query";
-import { ResetPasswordResponse } from "../interfaces/reset-password.response";
-import Toast from "react-native-toast-message";
-import { router } from "expo-router";
-import { ResetPasswordRequest } from "../schemas/reset-password.schema";
-import { resetPasswordAction } from "../actions";
+import { useMutation } from '@tanstack/react-query';
+import { ResetPasswordResponse } from '../interfaces/reset-password.response';
+import { ResetPasswordRequest } from '../schemas/reset-password.schema';
+import { resetPasswordAction } from '../actions';
+import { AxiosError } from 'axios';
+import { ServerException } from '@/core/interfaces/server-exception.response';
 
 export const useResetPasswordMutation = () => {
-  return useMutation<ResetPasswordResponse, Error, ResetPasswordRequest>({
+  return useMutation<
+    ResetPasswordResponse,
+    AxiosError<ServerException>,
+    ResetPasswordRequest
+  >({
     mutationFn: async (data: ResetPasswordRequest) => {
       return await resetPasswordAction(data);
     },
-    onSuccess: (response) => {
-      Toast.show({
-        type: "success",
-        text1: "Password Reset Successfully",
-        text2: response.message,
-      });
-      router.replace("/auth/sign-in");
-    },
     onError: (error) => {
-      Toast.show({
-        type: "error",
-        text1: "Reset Password Error",
-        text2: error.message,
-      });
+      console.error(error);
     },
   });
 };
