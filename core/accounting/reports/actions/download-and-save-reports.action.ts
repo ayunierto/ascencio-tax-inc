@@ -1,38 +1,27 @@
-import * as FileSystem from "expo-file-system";
-import { DownloadAndSaveReportResponse } from "../interfaces";
-import { StorageAdapter } from "@/core/adapters/storage.adapter";
+import * as FileSystem from 'expo-file-system';
+import { StorageAdapter } from '@/core/adapters/storage.adapter';
 
-export const DownloadAndSaveReport = async (
+export const downloadAndSaveReport = async (
   startDate: string,
   endDate: string
-): Promise<DownloadAndSaveReportResponse> => {
+): Promise<string> => {
   const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-  const token = await StorageAdapter.getItem("access_token");
+  if (!API_URL) {
+    throw new Error('No API URL found');
+  }
+  const token = await StorageAdapter.getItem('access_token');
   if (!token) {
-    return {
-      message: "Download and save report failed for token not found.",
-      error: "Token not found",
-    };
+    throw new Error('No token found');
   }
+  const fileName = `report-${startDate}-${endDate}.pdf`;
+  const url = `${API_URL}/reports/generate?startDate=${startDate}&endDate=${endDate}`;
+  const destinationUri = FileSystem.documentDirectory + fileName;
 
-  try {
-    const { uri } = await FileSystem.downloadAsync(
-      `${API_URL}/reports/generate?startDate=${startDate}&endDate=${endDate}`,
-      FileSystem.documentDirectory + `report.pdf`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+  const { uri } = await FileSystem.downloadAsync(url, destinationUri, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    return uri;
-  } catch (error) {
-    console.error("Error when downloading and saving pdf:", error);
-    return {
-      message: "Download and save report failed.",
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
+  return uri;
 };

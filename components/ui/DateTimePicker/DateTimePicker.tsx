@@ -8,25 +8,25 @@ import {
   StyleProp,
   ViewStyle,
   TextStyle,
-} from "react-native";
-import React, { useState, useMemo, useCallback } from "react";
-import { Button, ButtonText } from "../Button";
+} from 'react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { Button, ButtonText } from '../Button';
 import RNDateTimePicker, {
   DateTimePickerAndroid,
   DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
+} from '@react-native-community/datetimepicker';
 import {
   Controller,
   ControllerProps,
   FieldPath,
   FieldValues,
-} from "react-hook-form";
-import { theme } from "../theme";
-import { ThemedText } from "../ThemedText";
-import { Ionicons } from "@expo/vector-icons";
+} from 'react-hook-form';
+import { theme } from '../theme';
+import { ThemedText } from '../ThemedText';
+import { Ionicons } from '@expo/vector-icons';
 
 interface DateTimePickerProps {
-  mode?: "date" | "time" | "datetime";
+  mode?: 'date' | 'time' | 'datetime';
   is24Hour?: boolean;
   onChange?: (date: string | null) => void;
   value?: string | null;
@@ -45,7 +45,7 @@ interface DateTimePickerProps {
   errorTextStyle?: StyleProp<TextStyle>;
 }
 const DateTimeInput = ({
-  mode = "date",
+  mode = 'date',
   is24Hour = false,
   value,
   onChange,
@@ -84,18 +84,18 @@ const DateTimeInput = ({
     }
 
     switch (mode) {
-      case "time":
+      case 'time':
         return parsedDate.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
+          hour: '2-digit',
+          minute: '2-digit',
           hour12: !is24Hour,
         });
-      case "datetime":
+      case 'datetime':
         return `${parsedDate.toLocaleDateString()} ${parsedDate.toLocaleTimeString(
           [],
           {
-            hour: "2-digit",
-            minute: "2-digit",
+            hour: '2-digit',
+            minute: '2-digit',
             hour12: !is24Hour,
           }
         )}`;
@@ -107,7 +107,7 @@ const DateTimeInput = ({
   // Optimización: Memoizar handler de cambio
   const handleOnChange = useCallback(
     (event: DateTimePickerEvent, selectedDate?: Date) => {
-      if (Platform.OS === "ios") {
+      if (Platform.OS === 'ios') {
         // En iOS no cerramos automáticamente
         if (selectedDate && onChange) {
           onChange(selectedDate.toISOString());
@@ -115,9 +115,9 @@ const DateTimeInput = ({
       } else {
         // En Android cerramos automáticamente
         setModalVisible(false);
-        if (event.type === "set" && selectedDate && onChange) {
+        if (event.type === 'set' && selectedDate && onChange) {
           onChange(selectedDate.toISOString());
-        } else if (event.type === "dismissed" && onChange) {
+        } else if (event.type === 'dismissed' && onChange) {
           onChange(null);
         }
       }
@@ -129,11 +129,11 @@ const DateTimeInput = ({
   const showDatePicker = useCallback(() => {
     if (disabled) return;
 
-    if (Platform.OS === "android") {
+    if (Platform.OS === 'android') {
       DateTimePickerAndroid.open({
         value: parsedDate || new Date(),
         onChange: handleOnChange,
-        mode: mode === "datetime" ? "date" : mode,
+        mode: mode === 'datetime' ? 'date' : mode,
         is24Hour,
         minimumDate,
         maximumDate,
@@ -236,7 +236,7 @@ const DateTimeInput = ({
 
         {/* Ícono de calendario */}
         <Text style={styles.calendarIcon}>
-          {mode === "time" ? (
+          {mode === 'time' ? (
             <Ionicons
               name="time-outline"
               color={error ? theme.destructive : theme.foreground}
@@ -260,7 +260,7 @@ const DateTimeInput = ({
       )}
 
       {/* Modal para iOS */}
-      {Platform.OS === "ios" && (
+      {Platform.OS === 'ios' && (
         <Modal
           animationType="slide"
           transparent={true}
@@ -271,13 +271,13 @@ const DateTimeInput = ({
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalTitle}>
-                Select {mode === "datetime" ? "Date & Time" : mode}
+                Select {mode === 'datetime' ? 'Date & Time' : mode}
               </Text>
 
               <RNDateTimePicker
                 testID="dateTimePicker"
                 value={parsedDate || new Date()}
-                mode={mode === "datetime" ? "date" : mode}
+                mode={mode === 'datetime' ? 'date' : mode}
                 is24Hour={is24Hour}
                 display="spinner"
                 onChange={handleOnChange}
@@ -308,31 +308,31 @@ const DateTimeInput = ({
 };
 
 // Funciones helper
-const getDefaultPlaceholder = (mode: "date" | "time" | "datetime") => {
+const getDefaultPlaceholder = (mode: 'date' | 'time' | 'datetime') => {
   switch (mode) {
-    case "time":
-      return "Select time";
-    case "datetime":
-      return "Select date & time";
+    case 'time':
+      return 'Select time';
+    case 'datetime':
+      return 'Select date & time';
     default:
-      return "Select date";
+      return 'Select date';
   }
 };
 
 const formatDate = (date: Date, format: string): string => {
   // Implementación básica de formateo personalizado
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
 
   return format
-    .replace("DD", day)
-    .replace("MM", month)
-    .replace("YYYY", year.toString())
-    .replace("HH", hours)
-    .replace("mm", minutes);
+    .replace('DD', day)
+    .replace('MM', month)
+    .replace('YYYY', year.toString())
+    .replace('HH', hours)
+    .replace('mm', minutes);
 };
 
 const styles = StyleSheet.create({
@@ -344,9 +344,9 @@ const styles = StyleSheet.create({
     borderColor: theme.foreground,
     borderRadius: theme.radius,
     backgroundColor: theme.background,
-    justifyContent: "center",
-    flexDirection: "row",
-    alignItems: "center",
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   triggerError: {
     borderColor: theme.destructive,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   },
   triggerDisabled: {
     opacity: 0.5,
-    backgroundColor: theme.muted + "20",
+    backgroundColor: theme.muted + '20',
   },
   triggerText: {
     fontSize: 14,
@@ -368,29 +368,29 @@ const styles = StyleSheet.create({
     color: theme.mutedForeground,
   },
   floatingLabel: {
-    position: "absolute",
+    position: 'absolute',
     top: -10,
     left: 15,
     backgroundColor: theme.background,
     paddingHorizontal: 4,
     paddingVertical: 0,
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   clearBtn: {
-    position: "absolute",
+    position: 'absolute',
     right: 40,
     height: 28,
     width: 28,
     borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: theme.card,
   },
   clearBtnText: {
     color: theme.primary,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     fontSize: 18,
     lineHeight: 18,
     marginTop: 6,
@@ -414,17 +414,17 @@ const styles = StyleSheet.create({
   // Modal styles
   centeredView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: theme.radius,
     padding: 20,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -432,23 +432,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 8,
-    width: "85%",
+    width: '85%',
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 20,
-    color: "#111",
-    textTransform: "capitalize",
+    color: '#111',
+    textTransform: 'capitalize',
   },
   picker: {
-    width: "100%",
+    width: '100%',
     marginBottom: 20,
   },
   modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
     gap: 12,
   },
 });
@@ -458,10 +458,10 @@ const styles = StyleSheet.create({
 export type DateTimeFieldProps<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
-> = Omit<DateTimePickerProps, "value" | "onChange"> & {
+> = Omit<DateTimePickerProps, 'value' | 'onChange'> & {
   name: TName;
-  control: ControllerProps<TFieldValues, TName>["control"];
-  rules?: ControllerProps<TFieldValues, TName>["rules"];
+  control: ControllerProps<TFieldValues, TName>['control'];
+  rules?: ControllerProps<TFieldValues, TName>['rules'];
   defaultValue?: string | null;
 };
 
